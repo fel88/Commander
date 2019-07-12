@@ -1,0 +1,670 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Data;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+
+namespace commander
+{
+    public partial class FileListControl : UserControl
+    {
+        public FileListControl()
+        {
+            InitializeComponent();
+            listView1.ColumnClick += ListView1_ColumnClick;
+        }
+
+        private void ListView1_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
+            var cl = listView1.Columns[e.Column];
+            if (e.Column == 2)
+            {
+                /*var srt = (int)listView1.Sorting;
+                srt++;
+                var vls = Enum.GetValues(typeof(SortOrder));
+                srt %= vls.Length;
+                listView1.Sorting = (SortOrder)srt;
+                */
+                if (listView1.Sorting == SortOrder.Ascending)
+                {
+                    listView1.Sorting = SortOrder.Descending;
+                }
+                else
+                {
+                    listView1.Sorting = SortOrder.Ascending;
+                }
+                listView1.ListViewItemSorter = new Sorter1(listView1.Sorting);
+                listView1.Sort();
+            }
+        }
+
+        public DirectoryInfo CurrentDirectory;
+
+        public bool IsFilterPass(string str, string[] filters)
+        {
+            str = str.ToLower();
+            if (filters.Length == 0) return true;
+            return filters.Any(z => str.Contains(z));
+        }
+
+        public void UpdateList(string path)
+        {
+            UpdateList(path, textBox2.Text);
+        }
+
+        public void UpdateList(string path, string filter)
+        {
+            if (!Directory.Exists(path))
+            {
+                MessageBox.Show("Directory is not exist. ", "Commander", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            listView1.Items.Clear();
+            textBox1.Text = path;
+
+            var p = new DirectoryInfo(path);
+            CurrentDirectory = p;
+            ImageList list = new ImageList();
+            list.TransparentColor = Color.Black;
+            var fltrs = filter.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(z => z.ToLower()).ToArray();
+
+            listView1.SmallImageList = list;
+            listView1.LargeImageList = list;
+            listView1.Items.Add(new ListViewItem(new string[] { "..", "", "" }) { Tag = p.Parent });
+
+
+            foreach (var directoryInfo in p.GetDirectories())
+            {
+
+                bool was = false;
+                var bmp = DefaultIcons.FolderLarge;
+
+                list.Images.Add(bmp.ToBitmap());
+                was = true;
+
+                if (checkBox1.Checked && !IsFilterPass(directoryInfo.Name, fltrs)) continue;
+
+                listView1.Items.Add(new ListViewItem(new string[] { directoryInfo.Name, "", directoryInfo.LastWriteTime.ToString() })
+                {
+                    Tag = directoryInfo,
+                    ImageIndex = was ? (list.Images.Count - 1) : -1
+                });
+
+            }
+            foreach (var directoryInfo in p.GetFiles())
+            {
+                var ico = Icon.ExtractAssociatedIcon(directoryInfo.FullName);
+                var bmp = Bitmap.FromHicon(ico.Handle);
+                bmp.MakeTransparent();
+                list.Images.Add(bmp);
+                if (!IsFilterPass(directoryInfo.Name, fltrs)) continue;
+                var len = directoryInfo.Length / 1024;
+                listView1.Items.Add(
+                    new ListViewItem(new string[]
+                    {
+                        directoryInfo.Name, len+"Kb", directoryInfo.LastWriteTime.ToString()
+                    })
+                    {
+                        Tag = directoryInfo,
+                        ImageIndex = list.Images.Count - 1
+
+                    });
+            }
+        }
+        public DirectoryInfo SelectedDirectory
+        {
+            get
+            {
+                if (listView1.SelectedItems.Count > 0)
+                {
+                    var si = listView1.SelectedItems[0].Tag;
+                    if (si is DirectoryInfo)
+                    {
+                        return si as DirectoryInfo;
+                    }
+                }
+
+                return null;
+            }
+        }
+
+        public FileInfo SelectedFile
+        {
+            get
+            {
+                if (listView1.SelectedItems.Count > 0)
+                {
+                    var si = listView1.SelectedItems[0].Tag;
+                    if (si is FileInfo)
+                    {
+                        return si as FileInfo;
+                    }
+                }
+
+                return null;
+            }
+        }
+
+
+
+        private void listView1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+                ExecuteSelected();
+
+            }
+        }
+
+        private void textBox1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                UpdateList(textBox1.Text, textBox2.Text);
+            }
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            UpdateList(CurrentDirectory.FullName, textBox2.Text);
+        }
+
+        public void SetFilter(string mask)
+        {
+            textBox2.Text = mask;
+        }
+
+        public void UpdateDrivesList()
+        {
+            var drivs = System.IO.DriveInfo.GetDrives();
+            comboBox1.Items.Clear();
+            foreach (var item in drivs)
+            {
+                comboBox1.Items.Add(item);
+            }
+        }
+
+        public ListView ListView
+        {
+            get { return listView1; }
+        }
+
+        public List<TabInfo> Tabs = new List<TabInfo>();
+
+        public void AddTab(TabInfo tinf)
+        {
+
+            Tabs.Add(tinf);
+            var b = new Button() { Text = tinf.Hint };
+            b.ContextMenuStrip = contextMenuStrip1;
+            b.Click += (x, z) =>
+            {
+                var bb = x as Button;
+                var tabinf = bb.Tag as TabInfo;
+                textBox2.Text = tabinf.Filter;
+                UpdateList(tabinf.Path, tabinf.Filter);
+
+            };
+            b.Tag = tinf;
+            //b.Width = 140;
+            int ww = 0;
+            for (int i = 0; i < panel2.Controls.Count; i++)
+            {
+                ww += panel2.Controls[i].Width;
+            }
+
+            b.Left = ww;//panel2.Controls.Count * 140;
+            using (var gr = CreateGraphics())
+            {
+                var msr = gr.MeasureString(b.Text, b.Font, new SizeF(500, 40));
+                b.Width = (int)msr.Width + 20;
+            }
+
+            //b.AutoSize = true;
+            panel2.Controls.Add(b);
+        }
+        private void button1_Click(object sender, EventArgs e)
+        {
+            AddTabWindow atw = new AddTabWindow();
+            atw.Path = textBox1.Text;
+            var dir = new DirectoryInfo(textBox1.Text);
+            atw.Hint = dir.Name;
+            if (atw.ShowDialog() == DialogResult.OK)
+            {
+                AddTab(new TabInfo()
+                {
+                    Hint = atw.Hint,
+                    Path = atw.Path,
+                    Filter = atw.Filter
+                });
+            }
+        }
+
+        private Control todel;
+        private void removeTabToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var p = contextMenuStrip1.SourceControl;
+            Tabs.Remove(p.Tag as TabInfo);
+            panel2.Controls.Remove(p);
+        }
+
+        private void openExplorerHereToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+                if (listView1.SelectedItems[0].Tag is DirectoryInfo)
+                {
+                    var d = listView1.SelectedItems[0].Tag as DirectoryInfo;
+                    Process.Start(d.FullName);
+                }
+                else
+                if (listView1.SelectedItems[0].Tag is FileInfo)
+                {
+                    var d = listView1.SelectedItems[0].Tag as FileInfo;
+                    Process.Start(d.DirectoryName);
+                }
+
+            }
+        }
+
+        private void openInHexToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+
+                if (listView1.SelectedItems[0].Tag is FileInfo)
+                {
+                    var d = listView1.SelectedItems[0].Tag as FileInfo;
+                    HexEditor hex = new HexEditor();
+                    hex.OpenFile(d.FullName);
+                    hex.Show();
+
+                }
+
+            }
+        }
+
+        private void searcToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+                if (listView1.SelectedItems[0].Tag is DirectoryInfo)
+                {
+                    var d = listView1.SelectedItems[0].Tag as DirectoryInfo;
+                    TextSearchForm tsf = new TextSearchForm();
+                    tsf.SetPath(d.FullName);
+                    tsf.FileListControl = this;
+                    tsf.Show();
+
+                }
+                else
+                if (listView1.SelectedItems[0].Tag is FileInfo)
+                {
+                    var d = listView1.SelectedItems[0].Tag as FileInfo;
+                    TextSearchForm tsf = new TextSearchForm();
+                    tsf.SetPath(d.DirectoryName);
+                    tsf.FileListControl = this;
+                    tsf.Show();
+                }
+
+            }
+
+        }
+
+        private void openInImageViewerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+
+                if (listView1.SelectedItems[0].Tag is FileInfo)
+                {
+                    var d = listView1.SelectedItems[0].Tag as FileInfo;
+                    ImageViewer tsf = new ImageViewer();
+                    tsf.SetBitmap(Bitmap.FromFile(d.FullName) as Bitmap);
+                    tsf.Show();
+                }
+
+            }
+
+        }
+
+        private void openCmdHereToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+                if (listView1.SelectedItems[0].Tag is DirectoryInfo)
+                {
+                    var d = listView1.SelectedItems[0].Tag as DirectoryInfo;
+                    var startInfo = new System.Diagnostics.ProcessStartInfo
+                    {
+                        WorkingDirectory = d.FullName,
+                        FileName = "cmd.exe",
+
+                    };
+
+
+                    Process.Start(startInfo);
+                }
+                else
+                if (listView1.SelectedItems[0].Tag is FileInfo)
+                {
+
+                    var d = listView1.SelectedItems[0].Tag as FileInfo;
+                    var startInfo = new System.Diagnostics.ProcessStartInfo
+                    {
+                        WorkingDirectory = d.DirectoryName,
+                        //WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal,
+                        FileName = "cmd.exe",
+                        //RedirectStandardInput = true,
+                        //UseShellExecute = false
+                    };
+
+                    //Process.Start("cmd /c "+d.DirectoryName );
+                    Process.Start(startInfo);
+                }
+            }
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateList(CurrentDirectory.FullName, textBox2.Text);
+        }
+
+        private void calcMemToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+
+                if (listView1.SelectedItems[0].Tag is DirectoryInfo)
+                {
+                    var d = listView1.SelectedItems[0].Tag as DirectoryInfo;
+                    List<FileInfo> files = new List<FileInfo>();
+                    GetAllFiles(d, files);
+                    var total = files.Sum(z => z.Length);
+                    MessageBox.Show("total mem: " + total / 1024 / 1024 + " Mb");
+                }
+            }
+        }
+
+        public static List<FileInfo> GetAllFiles(DirectoryInfo dir, List<FileInfo> files = null)
+        {
+            if (files == null)
+            {
+                files = new List<FileInfo>();
+            }
+
+            try
+            {
+                foreach (var d in dir.GetDirectories())
+                {
+                    GetAllFiles(d, files);
+                }
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+
+            }
+
+
+            foreach (var file in dir.GetFiles())
+            {
+                files.Add(file);
+            }
+            return files;
+        }
+
+        private void findFileRepeatsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+                if (listView1.SelectedItems[0].Tag is DirectoryInfo)
+                {
+                    var d = listView1.SelectedItems[0].Tag as DirectoryInfo;
+                    List<FileInfo> files = new List<FileInfo>();
+                    GetAllFiles(d, files);
+
+                    var arr = files.GroupBy(z => Stuff.CalcMD5(z.FullName)).ToArray();
+                    var cnt = arr.Count(z => z.Count() > 1);
+                    var gr = arr.Where(z => z.Count() > 1).ToArray();
+                    if (cnt == 0)
+                    {
+                        MessageBox.Show("no repeates found");
+                    }
+                    else
+                    {
+                        RepeatsWindow rp = new RepeatsWindow();
+
+                        rp.SetRepeats(gr.Select(z => z.ToArray()).ToArray());
+                        rp.ShowDialog();
+                    }
+
+                }
+            }
+
+        }
+
+        void ExecuteSelected()
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+                if (listView1.SelectedItems[0].Tag is FileInfo)
+                {
+                    var f = listView1.SelectedItems[0].Tag as FileInfo;
+                    if (f.Extension.Contains("bat") && MessageBox.Show("show internal console?", Text, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    {
+                        ConsoleOutputWindow cow = new ConsoleOutputWindow();
+                        ProcessStartInfo psi = new ProcessStartInfo();
+                        psi.WorkingDirectory = f.DirectoryName;
+                        psi.FileName = "cmd";
+                        psi.Arguments = "/c " + f.FullName;
+                        psi.WorkingDirectory = f.DirectoryName;
+                        //Process.Start(f.FullName);
+                        psi.RedirectStandardOutput = true;
+                        psi.UseShellExecute = false;
+                        psi.CreateNoWindow = true;
+                        Process proc = new Process();
+                        proc.StartInfo = psi;
+
+                        proc.Start();
+
+                        StringBuilder sb = new StringBuilder();
+                        var output = proc.StandardOutput.ReadToEnd();
+                        /*
+                        while (!proc.StandardOutput.EndOfStream)
+                        {
+                            string line = proc.StandardOutput.ReadLine();
+                            sb.AppendLine(line);
+
+                        }
+                        */
+                        //cow.SetText("> Start\nProcess complete.. 100%\n > Exit");
+                        cow.SetText(sb.ToString());
+                        cow.SetText(output);
+
+                        mdi.MainForm.OpenWindow(cow);
+                    }
+                    else
+                    {
+                        ProcessStartInfo psi = new ProcessStartInfo();
+                        psi.WorkingDirectory = f.DirectoryName;
+                        psi.FileName = f.FullName;
+                        //Process.Start(f.FullName);
+                        Process.Start(psi);
+                    }
+                }
+                else
+                if (listView1.SelectedItems[0].Tag is DirectoryInfo)
+                {
+                    try
+                    {
+                        var f = listView1.SelectedItems[0].Tag as DirectoryInfo;
+                        UpdateList(f.FullName, textBox2.Text);
+                    }
+                    catch (UnauthorizedAccessException ex)
+                    {
+                        MessageBox.Show(ex.Message, "Commander", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    }
+                }
+
+            }
+        }
+        private void ListView1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                ExecuteSelected();
+            }
+        }
+
+
+        private void ComboBox1_DropDown(object sender, EventArgs e)
+        {
+            UpdateDrivesList();
+        }
+
+        private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            textBox1.Text = comboBox1.Text;
+            UpdateList(textBox1.Text);
+        }
+
+        private void TextBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void CalcMd5ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+                if (listView1.SelectedItems[0].Tag is FileInfo)
+                {
+                    var f = listView1.SelectedItems[0].Tag as FileInfo;
+                    var md5 = Stuff.CalcMD5(f.FullName);
+                    MessageBox.Show("MD5: " + md5, "Commander", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+        }
+
+        private void NewTextFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+
+        }
+
+        private void TxtFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int index = 0;
+            while (true)
+            {
+                string name = "noname" + index + ".txt";
+                string path = Path.Combine(CurrentDirectory.FullName, name);
+                if (!File.Exists(path))
+                {
+                    File.WriteAllText(path, "");
+                    break;
+                }
+                index++;
+            }
+
+            UpdateList(CurrentDirectory.FullName);
+
+
+
+        }
+
+        private void FolderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int index = 0;
+            while (true)
+            {
+                string name = "folder" + index;
+                string path = Path.Combine(CurrentDirectory.FullName, name);
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                    break;
+                }
+                index++;
+            }
+
+            UpdateList(CurrentDirectory.FullName);
+        }
+
+        private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+                if (listView1.SelectedItems[0].Tag is FileInfo)
+                {
+                    var f = listView1.SelectedItems[0].Tag as FileInfo;
+                    if (MessageBox.Show("Delete " + f.Name + "?", "Commander", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    {
+                        File.Delete(f.FullName);
+                        UpdateList(CurrentDirectory.FullName);
+                    }
+                }
+                else
+                if (listView1.SelectedItems[0].Tag is DirectoryInfo)
+                {
+                    var f = listView1.SelectedItems[0].Tag as DirectoryInfo;
+                    if (MessageBox.Show("Delete " + f.Name + " directory and all contents?", "Commander", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    {
+                        Directory.Delete(f.FullName, true);
+                        UpdateList(CurrentDirectory.FullName);
+                    }
+                }
+            }
+        }
+    }
+
+    public class TabInfo
+    {
+        public string Hint;
+        public string Path;
+        public string Filter;
+    }
+
+    public class Sorter1 : IComparer
+    {
+        private SortOrder sorting;
+
+        public Sorter1(SortOrder sorting)
+        {
+            this.sorting = sorting;
+        }
+
+        public int Compare(object x, object y)
+        {
+            var lv1 = x as ListViewItem;
+            var lv2 = y as ListViewItem;
+            DateTime dt1 = DateTime.Now;
+            DateTime dt2 = DateTime.Now;
+            if (lv1.SubItems[0].Text == "..")
+            {
+                return -1;
+            }
+            DateTime.TryParse(lv1.SubItems[2].Text, out dt1);
+            DateTime.TryParse(lv2.SubItems[2].Text, out dt2);
+            var res = dt1.CompareTo(dt2);
+            if (sorting == SortOrder.Descending)
+            {
+                res = -res;
+            }
+            return res;
+
+        }
+    }
+}

@@ -1,0 +1,15 @@
+﻿1. virtual dirs
+2. file tags (actors, genre)
+	-tags explorer like directories
+3. async processes
+4. right pane diff view styles : images / documents preview
+5. films plugin. filtering via tags (actor, genre)
+6. cache of hashes via last modifed date (background hashas recalc if allowed)
+7. regex masks
+8. internal text editor
+9. secret folders
+10. drag'n'drop
+11. webbrowser inside
+12. another window capture inside.
+13. ftp
+14. offline web sites caches
