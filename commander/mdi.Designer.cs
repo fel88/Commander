@@ -42,7 +42,7 @@
             this.toolStripButton2});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(849, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(1071, 25);
             this.toolStrip1.TabIndex = 1;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -52,8 +52,8 @@
             this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
             this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(72, 22);
-            this.toolStripButton1.Text = "file explorer";
+            this.toolStripButton1.Size = new System.Drawing.Size(74, 22);
+            this.toolStripButton1.Text = "File explorer";
             this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
             // toolStripButton2
@@ -62,8 +62,8 @@
             this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
             this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(33, 22);
-            this.toolStripButton2.Text = "web";
+            this.toolStripButton2.Size = new System.Drawing.Size(35, 22);
+            this.toolStripButton2.Text = "Web";
             this.toolStripButton2.Click += new System.EventHandler(this.ToolStripButton2_Click);
             // 
             // mdi
@@ -71,11 +71,11 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(849, 578);
+            this.ClientSize = new System.Drawing.Size(1071, 653);
             this.Controls.Add(this.toolStrip1);
             this.IsMdiContainer = true;
             this.Name = "mdi";
-            this.Text = "Commander";
+            this.Text = "Commander";            
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);

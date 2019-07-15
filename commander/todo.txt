@@ -1,15 +1,20 @@
-﻿1. virtual dirs
+﻿1. virtual dirs (mount iso to folder)
 2. file tags (actors, genre)
 	-tags explorer like directories
 3. async processes
 4. right pane diff view styles : images / documents preview
 5. films plugin. filtering via tags (actor, genre)
-6. cache of hashes via last modifed date (background hashas recalc if allowed)
+6. cache of hashes via last modifed date (background hashes recalc if allowed)
 7. regex masks
-8. internal text editor
-9. secret folders
-10. drag'n'drop
-11. webbrowser inside
-12. another window capture inside.
-13. ftp
-14. offline web sites caches
+8. internal text editor,img viewer, avi viewer
+9. drag'n'drop
+10. webbrowser inside
+11. another window capture inside.
+12. ftp
+13. offline web sites caches
+14. iso reader
+15. plugins
+16. file additional properties (such as rating etc. maybe as plugin extension), categories also or tags.
+17. quick http parser and list all resources like imgs.
+18. increase speed of loading. cache icons of file types.
+19. libraries, list,edit, iso-libraries, defaults icons

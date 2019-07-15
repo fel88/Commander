@@ -75,17 +75,25 @@
     <Compile Include="Explorer.Designer.cs">
       <DependentUpon>Explorer.cs</DependentUpon>
     </Compile>
+    <Compile Include="FilesystemLibrary.cs" />
     <Compile Include="HexEditor.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="HexEditor.Designer.cs">
       <DependentUpon>HexEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="ILibrary.cs" />
     <Compile Include="ImageViewer.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="ImageViewer.Designer.cs">
       <DependentUpon>ImageViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ImgViewerPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ImgViewerPanel.Designer.cs">
+      <DependentUpon>ImgViewerPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="mdi.cs">
       <SubType>Form</SubType>
@@ -108,6 +116,12 @@
       <DependentUpon>RepeatsWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Stuff.cs" />
+    <Compile Include="TextPreviewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TextPreviewer.Designer.cs">
+      <DependentUpon>TextPreviewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="TextSearchForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -135,6 +149,9 @@
     <EmbeddedResource Include="ImageViewer.resx">
       <DependentUpon>ImageViewer.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ImgViewerPanel.resx">
+      <DependentUpon>ImgViewerPanel.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="mdi.resx">
       <DependentUpon>mdi.cs</DependentUpon>
     </EmbeddedResource>
@@ -152,6 +169,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="RepeatsWindow.resx">
       <DependentUpon>RepeatsWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TextPreviewer.resx">
+      <DependentUpon>TextPreviewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TextSearchForm.resx">
       <DependentUpon>TextSearchForm.cs</DependentUpon>

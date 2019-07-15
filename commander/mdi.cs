@@ -15,6 +15,7 @@ namespace commander
         {
             InitializeComponent();
             Explorer f = new Explorer();
+            
             f.MdiParent = this;
             f.Show();
             //f.WindowState = FormWindowState.Maximized;
@@ -24,11 +25,11 @@ namespace commander
 
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
-            OpenWindow(new Explorer());            
+            OpenWindow(new Explorer());
         }
 
         public static mdi MainForm;
-        
+
         public void OpenWindow(Form frm)
         {
             frm.MdiParent = this;
@@ -36,9 +37,23 @@ namespace commander
 
         }
 
+        public void OpenWindow(Control cc)
+        {
+            var frm = new Form();
+            frm.Width = cc.Width;
+            frm.Height = cc.Height;
+
+            cc.Dock = DockStyle.Fill;
+            frm.Controls.Add(cc);
+            frm.MdiParent = this;
+            frm.Show();
+
+        }
         private void ToolStripButton2_Click(object sender, EventArgs e)
         {
             OpenWindow(new Browser());
         }
+
+        
     }
 }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
@@ -14,39 +16,40 @@ namespace commander
         public Explorer()
         {
             InitializeComponent();
-            var drvs = System.IO.DriveInfo.GetDrives();
+            var drvs = DriveInfo.GetDrives();
             fileListControl1.UpdateList(drvs[0].Name, "");
             fileListControl2.UpdateList(drvs[0].Name, "");
-            LoadSettings();
-        }
+            previewer = new ImgViewerPanel() { Dock = DockStyle.Fill };
+            textPreviewer = new TextPreviewer() { Dock = DockStyle.Fill };
 
-        private void LoadSettings()
-        {
-            var s = XDocument.Load("settings.xml");
-            foreach (var descendant in s.Descendants("path"))
+            fileListControl1.SelectedFileChanged = (x) =>
             {
-                RecentPathes.Add(descendant.Value);
-            }
-
-            foreach (var descendant in s.Descendants("tab"))
-            {
-                var hint = descendant.Attribute("hint").Value;
-                var owner = descendant.Attribute("owner").Value;
-                var path = descendant.Attribute("path").Value;
-                var filter = descendant.Attribute("filter").Value;
-                FileListControl fc = fileListControl1;
-                if (owner == "right")
+                if (splitContainer1.Panel2.Controls.Contains(textPreviewer))
                 {
-                    fc = fileListControl2;
+                    string[] exts = new string[] { ".txt", ".cs", ".js", ".xml", ".htm", ".bat", ".html", ".log", ".csproj", ".config", ".resx", ".sln", ".settings", ".md" };
+                    if (exts.Contains(x.Extension))
+                    {
+                        textPreviewer.LoadFile(x);
+                    }
+                    else
+                    {
+                        textPreviewer.Disable();
+                    }
                 }
-                fc.AddTab(new TabInfo() { Filter = filter, Path = path, Hint = hint });
+                if (splitContainer1.Panel2.Controls.Contains(previewer))
+                {
+                    string[] exts = new string[] { ".jpg", ".png", ".bmp" };
+                    if (exts.Contains(x.Extension))
+                    {
 
-            }
-
-
+                        previewer.SetImage(Bitmap.FromFile(x.FullName));
+                    }
+                }
+            };
+            Stuff.LoadSettings(fileListControl1, fileListControl2);
+            Stuff.IsDirty = false;
         }
 
-        public List<string> RecentPathes = new List<string>();
 
         protected override void OnKeyDown(KeyEventArgs e)
         {
@@ -163,7 +166,86 @@ namespace commander
             base.OnKeyDown(e);
         }
 
-        private void toolStripButton1_Click(object sender, EventArgs e)
+                 
+
+        private void toolStripButton3_Click(object sender, EventArgs e)
+        {
+            TextSearchForm tsf = new TextSearchForm();
+            tsf.MdiParent = MdiParent;
+            if (fileListControl2.ContainsFocus)
+            {
+                tsf.FileListControl = fileListControl2;
+                tsf.SetPath(fileListControl2.CurrentDirectory.FullName);
+            }
+            else
+            {
+                tsf.FileListControl = fileListControl1;
+                tsf.SetPath(fileListControl1.CurrentDirectory.FullName);
+            }
+            tsf.Show();
+        }
+
+        private void fileListControl1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ToolStripButton4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void TablesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RemoveSecondTab();
+            splitContainer1.Panel2.Controls.Add(fileListControl2);
+
+        }
+
+        void RemoveSecondTab()
+        {
+            splitContainer1.Panel2.Controls.Clear();
+        }
+
+        ImgViewerPanel previewer;
+        TextPreviewer textPreviewer = new TextPreviewer() { Dock = DockStyle.Fill };
+        private void TablePreviewerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            RemoveSecondTab();
+            splitContainer1.Panel2.Controls.Add(previewer);
+        }
+
+        private void CompareBinaryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (fileListControl1.SelectedFile != null && fileListControl2.SelectedFile != null)
+            {
+
+                var f1 = fileListControl1.SelectedFile.FullName;
+                var f2 = fileListControl2.SelectedFile.FullName;
+                var b1 = File.ReadAllBytes(f1);
+                var b2 = File.ReadAllBytes(f2);
+
+                if (b1.Length != b2.Length)
+                {
+                    MessageBox.Show("NOT equal");
+                    return;
+                }
+                for (int i = 0; i < b1.Length; i++)
+                {
+                    if (b1[i] != b2[i])
+                    {
+                        MessageBox.Show("NOT equal");
+                        return;
+                    }
+                }
+                MessageBox.Show("Equal!");
+
+
+            }
+        }
+
+        private void CompareMD5ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (fileListControl1.SelectedFile != null && fileListControl2.SelectedFile != null)
             {
@@ -198,82 +280,28 @@ namespace commander
             }
         }
 
-
-        public void SaveSettings()
+        private void TableTextEditorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("<?xml version=\"1.0\"?>");
-            sb.AppendLine("<settings>");
-            foreach (var item in fileListControl1.Tabs)
-            {
-                sb.AppendLine($"<tab hint=\"{item.Hint}\" owner=\"left\" path=\"{item.Path}\" filter=\"{item.Filter}\"/>");
-            }
-            foreach (var item in fileListControl2.Tabs)
-            {
-                sb.AppendLine($"<tab hint=\"{item.Hint}\" owner=\"right\" path=\"{item.Path}\" filter=\"{item.Filter}\"/>");
-            }
-            sb.AppendLine("</settings>");
-            File.WriteAllText("settings.xml", sb.ToString());
+
+            RemoveSecondTab();
+            splitContainer1.Panel2.Controls.Add(textPreviewer);
         }
 
-        private void toolStripButton2_Click(object sender, EventArgs e)
+        private void Explorer_FormClosing(object sender, FormClosingEventArgs e)
         {
-            //save ui and all tabs to settings config
-            if (MessageBox.Show("Replace settings?", Text, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (Stuff.IsDirty)
             {
-                SaveSettings();
-            }
-
-        }
-
-        private void toolStripButton3_Click(object sender, EventArgs e)
-        {
-            TextSearchForm tsf = new TextSearchForm();
-            tsf.MdiParent = MdiParent;
-            if (fileListControl2.ContainsFocus)
-            {
-                tsf.FileListControl = fileListControl2;
-                tsf.SetPath(fileListControl2.CurrentDirectory.FullName);
-            }
-            else
-            {
-                tsf.FileListControl = fileListControl1;
-                tsf.SetPath(fileListControl1.CurrentDirectory.FullName);
-            }
-            tsf.Show();
-        }
-
-        private void fileListControl1_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void ToolStripButton4_Click(object sender, EventArgs e)
-        {
-            if (fileListControl1.SelectedFile != null && fileListControl2.SelectedFile != null)
-            {
-
-                var f1 = fileListControl1.SelectedFile.FullName;
-                var f2 = fileListControl2.SelectedFile.FullName;
-                var b1 = File.ReadAllBytes(f1);
-                var b2 = File.ReadAllBytes(f2);
-
-                if (b1.Length != b2.Length)
+                var res = MessageBox.Show("Save changes (tabs, libraries etc.)?", Text, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                switch (res)
                 {
-                    MessageBox.Show("NOT equal");
-                    return;
-                }
-                for (int i = 0; i < b1.Length; i++)
-                {
-                    if (b1[i] != b2[i])
-                    {
-                        MessageBox.Show("NOT equal");
-                        return;
-                    }
-                }
-                MessageBox.Show("Equal!");
+                    case DialogResult.Cancel:
+                        e.Cancel = true;
+                        break;
+                    case DialogResult.Yes:
+                        Stuff.SaveSettings(fileListControl1, fileListControl2);
+                        break;
 
-
+                }                
             }
         }
     }

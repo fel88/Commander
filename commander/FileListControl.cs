@@ -117,6 +117,81 @@ namespace commander
                     });
             }
         }
+
+
+        public void UpdateLibrariesList(string path, string filter = "")
+        {
+            if (path == null)
+            {
+                listView1.Items.Clear();
+
+                foreach (var item in Stuff.Libraries)
+                {
+                    listView1.Items.Add(new ListViewItem(new string[] { item.Name }) { Tag = item });
+                }
+            }
+            else
+            {
+
+                listView1.Items.Clear();
+                textBox1.Text = path;
+
+                var p = new DirectoryInfo(path);
+                CurrentDirectory = p;
+                ImageList list = new ImageList();
+                list.TransparentColor = Color.Black;
+                var fltrs = filter.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(z => z.ToLower()).ToArray();
+
+                listView1.SmallImageList = list;
+                listView1.LargeImageList = list;
+                if (Stuff.Libraries.OfType<FilesystemLibrary>().Any(z => z.BaseDirectory == p.FullName))
+                {
+
+
+                    listView1.Items.Add(new ListViewItem(new string[] { "..", "", "" }) { Tag = libraryRootObject });
+                }
+
+
+                foreach (var directoryInfo in p.GetDirectories())
+                {
+
+                    bool was = false;
+                    var bmp = DefaultIcons.FolderLarge;
+
+                    list.Images.Add(bmp.ToBitmap());
+                    was = true;
+
+                    if (checkBox1.Checked && !IsFilterPass(directoryInfo.Name, fltrs)) continue;
+
+                    listView1.Items.Add(new ListViewItem(new string[] { directoryInfo.Name, "", directoryInfo.LastWriteTime.ToString() })
+                    {
+                        Tag = directoryInfo,
+                        ImageIndex = was ? (list.Images.Count - 1) : -1
+                    });
+
+                }
+                foreach (var directoryInfo in p.GetFiles())
+                {
+                    var ico = Icon.ExtractAssociatedIcon(directoryInfo.FullName);
+                    var bmp = Bitmap.FromHicon(ico.Handle);
+                    bmp.MakeTransparent();
+                    list.Images.Add(bmp);
+                    if (!IsFilterPass(directoryInfo.Name, fltrs)) continue;
+                    var len = directoryInfo.Length / 1024;
+                    listView1.Items.Add(
+                        new ListViewItem(new string[]
+                        {
+                        directoryInfo.Name, len+"Kb", directoryInfo.LastWriteTime.ToString()
+                        })
+                        {
+                            Tag = directoryInfo,
+                            ImageIndex = list.Images.Count - 1
+
+                        });
+                }
+            }
+        }
+
         public DirectoryInfo SelectedDirectory
         {
             get
@@ -158,7 +233,6 @@ namespace commander
             if (listView1.SelectedItems.Count > 0)
             {
                 ExecuteSelected();
-
             }
         }
 
@@ -199,7 +273,7 @@ namespace commander
 
         public void AddTab(TabInfo tinf)
         {
-
+            Stuff.IsDirty = true;
             Tabs.Add(tinf);
             var b = new Button() { Text = tinf.Hint };
             b.ContextMenuStrip = contextMenuStrip1;
@@ -251,6 +325,7 @@ namespace commander
         {
             var p = contextMenuStrip1.SourceControl;
             Tabs.Remove(p.Tag as TabInfo);
+            Stuff.IsDirty = true;
             panel2.Controls.Remove(p);
         }
 
@@ -512,9 +587,32 @@ namespace commander
 
                     }
                 }
+                else
+                if (listView1.SelectedItems[0].Tag is FilesystemLibrary || listView1.SelectedItems[0].Tag == libraryRootObject)
+                {
+                    try
+                    {
+                        
+                        if (listView1.SelectedItems[0].Tag == libraryRootObject)
+                        {
+                            UpdateLibrariesList(null, textBox2.Text);
+                        }
+                        else
+                        {
+                            var f = listView1.SelectedItems[0].Tag as FilesystemLibrary;
+                            UpdateLibrariesList(f.BaseDirectory, textBox2.Text);
+                        }
+                    }
+                    catch (UnauthorizedAccessException ex)
+                    {
+                        MessageBox.Show(ex.Message, "Commander", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
+                    }
+                }
             }
         }
+
+        private object libraryRootObject = new object();
         private void ListView1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
@@ -624,6 +722,42 @@ namespace commander
                     {
                         Directory.Delete(f.FullName, true);
                         UpdateList(CurrentDirectory.FullName);
+                    }
+                }
+            }
+        }
+
+        public Action<FileInfo> SelectedFileChanged;
+        private void ListView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (SelectedFile == null) return;
+            SelectedFileChanged(SelectedFile);
+        }
+
+        private void ComboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboBox2.SelectedIndex == 0)//filesystem
+            {
+                UpdateList(textBox1.Text);
+            }
+            if (comboBox2.SelectedIndex == 1)//libraries
+            {
+                UpdateLibrariesList(null);
+            }
+
+        }
+
+        private void MakeLibraryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+                if (listView1.SelectedItems[0].Tag is DirectoryInfo)
+                {
+                    var f = listView1.SelectedItems[0].Tag as DirectoryInfo;
+                    if (MessageBox.Show("Make " + f.Name + " library?", "Commander", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    {
+                        Stuff.Libraries.Add(new FilesystemLibrary() { BaseDirectory = f.FullName, Name = f.Name });
+                        Stuff.IsDirty = true;
                     }
                 }
             }
