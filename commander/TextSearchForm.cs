@@ -146,28 +146,36 @@ namespace commander
                 label4.Text = d.FullName;
                 foreach (var item in d.GetFiles())
                 {
-                    fileProcessed();
-                    if (!item.Extension.Contains(textBox3.Text)) continue;
-                    if (!item.Name.ToLower().Contains(textBox4.Text.ToLower())) continue;
-                    bool add = false;
-                    if (!string.IsNullOrEmpty(textBox2.Text))
+                    try
                     {
-                        var t = File.ReadAllLines(item.FullName);
-                        if (t.Any(z => z.ToUpper().Contains(textBox2.Text.ToUpper())))
+                        fileProcessed();
+                        if (!item.Extension.Contains(textBox3.Text)) continue;
+                        if (!item.Name.ToLower().Contains(textBox4.Text.ToLower())) continue;
+                        bool add = false;
+                        if (!string.IsNullOrEmpty(textBox2.Text))
+                        {
+
+                            var t = File.ReadAllLines(item.FullName);
+                            if (t.Any(z => z.ToUpper().Contains(textBox2.Text.ToUpper())))
+                            {
+                                add = true;
+                            }
+                        }
+                        else
                         {
                             add = true;
                         }
-                    }
-                    else
-                    {
-                        add = true;
-                    }
 
-                    if (add)
+                        if (add)
+                        {
+                            listView2.BeginUpdate();
+                            listView2.Items.Add(new ListViewItem(new string[] { item.Name }) { Tag = item });
+                            listView2.EndUpdate();
+                        }
+                    }
+                    catch (Exception ex)
                     {
-                        listView2.BeginUpdate();
-                        listView2.Items.Add(new ListViewItem(new string[] { item.Name }) { Tag = item });
-                        listView2.EndUpdate();
+
                     }
                 }
                 foreach (var item in d.GetDirectories())
@@ -260,7 +268,7 @@ namespace commander
                 richTextBox1.Clear();
                 richTextBox1.BackColor = Color.Gray;
                 richTextBox1.Enabled = false;
-                if (f.Length < 10 * 1024)
+                if (f.Length < maxShowableFileSize * 1024)
                 {
                     richTextBox1.BackColor = Color.White;
                     richTextBox1.Enabled = true;
@@ -278,6 +286,10 @@ namespace commander
 
                         cnt++;
                     }
+                }
+                else
+                {
+                    richTextBox1.Text = "File size exceeded";
                 }
 
             }
@@ -359,6 +371,19 @@ namespace commander
                 FileListControl.UpdateList(f.DirectoryName);
                 FileListControl.SetFilter(f.Name);
                 Close();
+            }
+        }
+
+        int maxShowableFileSize = 10;
+        private void TextBox5_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                maxShowableFileSize = int.Parse(textBox5.Text);
+            }
+            catch (Exception ex)
+            {
+
             }
         }
     }

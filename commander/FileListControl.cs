@@ -18,6 +18,20 @@ namespace commander
         {
             InitializeComponent();
             listView1.ColumnClick += ListView1_ColumnClick;
+            watcher.Changed += Watcher_Changed;
+
+            watcher.Created += Watcher_Changed;
+            watcher.Deleted += Watcher_Changed;
+            watcher.Renamed += Watcher_Changed;
+            watcher.NotifyFilter = NotifyFilters.CreationTime | NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.LastAccess;
+
+        }
+
+
+
+        private void Watcher_Changed(object sender, FileSystemEventArgs e)
+        {
+            UpdateList(textBox1.Text, textBox2.Text);
         }
 
         private void ListView1_ColumnClick(object sender, ColumnClickEventArgs e)
@@ -55,6 +69,8 @@ namespace commander
 
         public void UpdateList(string path)
         {
+            watcher.Path = path;
+            watcher.EnableRaisingEvents = true;
             UpdateList(path, textBox2.Text);
         }
 
@@ -65,6 +81,9 @@ namespace commander
                 MessageBox.Show("Directory is not exist. ", "Commander", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+            watcher.Path = path;
+            watcher.EnableRaisingEvents = true;
+            listView1.BeginUpdate();
             listView1.Items.Clear();
             textBox1.Text = path;
 
@@ -99,23 +118,30 @@ namespace commander
             }
             foreach (var directoryInfo in p.GetFiles())
             {
-                var ico = Icon.ExtractAssociatedIcon(directoryInfo.FullName);
-                var bmp = Bitmap.FromHicon(ico.Handle);
-                bmp.MakeTransparent();
-                list.Images.Add(bmp);
-                if (!IsFilterPass(directoryInfo.Name, fltrs)) continue;
-                var len = directoryInfo.Length / 1024;
-                listView1.Items.Add(
-                    new ListViewItem(new string[]
-                    {
+                try
+                {
+                    var ico = Icon.ExtractAssociatedIcon(directoryInfo.FullName);
+                    var bmp = Bitmap.FromHicon(ico.Handle);
+                    bmp.MakeTransparent();
+                    list.Images.Add(bmp);
+                    if (!IsFilterPass(directoryInfo.Name, fltrs)) continue;
+                    var len = directoryInfo.Length / 1024;
+                    listView1.Items.Add(
+                        new ListViewItem(new string[]
+                        {
                         directoryInfo.Name, len+"Kb", directoryInfo.LastWriteTime.ToString()
-                    })
-                    {
-                        Tag = directoryInfo,
-                        ImageIndex = list.Images.Count - 1
+                        })
+                        {
+                            Tag = directoryInfo,
+                            ImageIndex = list.Images.Count - 1
 
-                    });
+                        });
+                }catch(Exception ex)
+                {
+
+                }
             }
+            listView1.EndUpdate();
         }
 
 
@@ -404,9 +430,18 @@ namespace commander
                     tsf.SetBitmap(Bitmap.FromFile(d.FullName) as Bitmap);
                     tsf.Show();
                 }
-
             }
+        }
 
+        void RunCmd(string path)
+        {            
+            var startInfo = new ProcessStartInfo
+            {
+                WorkingDirectory = path,
+                FileName = "cmd.exe",
+
+            };
+            Process.Start(startInfo);
         }
 
         private void openCmdHereToolStripMenuItem_Click(object sender, EventArgs e)
@@ -416,33 +451,18 @@ namespace commander
                 if (listView1.SelectedItems[0].Tag is DirectoryInfo)
                 {
                     var d = listView1.SelectedItems[0].Tag as DirectoryInfo;
-                    var startInfo = new System.Diagnostics.ProcessStartInfo
-                    {
-                        WorkingDirectory = d.FullName,
-                        FileName = "cmd.exe",
-
-                    };
-
-
-                    Process.Start(startInfo);
+                    RunCmd(d.FullName);
                 }
                 else
                 if (listView1.SelectedItems[0].Tag is FileInfo)
                 {
-
                     var d = listView1.SelectedItems[0].Tag as FileInfo;
-                    var startInfo = new System.Diagnostics.ProcessStartInfo
-                    {
-                        WorkingDirectory = d.DirectoryName,
-                        //WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal,
-                        FileName = "cmd.exe",
-                        //RedirectStandardInput = true,
-                        //UseShellExecute = false
-                    };
-
-                    //Process.Start("cmd /c "+d.DirectoryName );
-                    Process.Start(startInfo);
+                    RunCmd(d.DirectoryName);                    
                 }
+            }
+            else if (CurrentDirectory != null && CurrentDirectory.Exists)
+            {
+                RunCmd(CurrentDirectory.FullName);
             }
         }
 
@@ -592,7 +612,7 @@ namespace commander
                 {
                     try
                     {
-                        
+
                         if (listView1.SelectedItems[0].Tag == libraryRootObject)
                         {
                             UpdateLibrariesList(null, textBox2.Text);
@@ -683,6 +703,7 @@ namespace commander
 
         }
 
+        FileSystemWatcher watcher = new FileSystemWatcher();
         private void FolderToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int index = 0;
@@ -731,7 +752,10 @@ namespace commander
         private void ListView1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (SelectedFile == null) return;
-            SelectedFileChanged(SelectedFile);
+            if (SelectedFileChanged != null)
+            {
+                SelectedFileChanged(SelectedFile);
+            }
         }
 
         private void ComboBox2_SelectedIndexChanged(object sender, EventArgs e)

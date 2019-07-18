@@ -18,3 +18,6 @@
 17. quick http parser and list all resources like imgs.
 18. increase speed of loading. cache icons of file types.
 19. libraries, list,edit, iso-libraries, defaults icons
+20. go-to line in text editor/text search
+21. highlight selected lines, lines numbers right draw
+22. search query, and saves results of search query search.

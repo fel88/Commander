@@ -26,7 +26,7 @@ namespace commander
             {
                 if (splitContainer1.Panel2.Controls.Contains(textPreviewer))
                 {
-                    string[] exts = new string[] { ".txt", ".cs", ".js", ".xml", ".htm", ".bat", ".html", ".log", ".csproj", ".config", ".resx", ".sln", ".settings", ".md" };
+                    string[] exts = new string[] { ".txt", ".cs", ".js", ".xml", ".htm", ".bat", ".html", ".log", ".csproj", ".config", ".resx", ".sln", ".settings", ".md", ".cpp", ".h",".asm" };
                     if (exts.Contains(x.Extension))
                     {
                         textPreviewer.LoadFile(x);
@@ -166,7 +166,7 @@ namespace commander
             base.OnKeyDown(e);
         }
 
-                 
+
 
         private void toolStripButton3_Click(object sender, EventArgs e)
         {
@@ -301,7 +301,7 @@ namespace commander
                         Stuff.SaveSettings(fileListControl1, fileListControl2);
                         break;
 
-                }                
+                }
             }
         }
     }
