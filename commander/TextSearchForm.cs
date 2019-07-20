@@ -349,12 +349,9 @@ namespace commander
         void Execute()
         {
             if (listView2.SelectedItems.Count > 0)
-            {
+            {                
                 var f = listView2.SelectedItems[0].Tag as FileInfo;
-                ProcessStartInfo psi = new ProcessStartInfo();
-                psi.WorkingDirectory = f.DirectoryName;
-                psi.FileName = f.FullName;
-                Process.Start(psi);
+                Stuff.ExecuteFile(f);                
             }
         }
 

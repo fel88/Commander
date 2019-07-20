@@ -1,13 +1,14 @@
 ﻿using System.Collections;
+using System.IO;
 using System.Windows.Forms;
 
 namespace commander
 {
-    public class Sorter2 : IComparer
+    public class Sorter3 : IComparer
     {
         private SortOrder sorting;
 
-        public Sorter2(SortOrder sorting)
+        public Sorter3(SortOrder sorting)
         {
             this.sorting = sorting;
         }
@@ -25,9 +26,20 @@ namespace commander
             {
                 return 1;
             }
-            var r1 = lv1.SubItems[0].Text;
-            var r2 = lv2.SubItems[0].Text;
-            var res = r1.CompareTo(r2);
+            long sz1 = 0;
+            long sz2 = 0;
+            if (lv1.Tag is FileInfo)
+            {
+                var fin = lv1.Tag as FileInfo;
+                sz1 = fin.Length;
+            }
+            if (lv2.Tag is FileInfo)
+            {
+                var fin = lv2.Tag as FileInfo;
+                sz2 = fin.Length;
+            }
+
+            var res = sz1.CompareTo(sz2);
             if (sorting == SortOrder.Descending)
             {
                 res = -res;

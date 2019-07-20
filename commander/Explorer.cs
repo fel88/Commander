@@ -324,5 +324,10 @@ namespace commander
             ChangePasswordDialog p = new ChangePasswordDialog();
             p.ShowDialog();
         }
+
+        private void ToolStripButton1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

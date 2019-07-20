@@ -16,6 +16,7 @@ namespace commander
         public TagListViewControl()
         {
             InitializeComponent();
+            Stuff.SetDoubleBuffered(listView1);
         }
 
         public void Init(FileListControl fc)
@@ -48,9 +49,14 @@ namespace commander
             {
                 listView1.Items.Clear();
                 parent.CurrentTag = null;
+
+                var filter = parent.Filter;                
+                var fltrs = filter.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(z => z.ToLower()).ToArray();
+
                 foreach (var item in Stuff.Tags)
                 {
                     if (!Stuff.ShowHidden && item.IsHidden) continue;
+                    if (!IsFilterPass(item.Name, fltrs)) continue;
                     listView1.Items.Add(new ListViewItem(new string[] { item.Name }) { Tag = item });
                 }
             }
@@ -159,11 +165,7 @@ namespace commander
             }
         }
 
-        private void SetHiddenToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
+     
         private void TrueToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (listView1.SelectedItems.Count > 0)
@@ -194,6 +196,31 @@ namespace commander
                         Stuff.IsDirty = true;
                         UpdateList(null);
                     }
+                }
+            }
+        }
+
+        private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+                var tag = listView1.SelectedItems[0].Tag;
+                if (tag is TagInfo)
+                {
+                    var t = tag as TagInfo;
+                    if (Stuff.Question("Are you sure to delete " + t.Name + " tag and all files?") == DialogResult.Yes)
+                    {
+                        Stuff.Tags.Remove(t);
+                        Stuff.IsDirty = true;
+                        UpdateList(null);
+                    }
+                }
+                else if (tag is FileInfo)
+                {
+                    var f = tag as FileInfo;
+                    Stuff.IsDirty = true;
+                    SelectedTag.Files.Remove(f.FullName);
+                    UpdateList(SelectedTag);
                 }
             }
         }

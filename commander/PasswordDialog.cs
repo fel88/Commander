@@ -37,5 +37,19 @@ namespace commander
                 MessageBox.Show("Password wrong!", mdi.MainForm.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                Close();
+            }
+            base.OnKeyDown(e);
+        }
+
+        private void PasswordDialog_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            
+        }
     }
 }

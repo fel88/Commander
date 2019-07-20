@@ -56,12 +56,14 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.contextMenuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // textBox1
@@ -177,8 +179,7 @@
             // panel1
             // 
             this.tableLayoutPanel1.SetColumnSpan(this.panel1, 3);
-            this.panel1.Controls.Add(this.label5);
-            this.panel1.Controls.Add(this.textBox5);
+            this.panel1.Controls.Add(this.groupBox2);
             this.panel1.Controls.Add(this.groupBox1);
             this.panel1.Controls.Add(this.label4);
             this.panel1.Controls.Add(this.progressBar1);
@@ -196,15 +197,15 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(314, 75);
+            this.label5.Location = new System.Drawing.Point(6, 22);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(94, 13);
+            this.label5.Size = new System.Drawing.Size(131, 13);
             this.label5.TabIndex = 20;
-            this.label5.Text = "Max File Size (Kb):";
+            this.label5.Text = "Max File Size to view (Kb):";
             // 
             // textBox5
             // 
-            this.textBox5.Location = new System.Drawing.Point(317, 91);
+            this.textBox5.Location = new System.Drawing.Point(9, 38);
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(100, 20);
             this.textBox5.TabIndex = 19;
@@ -341,6 +342,17 @@
             this.tableLayoutPanel2.Size = new System.Drawing.Size(921, 183);
             this.tableLayoutPanel2.TabIndex = 8;
             // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.label5);
+            this.groupBox2.Controls.Add(this.textBox5);
+            this.groupBox2.Location = new System.Drawing.Point(308, 54);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(200, 67);
+            this.groupBox2.TabIndex = 21;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Preview settings";
+            // 
             // TextSearchForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -359,6 +371,8 @@
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.tableLayoutPanel2.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -392,6 +406,7 @@
         private System.Windows.Forms.ToolStripMenuItem goToToolStripMenuItem;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox textBox5;
+        private System.Windows.Forms.GroupBox groupBox2;
     }
 }
 

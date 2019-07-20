@@ -58,12 +58,14 @@
             this.Controls.Add(this.button1);
             this.Controls.Add(this.textBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "PasswordDialog";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Password Dialog";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PasswordDialog_FormClosing);
+            this.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.PasswordDialog_PreviewKeyDown);
             this.ResumeLayout(false);
             this.PerformLayout();
 

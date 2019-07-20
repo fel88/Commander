@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using System.Windows.Forms;
 using System.Xml.Linq;
 
 namespace commander
@@ -22,6 +25,55 @@ namespace commander
             }
 
         }
+        public static void SetDoubleBuffered(Control control)
+        {
+            // set instance non-public property with name "DoubleBuffered" to true
+            typeof(Control).InvokeMember("DoubleBuffered",
+                BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
+                null, control, new object[] { true });
+        }
+
+        public static string CalcPartMD5(string filename, int bytes)
+        {
+
+            var fi = new FileInfo(filename);
+            if (fi.Length < bytes) return CalcMD5(filename);
+            using (var md5 = MD5.Create())
+            {
+                using (var stream = File.OpenRead(filename))
+                {
+                    byte[] bb = new byte[bytes];
+                    stream.Read(bb, 0, bytes);
+                    var hash = md5.ComputeHash(bb);
+                    return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+                }
+            }
+
+        }
+
+        public static void ExecuteFile(FileInfo f)
+        {
+            ProcessStartInfo psi = new ProcessStartInfo();
+            psi.WorkingDirectory = f.DirectoryName;
+            psi.FileName = f.FullName;
+            Process.Start(psi);
+        }
+
+        public static string GetUserFriendlyFileSize(long _v)
+        {
+            double v = _v;
+            string[] sfxs = new[] { "B", "Kb", "Mb", "Gb" };
+            for (int i = 0; i < sfxs.Length; i++)
+            {
+                if (v < 1024)
+                {
+                    return v.ToString("F") + sfxs[i];
+                }
+                v /= 1024;
+            }
+            return v.ToString("F") + sfxs.Last();
+        }
+
         public static bool IsDirty = false;
         public static List<string> RecentPathes = new List<string>();
         public static void LoadSettings(FileListControl fileListControl1, FileListControl fileListControl2)
@@ -132,13 +184,23 @@ namespace commander
                 return sb.ToString();
             }
         }
-        public static string PasswordHash { get; internal set; }
-    }
 
-    public class TagInfo
-    {
-        public string Name;
-        public bool IsHidden;
-        public List<string> Files = new List<string>();
+        public static DialogResult Question(string v)
+        {
+            return MessageBox.Show(v, mdi.MainForm.Text, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+        }
+        public static DialogResult Info(string v)
+        {
+            return MessageBox.Show(v, mdi.MainForm.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        public static DialogResult Warning(string v)
+        {
+            return MessageBox.Show(v, mdi.MainForm.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+        public static DialogResult Error(string v)
+        {
+            return MessageBox.Show(v, mdi.MainForm.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+        public static string PasswordHash { get; internal set; }
     }
 }

@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Reflection;
 
 namespace commander
 {
@@ -18,13 +19,14 @@ namespace commander
             InitializeComponent();
             listView1.ColumnClick += ListView1_ColumnClick;
             watcher.Changed += Watcher_Changed;
-
+            Stuff.SetDoubleBuffered(listView1);
             tagControl.Init(this);
             watcher.Created += Watcher_Changed;
             watcher.Deleted += Watcher_Changed;
             watcher.Renamed += Watcher_Changed;
             watcher.NotifyFilter = NotifyFilters.CreationTime | NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.LastAccess;
             filesControl = listView1;
+
         }
 
 
@@ -92,7 +94,7 @@ namespace commander
         }
 
         private void ListView1_ColumnClick(object sender, ColumnClickEventArgs e)
-        {            
+        {
             if (e.Column == 0)
             {
                 if (listView1.Sorting == SortOrder.Ascending)
@@ -106,9 +108,23 @@ namespace commander
                 listView1.ListViewItemSorter = new Sorter2(listView1.Sorting);
                 listView1.Sort();
             }
+            if (e.Column == 1)
+            {
+
+                if (listView1.Sorting == SortOrder.Ascending)
+                {
+                    listView1.Sorting = SortOrder.Descending;
+                }
+                else
+                {
+                    listView1.Sorting = SortOrder.Ascending;
+                }
+                listView1.ListViewItemSorter = new Sorter3(listView1.Sorting);
+                listView1.Sort();
+            }
             if (e.Column == 2)
             {
-                
+
                 if (listView1.Sorting == SortOrder.Ascending)
                 {
                     listView1.Sorting = SortOrder.Descending;
@@ -209,11 +225,11 @@ namespace commander
                         bmp.MakeTransparent();
                         list.Images.Add(bmp);
                         if (!IsFilterPass(directoryInfo.Name, fltrs)) continue;
-                        var len = directoryInfo.Length / 1024;
+
                         listView1.Items.Add(
                             new ListViewItem(new string[]
                             {
-                        directoryInfo.Name, len+"Kb", directoryInfo.LastWriteTime.ToString()
+                        directoryInfo.Name, Stuff.GetUserFriendlyFileSize(directoryInfo.Length) , directoryInfo.LastWriteTime.ToString()
                             })
                             {
                                 Tag = directoryInfo,
@@ -301,11 +317,11 @@ namespace commander
                     bmp.MakeTransparent();
                     list.Images.Add(bmp);
                     if (!IsFilterPass(directoryInfo.Name, fltrs)) continue;
-                    var len = directoryInfo.Length / 1024;
+
                     listView1.Items.Add(
                         new ListViewItem(new string[]
                         {
-                        directoryInfo.Name, len+"Kb", directoryInfo.LastWriteTime.ToString()
+                        directoryInfo.Name, Stuff.GetUserFriendlyFileSize(directoryInfo.Length), directoryInfo.LastWriteTime.ToString()
                         })
                         {
                             Tag = directoryInfo,
@@ -375,7 +391,14 @@ namespace commander
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
-            UpdateList(CurrentDirectory.FullName, textBox2.Text);
+            if (Mode == ViewModeEnum.Tags)
+            {
+                tagControl.UpdateList(CurrentTag);
+            }
+            else
+            {
+                UpdateList(CurrentDirectory.FullName, textBox2.Text);
+            }
         }
 
         public void SetFilter(string mask)
@@ -389,7 +412,10 @@ namespace commander
             comboBox1.Items.Clear();
             foreach (var item in drivs)
             {
-                comboBox1.Items.Add(item);
+
+                comboBox1.Items.Add(new ComboBoxItem() { Tag = item, Name = item.Name + 
+                    (string.IsNullOrEmpty(item.VolumeLabel)?"":("(" + item.VolumeLabel + ")")) + " "+Stuff.GetUserFriendlyFileSize( item.AvailableFreeSpace)+" / "+Stuff.GetUserFriendlyFileSize(item.TotalSize)
+                     });
             }
         }
 
@@ -482,6 +508,11 @@ namespace commander
                     Process.Start(d.DirectoryName);
                 }
 
+            }
+
+            else if (CurrentDirectory != null && CurrentDirectory.Exists)
+            {
+                Process.Start(CurrentDirectory.FullName);
             }
         }
 
@@ -586,14 +617,13 @@ namespace commander
         {
             if (listView1.SelectedItems.Count > 0)
             {
-
                 if (listView1.SelectedItems[0].Tag is DirectoryInfo)
                 {
                     var d = listView1.SelectedItems[0].Tag as DirectoryInfo;
                     List<FileInfo> files = new List<FileInfo>();
                     GetAllFiles(d, files);
                     var total = files.Sum(z => z.Length);
-                    MessageBox.Show("total mem: " + total / 1024 / 1024 + " Mb");
+                    MessageBox.Show("total mem: " + Stuff.GetUserFriendlyFileSize(total), Parent.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
         }
@@ -616,11 +646,21 @@ namespace commander
             {
 
             }
-
-
-            foreach (var file in dir.GetFiles())
+            catch (Exception ex)
             {
-                files.Add(file);
+                //generate error
+            }
+
+            try
+            {
+                foreach (var file in dir.GetFiles())
+                {
+                    files.Add(file);
+                }
+            }
+            catch (Exception ex)
+            {
+
             }
             return files;
         }
@@ -635,25 +675,33 @@ namespace commander
                     List<FileInfo> files = new List<FileInfo>();
                     GetAllFiles(d, files);
 
-                    var arr = files.GroupBy(z => Stuff.CalcMD5(z.FullName)).ToArray();
-                    var cnt = arr.Count(z => z.Count() > 1);
-                    var gr = arr.Where(z => z.Count() > 1).ToArray();
-                    if (cnt == 0)
+                    var grp1 = files.GroupBy(z => z.Length).Where(z => z.Count() > 1).ToArray();
+                    List<FileInfo[]> groups = new List<FileInfo[]>();
+                    foreach (var item in grp1)
+                    {
+                        var arr0 = item.GroupBy(z => Stuff.CalcPartMD5(z.FullName, 1024 * 1024)).ToArray();
+                        var cnt0 = arr0.Count(z => z.Count() > 1);
+                        if (cnt0 == 0) continue;
+                        groups.AddRange(arr0.Select(z => z.ToArray()).ToArray());
+                    }
+
+                    if (groups.Count == 0)
                     {
                         MessageBox.Show("no repeates found");
                     }
                     else
                     {
                         RepeatsWindow rp = new RepeatsWindow();
-
-                        rp.SetRepeats(gr.Select(z => z.ToArray()).ToArray());
-                        rp.ShowDialog();
+                        rp.MdiParent = mdi.MainForm;
+                        rp.SetRepeats(groups.ToArray());
+                        rp.Show();
                     }
 
                 }
             }
 
         }
+
 
         void ExecuteSelected()
         {
@@ -752,15 +800,35 @@ namespace commander
             }
         }
 
-
-        private void ComboBox1_DropDown(object sender, EventArgs e)
+        int DropDownWidth(ComboBox myCombo)
         {
+            int maxWidth = 0;
+            int temp = 0;
+            Label label1 = new Label();
+
+            foreach (var obj in myCombo.Items)
+            {
+                label1.Text = obj.ToString();
+                temp = label1.PreferredWidth;
+                if (temp > maxWidth)
+                {
+                    maxWidth = temp;
+                }
+            }
+            label1.Dispose();
+            return maxWidth;
+        }
+        private void ComboBox1_DropDown(object sender, EventArgs e)
+        {           
             UpdateDrivesList();
+            comboBox1.DropDownWidth = DropDownWidth(comboBox1);
         }
 
         private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox1.Text = comboBox1.Text;
+            var citem = comboBox1.SelectedItem as ComboBoxItem;
+            var di = citem.Tag as DriveInfo;
+            textBox1.Text = di.Name;
             UpdateList(textBox1.Text);
         }
 
@@ -922,6 +990,14 @@ namespace commander
                 }
             }
         }
+
+        private void ExecuteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+                ExecuteSelected();
+            }
+        }
     }
 
     public class TabInfo
@@ -933,5 +1009,15 @@ namespace commander
     public enum ViewModeEnum
     {
         Filesystem, Libraries, Tags
+    }
+
+    public class ComboBoxItem
+    {
+        public object Tag;
+        public string Name;
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

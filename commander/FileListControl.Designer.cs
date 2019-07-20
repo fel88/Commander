@@ -35,6 +35,7 @@
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.executeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openExplorerHereToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openInHexToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.searcToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -112,6 +113,7 @@
             // contextMenuStrip2
             // 
             this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.executeToolStripMenuItem,
             this.openExplorerHereToolStripMenuItem,
             this.openInHexToolStripMenuItem,
             this.searcToolStripMenuItem,
@@ -124,7 +126,15 @@
             this.deleteToolStripMenuItem,
             this.makeLibraryToolStripMenuItem});
             this.contextMenuStrip2.Name = "contextMenuStrip2";
-            this.contextMenuStrip2.Size = new System.Drawing.Size(188, 246);
+            this.contextMenuStrip2.Size = new System.Drawing.Size(188, 268);
+            // 
+            // executeToolStripMenuItem
+            // 
+            this.executeToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.executeToolStripMenuItem.Name = "executeToolStripMenuItem";
+            this.executeToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.executeToolStripMenuItem.Text = "execute";
+            this.executeToolStripMenuItem.Click += new System.EventHandler(this.ExecuteToolStripMenuItem_Click);
             // 
             // openExplorerHereToolStripMenuItem
             // 
@@ -283,7 +293,7 @@
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Location = new System.Drawing.Point(3, 4);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(47, 21);
+            this.comboBox1.Size = new System.Drawing.Size(42, 21);
             this.comboBox1.TabIndex = 8;
             this.comboBox1.DropDown += new System.EventHandler(this.ComboBox1_DropDown);
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.ComboBox1_SelectedIndexChanged);
@@ -339,9 +349,9 @@
             // 
             this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox1.Location = new System.Drawing.Point(56, 5);
+            this.textBox1.Location = new System.Drawing.Point(47, 5);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(365, 20);
+            this.textBox1.Size = new System.Drawing.Size(374, 20);
             this.textBox1.TabIndex = 0;
             this.textBox1.TextChanged += new System.EventHandler(this.TextBox1_TextChanged);
             this.textBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox1_KeyDown);
@@ -421,5 +431,6 @@
         private System.Windows.Forms.ComboBox comboBox2;
         private System.Windows.Forms.ToolStripMenuItem makeLibraryToolStripMenuItem;
         private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.ToolStripMenuItem executeToolStripMenuItem;
     }
 }
