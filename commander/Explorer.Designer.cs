@@ -40,8 +40,13 @@
             this.compareMD5ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.compareBinaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.toolStripDropDownButton3 = new System.Windows.Forms.ToolStripDropDownButton();
+            this.hiddenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hideToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.unhideToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fileListControl1 = new commander.FileListControl();
             this.fileListControl2 = new commander.FileListControl();
+            this.changePasswordToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -71,7 +76,8 @@
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton3,
             this.toolStripDropDownButton1,
-            this.toolStripDropDownButton2});
+            this.toolStripDropDownButton2,
+            this.toolStripDropDownButton3});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(1004, 25);
@@ -165,6 +171,41 @@
             this.splitContainer1.SplitterDistance = 499;
             this.splitContainer1.TabIndex = 3;
             // 
+            // toolStripDropDownButton3
+            // 
+            this.toolStripDropDownButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripDropDownButton3.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.hiddenToolStripMenuItem,
+            this.changePasswordToolStripMenuItem});
+            this.toolStripDropDownButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton3.Image")));
+            this.toolStripDropDownButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripDropDownButton3.Name = "toolStripDropDownButton3";
+            this.toolStripDropDownButton3.Size = new System.Drawing.Size(62, 22);
+            this.toolStripDropDownButton3.Text = "Settings";
+            // 
+            // hiddenToolStripMenuItem
+            // 
+            this.hiddenToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.hideToolStripMenuItem,
+            this.unhideToolStripMenuItem});
+            this.hiddenToolStripMenuItem.Name = "hiddenToolStripMenuItem";
+            this.hiddenToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.hiddenToolStripMenuItem.Text = "Hidden";
+            // 
+            // hideToolStripMenuItem
+            // 
+            this.hideToolStripMenuItem.Name = "hideToolStripMenuItem";
+            this.hideToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.hideToolStripMenuItem.Text = "Hide";
+            this.hideToolStripMenuItem.Click += new System.EventHandler(this.HideToolStripMenuItem_Click);
+            // 
+            // unhideToolStripMenuItem
+            // 
+            this.unhideToolStripMenuItem.Name = "unhideToolStripMenuItem";
+            this.unhideToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.unhideToolStripMenuItem.Text = "Unhide";
+            this.unhideToolStripMenuItem.Click += new System.EventHandler(this.UnhideToolStripMenuItem_Click);
+            // 
             // fileListControl1
             // 
             this.fileListControl1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -181,6 +222,13 @@
             this.fileListControl2.Name = "fileListControl2";
             this.fileListControl2.Size = new System.Drawing.Size(495, 529);
             this.fileListControl2.TabIndex = 1;
+            // 
+            // changePasswordToolStripMenuItem
+            // 
+            this.changePasswordToolStripMenuItem.Name = "changePasswordToolStripMenuItem";
+            this.changePasswordToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.changePasswordToolStripMenuItem.Text = "Change password";
+            this.changePasswordToolStripMenuItem.Click += new System.EventHandler(this.ChangePasswordToolStripMenuItem_Click);
             // 
             // Explorer
             // 
@@ -219,6 +267,11 @@
         private System.Windows.Forms.ToolStripMenuItem compareBinaryToolStripMenuItem;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.ToolStripMenuItem tableTextEditorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton3;
+        private System.Windows.Forms.ToolStripMenuItem hiddenToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem hideToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem unhideToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem changePasswordToolStripMenuItem;
     }
 }
 

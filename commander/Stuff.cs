@@ -27,6 +27,8 @@ namespace commander
         public static void LoadSettings(FileListControl fileListControl1, FileListControl fileListControl2)
         {
             var s = XDocument.Load("settings.xml");
+            var fr = s.Descendants("settings").First();
+            Stuff.PasswordHash = fr.Attribute("password").Value;
             foreach (var descendant in s.Descendants("path"))
             {
                 RecentPathes.Add(descendant.Value);
@@ -52,12 +54,27 @@ namespace commander
                 var path = descendant.Attribute("path").Value;
                 Stuff.Libraries.Add(new FilesystemLibrary() { Name = name, BaseDirectory = path });
             }
+
+            foreach (var descendant in s.Descendants("tag"))
+            {
+                var name = descendant.Attribute("name").Value;
+
+                string flags = "";
+                if (descendant.Attribute("flags") != null) { flags = descendant.Attribute("flags").Value; }
+
+                var tag = new TagInfo() { Name = name, IsHidden = flags.Contains("hidden") };
+                Stuff.Tags.Add(tag);
+                foreach (var item in descendant.Descendants("file"))
+                {
+                    tag.Files.Add(item.Value);
+                }
+            }
         }
         public static void SaveSettings(FileListControl flc1, FileListControl flc2)
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("<?xml version=\"1.0\"?>");
-            sb.AppendLine("<settings>");
+            sb.AppendLine($"<settings password=\"{PasswordHash}\">");
             sb.AppendLine("<tabs>");
             foreach (var item in flc1.Tabs)
             {
@@ -74,11 +91,54 @@ namespace commander
                 sb.AppendLine($"<library name=\"{item.Name}\" path=\"{item.BaseDirectory}\" />");
             }
             sb.AppendLine("</libraries>");
+            sb.AppendLine("<tags>");
+            foreach (var item in Stuff.Tags)
+            {
+                sb.AppendLine($"<tag name=\"{item.Name}\" flags=\"{(item.IsHidden ? "hidden" : "")}\" >");
+                foreach (var fitem in item.Files)
+                {
+
+                    sb.AppendLine($"<file><![CDATA[{fitem}]]></file>");
+                }
+                sb.AppendLine($"</tag>");
+            }
+            sb.AppendLine("</tags>");
             sb.AppendLine("</settings>");
             File.WriteAllText("settings.xml", sb.ToString());
         }
 
+        internal static void AddTag(TagInfo tagInfo)
+        {
+            Tags.Add(tagInfo);
+            IsDirty = true;
+        }
 
         public static List<ILibrary> Libraries = new List<ILibrary>();
+        public static List<TagInfo> Tags = new List<TagInfo>();
+        public static bool ShowHidden = false;
+
+        public static string CreateMD5(string input)
+        {
+            using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
+            {
+                byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(input);
+                byte[] hashBytes = md5.ComputeHash(inputBytes);
+
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < hashBytes.Length; i++)
+                {
+                    sb.Append(hashBytes[i].ToString("X2"));
+                }
+                return sb.ToString();
+            }
+        }
+        public static string PasswordHash { get; internal set; }
+    }
+
+    public class TagInfo
+    {
+        public string Name;
+        public bool IsHidden;
+        public List<string> Files = new List<string>();
     }
 }

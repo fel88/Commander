@@ -59,11 +59,13 @@
             this.label1 = new System.Windows.Forms.Label();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
+            this.panel3 = new System.Windows.Forms.Panel();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.removeTabToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.panel3.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -79,7 +81,7 @@
             this.listView1.FullRowSelect = true;
             this.listView1.GridLines = true;
             this.listView1.HideSelection = false;
-            this.listView1.Location = new System.Drawing.Point(3, 83);
+            this.listView1.Location = new System.Drawing.Point(0, 0);
             this.listView1.Name = "listView1";
             this.listView1.Size = new System.Drawing.Size(432, 271);
             this.listView1.TabIndex = 1;
@@ -221,8 +223,8 @@
             // 
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Controls.Add(this.listView1, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.panel1, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.panel3, 0, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
@@ -344,6 +346,15 @@
             this.textBox1.TextChanged += new System.EventHandler(this.TextBox1_TextChanged);
             this.textBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox1_KeyDown);
             // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.listView1);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel3.Location = new System.Drawing.Point(3, 83);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(432, 271);
+            this.panel3.TabIndex = 3;
+            // 
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -369,6 +380,7 @@
             this.tableLayoutPanel1.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.panel3.ResumeLayout(false);
             this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -408,5 +420,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ComboBox comboBox2;
         private System.Windows.Forms.ToolStripMenuItem makeLibraryToolStripMenuItem;
+        private System.Windows.Forms.Panel panel3;
     }
 }

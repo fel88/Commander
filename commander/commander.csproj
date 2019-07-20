@@ -56,6 +56,12 @@
     <Compile Include="Browser.Designer.cs">
       <DependentUpon>Browser.cs</DependentUpon>
     </Compile>
+    <Compile Include="ChangePasswordDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ChangePasswordDialog.Designer.cs">
+      <DependentUpon>ChangePasswordDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="ConsoleOutputWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -101,6 +107,12 @@
     <Compile Include="mdi.Designer.cs">
       <DependentUpon>mdi.cs</DependentUpon>
     </Compile>
+    <Compile Include="PasswordDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PasswordDialog.Designer.cs">
+      <DependentUpon>PasswordDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenameDialog.cs">
@@ -115,7 +127,15 @@
     <Compile Include="RepeatsWindow.Designer.cs">
       <DependentUpon>RepeatsWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="Sorter1.cs" />
+    <Compile Include="Sorter2.cs" />
     <Compile Include="Stuff.cs" />
+    <Compile Include="TagListViewControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TagListViewControl.Designer.cs">
+      <DependentUpon>TagListViewControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="TextPreviewer.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -133,6 +153,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Browser.resx">
       <DependentUpon>Browser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ChangePasswordDialog.resx">
+      <DependentUpon>ChangePasswordDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ConsoleOutputWindow.resx">
       <DependentUpon>ConsoleOutputWindow.cs</DependentUpon>
@@ -155,6 +178,9 @@
     <EmbeddedResource Include="mdi.resx">
       <DependentUpon>mdi.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="PasswordDialog.resx">
+      <DependentUpon>PasswordDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -169,6 +195,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="RepeatsWindow.resx">
       <DependentUpon>RepeatsWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TagListViewControl.resx">
+      <DependentUpon>TagListViewControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TextPreviewer.resx">
       <DependentUpon>TextPreviewer.cs</DependentUpon>

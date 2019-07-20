@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -20,31 +19,96 @@ namespace commander
             listView1.ColumnClick += ListView1_ColumnClick;
             watcher.Changed += Watcher_Changed;
 
+            tagControl.Init(this);
             watcher.Created += Watcher_Changed;
             watcher.Deleted += Watcher_Changed;
             watcher.Renamed += Watcher_Changed;
             watcher.NotifyFilter = NotifyFilters.CreationTime | NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.LastAccess;
-
+            filesControl = listView1;
         }
 
 
+        public void Rename()
+        {
+
+            if (Mode == ViewModeEnum.Tags)
+            {
+                if (!tagControl.ContainsFocus) return;
+                if (tagControl.SelectedTag != null)
+                {
+                    RenameDialog rd = new RenameDialog();
+                    rd.Value = tagControl.SelectedTag.Name;
+                    if (rd.ShowDialog() == DialogResult.OK)
+                    {
+                        tagControl.SelectedTag.Name = rd.Value;
+                    }
+                    tagControl.UpdateList(null);
+                }
+            }
+            else
+            {
+                if (!ListView.Focused) return;
+                if (SelectedFile != null)
+                {
+                    RenameDialog rd = new RenameDialog();
+                    rd.Value = SelectedFile.Name;
+                    if (rd.ShowDialog() == DialogResult.OK)
+                    {
+                        File.Move(SelectedFile.FullName, Path.Combine(SelectedFile.Directory.FullName, rd.Value));
+                    }
+                    UpdateList(CurrentDirectory.FullName);
+                }
+                else if (SelectedDirectory != null)
+                {
+                    RenameDialog rd = new RenameDialog();
+                    rd.Value = SelectedDirectory.Name;
+                    if (rd.ShowDialog() == DialogResult.OK)
+                    {
+                        Directory.Move(SelectedDirectory.FullName, Path.Combine(SelectedDirectory.Parent.FullName, rd.Value));
+                    }
+                    UpdateList(CurrentDirectory.FullName);
+                }
+            }
+        }
+
+        ListView filesControl;
 
         private void Watcher_Changed(object sender, FileSystemEventArgs e)
         {
             UpdateList(textBox1.Text, textBox2.Text);
         }
 
-        private void ListView1_ColumnClick(object sender, ColumnClickEventArgs e)
+        public void SetPath(string path)
         {
-            var cl = listView1.Columns[e.Column];
+            textBox1.Text = path;
+        }
+
+        public bool DirFilterEnable
+        {
+            get
+            {
+                return checkBox1.Checked;
+            }
+        }
+
+        private void ListView1_ColumnClick(object sender, ColumnClickEventArgs e)
+        {            
+            if (e.Column == 0)
+            {
+                if (listView1.Sorting == SortOrder.Ascending)
+                {
+                    listView1.Sorting = SortOrder.Descending;
+                }
+                else
+                {
+                    listView1.Sorting = SortOrder.Ascending;
+                }
+                listView1.ListViewItemSorter = new Sorter2(listView1.Sorting);
+                listView1.Sort();
+            }
             if (e.Column == 2)
             {
-                /*var srt = (int)listView1.Sorting;
-                srt++;
-                var vls = Enum.GetValues(typeof(SortOrder));
-                srt %= vls.Length;
-                listView1.Sorting = (SortOrder)srt;
-                */
+                
                 if (listView1.Sorting == SortOrder.Ascending)
                 {
                     listView1.Sorting = SortOrder.Descending;
@@ -59,7 +123,7 @@ namespace commander
         }
 
         public DirectoryInfo CurrentDirectory;
-
+        public TagInfo CurrentTag;
         public bool IsFilterPass(string str, string[] filters)
         {
             str = str.ToLower();
@@ -69,11 +133,29 @@ namespace commander
 
         public void UpdateList(string path)
         {
-            watcher.Path = path;
-            watcher.EnableRaisingEvents = true;
+            try
+            {
+                watcher.Path = path;
+                watcher.EnableRaisingEvents = true;
+            }
+            catch (Exception ex)
+            {
+
+            }
             UpdateList(path, textBox2.Text);
         }
 
+        public static Dictionary<string, Bitmap> Icons = new Dictionary<string, Bitmap>();
+
+        public static Bitmap GetBitmapOfFile(string fn)
+        {
+            var d = Path.GetExtension(fn);
+            if (!Icons.ContainsKey(d))
+            {
+                Icons.Add(d, Bitmap.FromHicon(Icon.ExtractAssociatedIcon(fn).Handle));
+            }
+            return Icons[d];
+        }
         public void UpdateList(string path, string filter)
         {
             if (!Directory.Exists(path))
@@ -81,69 +163,85 @@ namespace commander
                 MessageBox.Show("Directory is not exist. ", "Commander", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            watcher.Path = path;
-            watcher.EnableRaisingEvents = true;
-            listView1.BeginUpdate();
-            listView1.Items.Clear();
-            textBox1.Text = path;
-
-            var p = new DirectoryInfo(path);
-            CurrentDirectory = p;
-            ImageList list = new ImageList();
-            list.TransparentColor = Color.Black;
-            var fltrs = filter.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(z => z.ToLower()).ToArray();
-
-            listView1.SmallImageList = list;
-            listView1.LargeImageList = list;
-            listView1.Items.Add(new ListViewItem(new string[] { "..", "", "" }) { Tag = p.Parent });
-
-
-            foreach (var directoryInfo in p.GetDirectories())
+            try
             {
+                watcher.Path = path;
+                watcher.EnableRaisingEvents = true;
 
-                bool was = false;
-                var bmp = DefaultIcons.FolderLarge;
+                listView1.BeginUpdate();
+                listView1.Items.Clear();
+                textBox1.Text = path;
 
-                list.Images.Add(bmp.ToBitmap());
-                was = true;
+                var p = new DirectoryInfo(path);
+                CurrentDirectory = p;
+                ImageList list = new ImageList();
+                list.TransparentColor = Color.Black;
+                var fltrs = filter.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(z => z.ToLower()).ToArray();
 
-                if (checkBox1.Checked && !IsFilterPass(directoryInfo.Name, fltrs)) continue;
+                listView1.SmallImageList = list;
+                listView1.LargeImageList = list;
+                listView1.Items.Add(new ListViewItem(new string[] { "..", "", "" }) { Tag = p.Parent });
 
-                listView1.Items.Add(new ListViewItem(new string[] { directoryInfo.Name, "", directoryInfo.LastWriteTime.ToString() })
+
+                foreach (var directoryInfo in p.GetDirectories())
                 {
-                    Tag = directoryInfo,
-                    ImageIndex = was ? (list.Images.Count - 1) : -1
-                });
 
-            }
-            foreach (var directoryInfo in p.GetFiles())
-            {
-                try
-                {
-                    var ico = Icon.ExtractAssociatedIcon(directoryInfo.FullName);
-                    var bmp = Bitmap.FromHicon(ico.Handle);
-                    bmp.MakeTransparent();
-                    list.Images.Add(bmp);
-                    if (!IsFilterPass(directoryInfo.Name, fltrs)) continue;
-                    var len = directoryInfo.Length / 1024;
-                    listView1.Items.Add(
-                        new ListViewItem(new string[]
-                        {
-                        directoryInfo.Name, len+"Kb", directoryInfo.LastWriteTime.ToString()
-                        })
-                        {
-                            Tag = directoryInfo,
-                            ImageIndex = list.Images.Count - 1
+                    bool was = false;
+                    var bmp = DefaultIcons.FolderLarge;
 
-                        });
-                }catch(Exception ex)
-                {
+                    list.Images.Add(bmp.ToBitmap());
+                    was = true;
+
+                    if (checkBox1.Checked && !IsFilterPass(directoryInfo.Name, fltrs)) continue;
+
+                    listView1.Items.Add(new ListViewItem(new string[] { directoryInfo.Name, "", directoryInfo.LastWriteTime.ToString() })
+                    {
+                        Tag = directoryInfo,
+                        ImageIndex = was ? (list.Images.Count - 1) : -1
+                    });
 
                 }
+                foreach (var directoryInfo in p.GetFiles())
+                {
+                    try
+                    {
+                        var bmp = GetBitmapOfFile(directoryInfo.FullName);
+                        bmp.MakeTransparent();
+                        list.Images.Add(bmp);
+                        if (!IsFilterPass(directoryInfo.Name, fltrs)) continue;
+                        var len = directoryInfo.Length / 1024;
+                        listView1.Items.Add(
+                            new ListViewItem(new string[]
+                            {
+                        directoryInfo.Name, len+"Kb", directoryInfo.LastWriteTime.ToString()
+                            })
+                            {
+                                Tag = directoryInfo,
+                                ImageIndex = list.Images.Count - 1
+
+                            });
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                }
+                listView1.EndUpdate();
             }
-            listView1.EndUpdate();
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                listView1.EndUpdate();
+            }
         }
 
+        public void UpdateTagsList()
+        {
+            tagControl.UpdateList(CurrentTag);
+        }
 
         public void UpdateLibrariesList(string path, string filter = "")
         {
@@ -216,6 +314,11 @@ namespace commander
                         });
                 }
             }
+        }
+
+        internal void UpdateAllLists()
+        {
+            tagControl.UpdateList(CurrentTag);
         }
 
         public DirectoryInfo SelectedDirectory
@@ -293,6 +396,14 @@ namespace commander
         public ListView ListView
         {
             get { return listView1; }
+        }
+
+        public string Filter
+        {
+            get
+            {
+                return textBox2.Text;
+            }
         }
 
         public List<TabInfo> Tabs = new List<TabInfo>();
@@ -434,7 +545,7 @@ namespace commander
         }
 
         void RunCmd(string path)
-        {            
+        {
             var startInfo = new ProcessStartInfo
             {
                 WorkingDirectory = path,
@@ -457,7 +568,7 @@ namespace commander
                 if (listView1.SelectedItems[0].Tag is FileInfo)
                 {
                     var d = listView1.SelectedItems[0].Tag as FileInfo;
-                    RunCmd(d.DirectoryName);                    
+                    RunCmd(d.DirectoryName);
                 }
             }
             else if (CurrentDirectory != null && CurrentDirectory.Exists)
@@ -601,7 +712,7 @@ namespace commander
                         var f = listView1.SelectedItems[0].Tag as DirectoryInfo;
                         UpdateList(f.FullName, textBox2.Text);
                     }
-                    catch (UnauthorizedAccessException ex)
+                    catch (Exception ex)
                     {
                         MessageBox.Show(ex.Message, "Commander", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -699,8 +810,6 @@ namespace commander
 
             UpdateList(CurrentDirectory.FullName);
 
-
-
         }
 
         FileSystemWatcher watcher = new FileSystemWatcher();
@@ -758,17 +867,44 @@ namespace commander
             }
         }
 
+        TagListViewControl tagControl = new TagListViewControl() { Dock = DockStyle.Fill };
+        void SetTagMode()
+        {
+            Mode = ViewModeEnum.Tags;
+            panel3.Controls.Clear();
+            panel3.Controls.Add(tagControl);
+        }
+        void SetFilesystemMode()
+        {
+            Mode = ViewModeEnum.Filesystem;
+            panel3.Controls.Clear();
+            panel3.Controls.Add(filesControl);
+        }
+
+        void SetLibrariesMode()
+        {
+            Mode = ViewModeEnum.Libraries;
+            panel3.Controls.Clear();
+            panel3.Controls.Add(filesControl);
+        }
+        public ViewModeEnum Mode = ViewModeEnum.Filesystem;
         private void ComboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (comboBox2.SelectedIndex == 0)//filesystem
             {
+                SetFilesystemMode();
                 UpdateList(textBox1.Text);
             }
             if (comboBox2.SelectedIndex == 1)//libraries
             {
+                SetLibrariesMode();
                 UpdateLibrariesList(null);
             }
-
+            if (comboBox2.SelectedIndex == 2)//tags
+            {
+                SetTagMode();
+                tagControl.UpdateList(null);
+            }
         }
 
         private void MakeLibraryToolStripMenuItem_Click(object sender, EventArgs e)
@@ -794,35 +930,8 @@ namespace commander
         public string Path;
         public string Filter;
     }
-
-    public class Sorter1 : IComparer
+    public enum ViewModeEnum
     {
-        private SortOrder sorting;
-
-        public Sorter1(SortOrder sorting)
-        {
-            this.sorting = sorting;
-        }
-
-        public int Compare(object x, object y)
-        {
-            var lv1 = x as ListViewItem;
-            var lv2 = y as ListViewItem;
-            DateTime dt1 = DateTime.Now;
-            DateTime dt2 = DateTime.Now;
-            if (lv1.SubItems[0].Text == "..")
-            {
-                return -1;
-            }
-            DateTime.TryParse(lv1.SubItems[2].Text, out dt1);
-            DateTime.TryParse(lv2.SubItems[2].Text, out dt2);
-            var res = dt1.CompareTo(dt2);
-            if (sorting == SortOrder.Descending)
-            {
-                res = -res;
-            }
-            return res;
-
-        }
+        Filesystem, Libraries, Tags
     }
 }

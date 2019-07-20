@@ -26,7 +26,7 @@ namespace commander
             {
                 if (splitContainer1.Panel2.Controls.Contains(textPreviewer))
                 {
-                    string[] exts = new string[] { ".txt", ".cs", ".js", ".xml", ".htm", ".bat", ".html", ".log", ".csproj", ".config", ".resx", ".sln", ".settings", ".md", ".cpp", ".h",".asm" };
+                    string[] exts = new string[] { ".txt", ".cs", ".js", ".xml", ".htm", ".bat", ".html", ".log", ".csproj", ".config", ".resx", ".sln", ".settings", ".md", ".cpp", ".h", ".asm" };
                     if (exts.Contains(x.Extension))
                     {
                         textPreviewer.LoadFile(x);
@@ -111,55 +111,51 @@ namespace commander
                 {
                     fc = fileListControl2;
                 }
-
-                if (fc != null && fc.ListView.Focused)
+                if (fc != null)
                 {
-                    if (fc.SelectedFile != null)
-                    {
-
-                        RenameDialog rd = new RenameDialog();
-                        rd.Value = fc.SelectedFile.Name;
-                        if (rd.ShowDialog() == DialogResult.OK)
-                        {
-                            File.Move(fc.SelectedFile.FullName, Path.Combine(fc.SelectedFile.Directory.FullName, rd.Value));
-                        }
-                        fc.UpdateList(fc.CurrentDirectory.FullName);
-                    }
-                    else if (fc.SelectedDirectory != null)
-                    {
-                        RenameDialog rd = new RenameDialog();
-                        rd.Value = fc.SelectedDirectory.Name;
-                        if (rd.ShowDialog() == DialogResult.OK)
-                        {
-                            Directory.Move(fc.SelectedDirectory.FullName, Path.Combine(fc.SelectedDirectory.Parent.FullName, rd.Value));
-                        }
-                        fc.UpdateList(fc.CurrentDirectory.FullName);
-
-                    }
+                    fc.Rename();
                 }
             }
             if (e.KeyCode == Keys.F5)
             {//copy
-                if (fileListControl1.SelectedFile != null)
+
+                if (fileListControl1.Mode == ViewModeEnum.Filesystem && fileListControl2.Mode == ViewModeEnum.Filesystem)
                 {
-                    bool allow = true;
-                    var p1 = Path.Combine(fileListControl2.CurrentDirectory.FullName,
-                        fileListControl1.SelectedFile.Name);
-                    if (File.Exists(p1))
+                    if (fileListControl1.SelectedFile != null)
                     {
-                        if (MessageBox.Show(
-                                "File " + p1 + " already exist. replace?", Text,
-                                MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.No)
+                        bool allow = true;
+                        var p1 = Path.Combine(fileListControl2.CurrentDirectory.FullName,
+                            fileListControl1.SelectedFile.Name);
+                        if (File.Exists(p1))
                         {
-                            allow = false;
+                            if (MessageBox.Show(
+                                    "File " + p1 + " already exist. replace?", Text,
+                                    MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.No)
+                            {
+                                allow = false;
+                            }
+
                         }
 
+                        if (allow)
+                        {
+                            File.Copy(fileListControl1.SelectedFile.FullName, p1, true);
+                            fileListControl2.UpdateList(fileListControl2.CurrentDirectory.FullName);
+                        }
                     }
-
-                    if (allow)
+                }
+                if (fileListControl1.Mode == ViewModeEnum.Filesystem && fileListControl2.Mode == ViewModeEnum.Tags)
+                {
+                    if (fileListControl1.SelectedFile != null && fileListControl2.CurrentTag != null)
                     {
-                        File.Copy(fileListControl1.SelectedFile.FullName, p1, true);
-                        fileListControl2.UpdateList(fileListControl2.CurrentDirectory.FullName);
+                        var fn = fileListControl1.SelectedFile.FullName;
+                        if (!fileListControl2.CurrentTag.Files.Contains(fn))
+                        {
+                            fileListControl2.CurrentTag.Files.Add(fn);
+                            MessageBox.Show(Path.GetFileName(fn) + " tagged as " + fileListControl2.CurrentTag.Name);
+                            Stuff.IsDirty = true;
+                            fileListControl2.UpdateTagsList();
+                        }
                     }
                 }
             }
@@ -303,6 +299,30 @@ namespace commander
 
                 }
             }
+        }
+
+        private void HideToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Stuff.ShowHidden = false;
+            fileListControl1.UpdateAllLists();
+            fileListControl2.UpdateAllLists();
+        }
+
+        private void UnhideToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PasswordDialog pdlg = new PasswordDialog();
+            if (pdlg.ShowDialog() == DialogResult.OK)
+            {
+                Stuff.ShowHidden = true;
+                fileListControl1.UpdateAllLists();
+                fileListControl2.UpdateAllLists();
+            }
+        }
+
+        private void ChangePasswordToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ChangePasswordDialog p = new ChangePasswordDialog();
+            p.ShowDialog();
         }
     }
 }
