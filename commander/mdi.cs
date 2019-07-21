@@ -16,14 +16,23 @@ namespace commander
             InitializeComponent();
 
             LoadPlugins();
-            Explorer f = new Explorer();
+          
 
-            f.MdiParent = this;
-            f.Show();
+            /*MemInfoReport test = new MemInfoReport();
+            test.MdiParent = this;
+            test.Sectors.Add(new ReportSectorInfo() {   Percentage=250f/360, Name = "test" });
+            test.Sectors.Add(new ReportSectorInfo() {  Percentage=100/360f, Name = "test1" });
+            test.Show();
+            */
             //f.WindowState = FormWindowState.Maximized;
-
+            Stuff.LoadSettings();
+            Stuff.IsDirty = false;
             MainForm = this;
+
+            OpenWindow(new Explorer());            
         }
+
+        
 
         private void LoadPlugins()
         {
@@ -62,7 +71,7 @@ namespace commander
                     {
                         attr = aaa.First(z => z.GetType() == typeof(PluginInfoAttribute)) as PluginInfoAttribute;
                     }
-                    
+
                     if (PluginsInstances.Any(z => z.GetType() == zitem))
                     {
                         return new Tuple<LoadPluginResultEnum, PluginInfoAttribute, IPlugin>(LoadPluginResultEnum.AlreadyExist, attr, null);
@@ -164,7 +173,12 @@ namespace commander
 
         private void WindowsToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
         {
-            windowsToolStripMenuItem.DropDownItems.Clear();
+            for (int i = windowsToolStripMenuItem.DropDownItems.Count - 1; i > 0; i--)
+            {
+                windowsToolStripMenuItem.DropDownItems.Remove(windowsToolStripMenuItem.DropDownItems[i]);
+            }
+            windowsToolStripMenuItem.DropDownItems.Add(new ToolStripSeparator());
+            
             foreach (var item in MdiChildren)
             {
                 var w = new ToolStripMenuItem(item.Text) { Tag = item };
@@ -200,6 +214,39 @@ namespace commander
                         break;
                 }
             }
+        }
+
+        private void Mdi_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (Stuff.IsDirty)
+            {
+                var res = MessageBox.Show("Save changes (tabs, libraries etc.)?", Text, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                switch (res)
+                {
+                    case DialogResult.Cancel:
+                        e.Cancel = true;
+                        break;
+                    case DialogResult.Yes:
+                        Stuff.SaveSettings();
+                        break;
+
+                }
+            }
+        }
+
+        private void CascadeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            LayoutMdi(MdiLayout.Cascade);
+        }
+
+        private void HorizontalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            LayoutMdi(MdiLayout.TileHorizontal);
+        }
+
+        private void VerticalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            LayoutMdi(MdiLayout.TileVertical);
         }
     }
 }

@@ -240,7 +240,7 @@ namespace commander
 
             searchThread = new Thread(() =>
              {
-                 var files = FileListControl.GetAllFiles(d);
+                 var files = Stuff.GetAllFiles(d);
                  progressBar1.Value = 0;
                  progressBar1.Maximum = files.Count;
 

@@ -33,8 +33,10 @@ namespace LinesPlugin
             var g = new ToolStripMenuItem("Lines");
             g.Click += G_Click;
             mitem.DropDownItems.Add(g);
-        }
 
+            
+        }
+        
         private void G_Click(object sender, EventArgs e)
         {
             Container.OpenWindow(new Lines());

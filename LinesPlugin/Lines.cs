@@ -14,10 +14,12 @@ namespace LinesPlugin
         public Lines()
         {
             InitializeComponent();
-            Rectangle screenRectangle = RectangleToScreen(this.ClientRectangle);
-            int titleHeight = screenRectangle.Top - this.Top;
+            Shown += Lines_Shown;
+        }
 
-            Height = 10 * CellW + titleHeight + 6;
+        private void Lines_Shown(object sender, EventArgs e)
+        {
+            Height = 10 * CellW + SystemInformation.ToolWindowCaptionHeight + 6;
             Width = 10 * CellW + 6;
             bmp = new Bitmap(Width, Height);
             gr = Graphics.FromImage(bmp);

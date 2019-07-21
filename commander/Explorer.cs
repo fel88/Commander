@@ -18,7 +18,11 @@ namespace commander
             InitializeComponent();
             var drvs = DriveInfo.GetDrives();
             fileListControl1.UpdateList(drvs[0].Name, "");
+            fileListControl1.TabOwnerString = "left";
             fileListControl2.UpdateList(drvs[0].Name, "");
+            fileListControl2.TabOwnerString = "right";
+            UpdateTabs();
+
             previewer = new ImgViewerPanel() { Dock = DockStyle.Fill };
             textPreviewer = new TextPreviewer() { Dock = DockStyle.Fill };
 
@@ -46,16 +50,29 @@ namespace commander
                     }
                 }
             };
-            Stuff.LoadSettings(fileListControl1, fileListControl2);
-            Stuff.IsDirty = false;
+            
         }
 
+        private void UpdateTabs()
+        {
+            foreach (var item in Stuff.Tabs)
+            {
+                if (item.Owner == fileListControl1.TabOwnerString)
+                {
+                    fileListControl1.AddTab(item);
+                }
+                if (item.Owner == fileListControl2.TabOwnerString)
+                {
+                    fileListControl2.AddTab(item);
+                }
+            }
+        }
 
         protected override void OnKeyDown(KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
-                FileListControl fc = null;
+                /*FileListControl fc = null;
                 if (fileListControl1.ContainsFocus)
                 {
                     fc = fileListControl1;
@@ -66,7 +83,6 @@ namespace commander
                 }
 
                 if (fc != null && fc.ListView.Focused && fc.SelectedFile != null)
-
                 {
                     ProcessStartInfo psi = new ProcessStartInfo();
                     psi.WorkingDirectory = fc.SelectedFile.DirectoryName;
@@ -74,7 +90,7 @@ namespace commander
 
                     Process.Start(psi);
 
-                }
+                }*/
 
             }
 
@@ -144,16 +160,16 @@ namespace commander
                         }
                     }
                 }
-                if (fileListControl1.Mode == ViewModeEnum.Filesystem && fileListControl2.Mode == ViewModeEnum.Tags)
+                if ((fileListControl1.Mode == ViewModeEnum.Filesystem || fileListControl1.Mode == ViewModeEnum.Libraries)
+                    && fileListControl2.Mode == ViewModeEnum.Tags)
                 {
                     if (fileListControl1.SelectedFile != null && fileListControl2.CurrentTag != null)
                     {
                         var fn = fileListControl1.SelectedFile.FullName;
                         if (!fileListControl2.CurrentTag.Files.Contains(fn))
                         {
-                            fileListControl2.CurrentTag.Files.Add(fn);
-                            MessageBox.Show(Path.GetFileName(fn) + " tagged as " + fileListControl2.CurrentTag.Name);
-                            Stuff.IsDirty = true;
+                            fileListControl2.CurrentTag.AddFile(fn);
+                            MessageBox.Show(Path.GetFileName(fn) + " tagged as " + fileListControl2.CurrentTag.Name);                            
                             fileListControl2.UpdateTagsList();
                         }
                     }
@@ -285,20 +301,7 @@ namespace commander
 
         private void Explorer_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (Stuff.IsDirty)
-            {
-                var res = MessageBox.Show("Save changes (tabs, libraries etc.)?", Text, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
-                switch (res)
-                {
-                    case DialogResult.Cancel:
-                        e.Cancel = true;
-                        break;
-                    case DialogResult.Yes:
-                        Stuff.SaveSettings(fileListControl1, fileListControl2);
-                        break;
-
-                }
-            }
+          
         }
 
         private void HideToolStripMenuItem_Click(object sender, EventArgs e)

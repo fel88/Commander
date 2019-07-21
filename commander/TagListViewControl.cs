@@ -19,9 +19,16 @@ namespace commander
             Stuff.SetDoubleBuffered(listView1);
         }
 
+
         public void Init(FileListControl fc)
         {
             parent = fc;
+            listView1.KeyDown += ListView1_KeyDown;
+        }
+
+        private void ListView1_KeyDown(object sender, KeyEventArgs e)
+        {
+            ExecuteSelected();
         }
 
         FileListControl parent;
@@ -50,7 +57,7 @@ namespace commander
                 listView1.Items.Clear();
                 parent.CurrentTag = null;
 
-                var filter = parent.Filter;                
+                var filter = parent.Filter;
                 var fltrs = filter.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(z => z.ToLower()).ToArray();
 
                 foreach (var item in Stuff.Tags)
@@ -82,23 +89,39 @@ namespace commander
                 listView1.Items.Add(new ListViewItem(new string[] { "..", "", "" }) { Tag = tagRootObject });
                 foreach (var finfo in tag.Files)
                 {
+                    try
+                    {
+                        var f = new FileInfo(finfo);
+                        var bmp = FileListControl.GetBitmapOfFile(f.FullName);
+                        bmp.MakeTransparent();
+                        list.Images.Add(bmp);
+                        if (!IsFilterPass(f.Name, fltrs)) continue;
 
-                    var f = new FileInfo(finfo);
-                    var bmp = FileListControl.GetBitmapOfFile(f.FullName);
-                    bmp.MakeTransparent();
-                    list.Images.Add(bmp);
-                    if (!IsFilterPass(f.Name, fltrs)) continue;
-                    var len = f.Length / 1024;
-                    listView1.Items.Add(
-                        new ListViewItem(new string[]
-                        {
-                        f.Name, len+"Kb"
-                        })
-                        {
-                            Tag = f,
-                            ImageIndex = list.Images.Count - 1
+                        listView1.Items.Add(
+                            new ListViewItem(new string[]
+                            {
+                        f.Name, Stuff.GetUserFriendlyFileSize(f.Length)
+                            })
+                            {
+                                Tag = f,
+                                ImageIndex = list.Images.Count - 1
 
-                        });
+                            });
+                    }
+                    catch (FileNotFoundException ex)
+                    {
+                        listView1.Items.Add(
+                            new ListViewItem(new string[]
+                            {
+                                Path.GetFileName(
+                                    finfo)
+                            })
+                            {
+                                BackColor = Color.LightPink,
+                                Tag = ex,
+
+                            });
+                    }
                 }
             }
         }
@@ -139,7 +162,7 @@ namespace commander
             UpdateList(null);
         }
 
-        private void ListView1_MouseDoubleClick(object sender, MouseEventArgs e)
+        void ExecuteSelected()
         {
             if (listView1.SelectedItems.Count > 0)
             {
@@ -164,8 +187,12 @@ namespace commander
                 }
             }
         }
+        private void ListView1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            ExecuteSelected();
+        }
 
-     
+
         private void TrueToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (listView1.SelectedItems.Count > 0)
@@ -218,8 +245,8 @@ namespace commander
                 else if (tag is FileInfo)
                 {
                     var f = tag as FileInfo;
-                    Stuff.IsDirty = true;
-                    SelectedTag.Files.Remove(f.FullName);
+                
+                    SelectedTag.DeleteFile(f.FullName);
                     UpdateList(SelectedTag);
                 }
             }

@@ -13,6 +13,42 @@ namespace commander
 {
     public class Stuff
     {
+        public static List<FileInfo> GetAllFiles(DirectoryInfo dir, List<FileInfo> files = null)
+        {
+            if (files == null)
+            {
+                files = new List<FileInfo>();
+            }
+
+            try
+            {
+                foreach (var d in dir.GetDirectories())
+                {
+                    GetAllFiles(d, files);
+                }
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+
+            }
+            catch (Exception ex)
+            {
+                //generate error
+            }
+
+            try
+            {
+                foreach (var file in dir.GetFiles())
+                {
+                    files.Add(file);
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return files;
+        }
         public static string CalcMD5(string filename)
         {
             using (var md5 = MD5.Create())
@@ -76,7 +112,18 @@ namespace commander
 
         public static bool IsDirty = false;
         public static List<string> RecentPathes = new List<string>();
-        public static void LoadSettings(FileListControl fileListControl1, FileListControl fileListControl2)
+        public static List<TabInfo> Tabs = new List<TabInfo>();
+
+        public static void AddTab(TabInfo tab)
+        {
+            if (Tabs.Contains(tab))
+            {
+                throw new Exception("tab was already added");
+            }
+            Tabs.Add(tab);
+            IsDirty = true;
+        }
+        public static void LoadSettings()
         {
             var s = XDocument.Load("settings.xml");
             var fr = s.Descendants("settings").First();
@@ -92,12 +139,10 @@ namespace commander
                 var owner = descendant.Attribute("owner").Value;
                 var path = descendant.Attribute("path").Value;
                 var filter = descendant.Attribute("filter").Value;
-                FileListControl fc = fileListControl1;
-                if (owner == "right")
-                {
-                    fc = fileListControl2;
-                }
-                fc.AddTab(new TabInfo() { Filter = filter, Path = path, Hint = hint });
+                
+                var tab = new TabInfo() { Filter = filter, Path = path, Hint = hint };
+                tab.Owner = owner;
+                Stuff.AddTab(tab);
             }
 
             foreach (var descendant in s.Descendants("library"))
@@ -118,24 +163,22 @@ namespace commander
                 Stuff.Tags.Add(tag);
                 foreach (var item in descendant.Descendants("file"))
                 {
-                    tag.Files.Add(item.Value);
+                    tag.AddFile(item.Value);
                 }
             }
         }
-        public static void SaveSettings(FileListControl flc1, FileListControl flc2)
+        public static void SaveSettings()
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("<?xml version=\"1.0\"?>");
             sb.AppendLine($"<settings password=\"{PasswordHash}\">");
             sb.AppendLine("<tabs>");
-            foreach (var item in flc1.Tabs)
+
+            foreach (var item in Stuff.Tabs)
             {
-                sb.AppendLine($"<tab hint=\"{item.Hint}\" owner=\"left\" path=\"{item.Path}\" filter=\"{item.Filter}\"/>");
+                sb.AppendLine($"<tab hint=\"{item.Hint}\" owner=\"{item.Owner}\" path=\"{item.Path}\" filter=\"{item.Filter}\"/>");
             }
-            foreach (var item in flc2.Tabs)
-            {
-                sb.AppendLine($"<tab hint=\"{item.Hint}\" owner=\"right\" path=\"{item.Path}\" filter=\"{item.Filter}\"/>");
-            }
+            
             sb.AppendLine("</tabs>");
             sb.AppendLine("<libraries>");
             foreach (var item in Stuff.Libraries.OfType<FilesystemLibrary>())

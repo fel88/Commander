@@ -113,6 +113,12 @@
     <Compile Include="mdi.Designer.cs">
       <DependentUpon>mdi.cs</DependentUpon>
     </Compile>
+    <Compile Include="MemInfoReport.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MemInfoReport.Designer.cs">
+      <DependentUpon>MemInfoReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="PasswordDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -133,6 +139,7 @@
     <Compile Include="RepeatsWindow.Designer.cs">
       <DependentUpon>RepeatsWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="ReportSectorInfo.cs" />
     <Compile Include="Sorter1.cs" />
     <Compile Include="Sorter2.cs" />
     <Compile Include="Sorter3.cs" />
@@ -188,6 +195,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="mdi.resx">
       <DependentUpon>mdi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MemInfoReport.resx">
+      <DependentUpon>MemInfoReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PasswordDialog.resx">
       <DependentUpon>PasswordDialog.cs</DependentUpon>

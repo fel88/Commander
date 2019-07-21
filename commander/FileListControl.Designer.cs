@@ -49,6 +49,7 @@
             this.txtFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.makeLibraryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.setTagsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
@@ -88,9 +89,10 @@
             this.listView1.TabIndex = 1;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
-            this.listView1.SelectedIndexChanged += new System.EventHandler(this.ListView1_SelectedIndexChanged);
-            this.listView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ListView1_KeyDown);
+            this.listView1.SelectedIndexChanged += new System.EventHandler(this.ListView1_SelectedIndexChanged);            
+            this.listView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ListView1_KeyDown);            
             this.listView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseDoubleClick);
+            this.listView1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ListView1_MouseDown);
             // 
             // columnHeader1
             // 
@@ -124,9 +126,11 @@
             this.calcMd5ToolStripMenuItem,
             this.newToolStripMenuItem,
             this.deleteToolStripMenuItem,
-            this.makeLibraryToolStripMenuItem});
+            this.makeLibraryToolStripMenuItem,
+            this.setTagsToolStripMenuItem});
             this.contextMenuStrip2.Name = "contextMenuStrip2";
-            this.contextMenuStrip2.Size = new System.Drawing.Size(188, 268);
+            this.contextMenuStrip2.Size = new System.Drawing.Size(188, 290);
+            this.contextMenuStrip2.Closing += new System.Windows.Forms.ToolStripDropDownClosingEventHandler(this.ContextMenuStrip2_Closing);
             // 
             // executeToolStripMenuItem
             // 
@@ -228,6 +232,13 @@
             this.makeLibraryToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
             this.makeLibraryToolStripMenuItem.Text = "make library";
             this.makeLibraryToolStripMenuItem.Click += new System.EventHandler(this.MakeLibraryToolStripMenuItem_Click);
+            // 
+            // setTagsToolStripMenuItem
+            // 
+            this.setTagsToolStripMenuItem.Name = "setTagsToolStripMenuItem";
+            this.setTagsToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.setTagsToolStripMenuItem.Text = "Set tags";
+            this.setTagsToolStripMenuItem.DropDownOpening += new System.EventHandler(this.SetTagsToolStripMenuItem_DropDownOpening);
             // 
             // tableLayoutPanel1
             // 
@@ -432,5 +443,6 @@
         private System.Windows.Forms.ToolStripMenuItem makeLibraryToolStripMenuItem;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.ToolStripMenuItem executeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem setTagsToolStripMenuItem;
     }
 }
