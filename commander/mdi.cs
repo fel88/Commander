@@ -117,6 +117,8 @@ namespace commander
             }
         }
 
+        public ILibrary[] Libraries => Stuff.Libraries.ToArray();
+
         public void OpenWindow(Form frm)
         {
             frm.MdiParent = this;

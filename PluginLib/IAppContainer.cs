@@ -7,5 +7,7 @@ namespace PluginLib
         MenuStrip MainMenu { get; }
         void OpenWindow(Form frm);
         void OpenWindow(Control cc);
+
+        ILibrary[] Libraries { get; }
     }
 }

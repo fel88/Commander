@@ -946,9 +946,16 @@ namespace commander
                         }
                         if (allow)
                         {
+                            //remove tags
+                            foreach (var item in Stuff.Tags)
+                            {
+                                if (item.ContainsFile(f.FullName))
+                                {
+                                    item.DeleteFile(f.FullName);
+                                }
+                            }
                             File.Delete(f.FullName);
                             UpdateList(CurrentDirectory.FullName);
-
                         }
                     }
 

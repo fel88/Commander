@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IAppContainer.cs" />
+    <Compile Include="ILibrary.cs" />
     <Compile Include="IPlugin.cs" />
     <Compile Include="PluginContext.cs" />
     <Compile Include="PluginInfoAttribute.cs" />

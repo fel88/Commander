@@ -32,10 +32,18 @@ namespace GamesPack1
             var g = new ToolStripMenuItem("Lines");
             g.Click += G_Click;
             mitem.DropDownItems.Add(g);
+
+            g = new ToolStripMenuItem("Puzzle");
+            g.Click += G_Click2;
+            mitem.DropDownItems.Add(g);
         }
         private void G_Click(object sender, EventArgs e)
         {
             Container.OpenWindow(new Lines());
+        }
+        private void G_Click2(object sender, EventArgs e)
+        {
+            Container.OpenWindow(new PuzzleGame());
         }
     }
 }

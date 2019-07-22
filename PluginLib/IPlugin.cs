@@ -5,5 +5,6 @@ namespace PluginLib
     {
         void Activate(PluginContext ctx);
         string Name { get; }
+       
     }
 }
