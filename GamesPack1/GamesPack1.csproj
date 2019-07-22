@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B158EEB3-9BD3-44B9-819A-2E654EB941E6}</ProjectGuid>
+    <ProjectGuid>{DD4EB311-46BE-472B-8D2A-98A5F2539869}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LinesPlugin</RootNamespace>
-    <AssemblyName>LinesPlugin</AssemblyName>
+    <RootNamespace>GamesPack1</RootNamespace>
+    <AssemblyName>GamesPack1</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -42,13 +42,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GamePack1Plugin.cs" />
     <Compile Include="Lines.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Lines.Designer.cs">
       <DependentUpon>Lines.cs</DependentUpon>
     </Compile>
-    <Compile Include="LinesPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

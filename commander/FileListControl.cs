@@ -100,6 +100,13 @@ namespace commander
         public void SetPath(string path)
         {
             textBox1.Text = path;
+
+        }
+
+        public void NavigateTo(string path)
+        {
+            SetPath(path);
+            UpdateList(textBox1.Text, textBox2.Text);
         }
 
         public bool DirFilterEnable
@@ -223,42 +230,9 @@ namespace commander
                 listView1.Items.Add(new ListViewItem(new string[] { "..", "", "" }) { Tag = p.Parent });
 
 
-                foreach (var directoryInfo in p.GetDirectories())
-                {
-                    if (checkBox1.Checked && !IsFilterPass(directoryInfo.Name, fltrs)) continue;
 
-                    listView1.Items.Add(new ListViewItem(new string[] { directoryInfo.Name, "", directoryInfo.LastWriteTime.ToString() })
-                    {
-                        Tag = directoryInfo,
-                        ImageIndex = 0
-                    });
-
-                }
-                foreach (var directoryInfo in p.GetFiles())
-                {
-                    try
-                    {
-                        var bmp = GetBitmapOfFile(directoryInfo.FullName);
-                        var ext = Path.GetExtension(directoryInfo.FullName);
-
-                        if (!IsFilterPass(directoryInfo.Name, fltrs)) continue;
-
-                        listView1.Items.Add(
-                            new ListViewItem(new string[]
-                            {
-                        directoryInfo.Name, Stuff.GetUserFriendlyFileSize(directoryInfo.Length) , directoryInfo.LastWriteTime.ToString()
-                            })
-                            {
-                                Tag = directoryInfo,
-                                ImageIndex = IconDictionary[ext]
-
-                            });
-                    }
-                    catch (Exception ex)
-                    {
-
-                    }
-                }
+                AppendDirsToList(p.GetDirectories(), fltrs);
+                AppendFilesToList(p.GetFiles(), fltrs);
                 listView1.EndUpdate();
             }
             catch (Exception ex)
@@ -268,6 +242,54 @@ namespace commander
             finally
             {
                 listView1.EndUpdate();
+            }
+        }
+
+        public void AppendDirsToList(DirectoryInfo[] dirs, string[] fltrs)
+        {
+            foreach (var directoryInfo in dirs)
+            {
+                if (checkBox1.Checked && !IsFilterPass(directoryInfo.Name, fltrs)) continue;
+                listView1.Items.Add(new ListViewItem(new string[] { directoryInfo.Name, "", directoryInfo.LastWriteTime.ToString() })
+                {
+                    Tag = directoryInfo,
+                    ImageIndex = 0
+                });
+            }
+        }
+
+        public void AppendFilesToList(FileInfo[] files, string[] fltrs)
+        {
+            foreach (var directoryInfo in files)
+            {
+                try
+                {
+                    var bmp = GetBitmapOfFile(directoryInfo.FullName);
+                    var ext = Path.GetExtension(directoryInfo.FullName);
+
+                    if (!IsFilterPass(directoryInfo.Name, fltrs)) continue;
+                    var astr = File.GetAttributes(directoryInfo.FullName).ToString();
+                    if (astr.ToLower().Contains("spar"))
+                    {
+
+                    }
+                    var attrs = astr.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries).Aggregate("", (x, y) => x + y[0]);
+                    listView1.Items.Add(
+                        new ListViewItem(new string[]
+                        {
+                        directoryInfo.Name, Stuff.GetUserFriendlyFileSize(directoryInfo.Length) , directoryInfo.LastWriteTime.ToString(),"",
+                        astr
+                        })
+                        {
+                            Tag = directoryInfo,
+                            ImageIndex = IconDictionary[ext]
+
+                        });
+                }
+                catch (Exception ex)
+                {
+
+                }
             }
         }
 
@@ -310,40 +332,9 @@ namespace commander
                 }
 
 
-                foreach (var directoryInfo in p.GetDirectories())
-                {
 
-
-
-                    if (checkBox1.Checked && !IsFilterPass(directoryInfo.Name, fltrs)) continue;
-
-                    listView1.Items.Add(new ListViewItem(new string[] { directoryInfo.Name, "", directoryInfo.LastWriteTime.ToString() })
-                    {
-                        Tag = directoryInfo,
-                        ImageIndex = 0
-                    });
-
-                }
-                foreach (var directoryInfo in p.GetFiles())
-                {
-                    var bmp = GetBitmapOfFile(directoryInfo.FullName);
-
-                    var ext = Path.GetExtension(directoryInfo.FullName);
-
-
-                    if (!IsFilterPass(directoryInfo.Name, fltrs)) continue;
-
-                    listView1.Items.Add(
-                        new ListViewItem(new string[]
-                        {
-                        directoryInfo.Name, Stuff.GetUserFriendlyFileSize(directoryInfo.Length), directoryInfo.LastWriteTime.ToString()
-                        })
-                        {
-                            Tag = directoryInfo,
-                            ImageIndex = IconDictionary[ext]
-
-                        });
-                }
+                AppendDirsToList(p.GetDirectories(), fltrs);
+                AppendFilesToList(p.GetFiles(), fltrs);
             }
         }
 
@@ -402,6 +393,7 @@ namespace commander
             {
                 UpdateList(textBox1.Text, textBox2.Text);
             }
+
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
@@ -416,9 +408,10 @@ namespace commander
             }
         }
 
-        public void SetFilter(string mask)
+        public void SetFilter(string mask, bool dirFilter = false)
         {
             textBox2.Text = mask;
+            checkBox1.Checked = dirFilter;
         }
 
         public void UpdateDrivesList()
@@ -703,21 +696,10 @@ namespace commander
                     else
                     {
                         d = listView1.SelectedItems[0].Tag as DirectoryInfo;
-                    }
-                    List<FileInfo> files = new List<FileInfo>();
-                    Stuff.GetAllFiles(d, files);
+                    }                    
 
-                    var grp1 = files.GroupBy(z => z.Length).Where(z => z.Count() > 1).ToArray();
-                    List<FileInfo[]> groups = new List<FileInfo[]>();
-                    foreach (var item in grp1)
-                    {
-                        var arr0 = item.GroupBy(z => Stuff.CalcPartMD5(z.FullName, 1024 * 1024)).ToArray();
-                        var cnt0 = arr0.Count(z => z.Count() > 1);
-                        if (cnt0 == 0) continue;
-                        groups.AddRange(arr0.Select(z => z.ToArray()).ToArray());
-                    }
-
-                    if (groups.Count == 0)
+                    var groups = RepeatsWindow.FindRepeats(d);
+                    if (groups.Count() == 0)
                     {
                         Stuff.Info("No repeates found.");
                     }
@@ -725,13 +707,11 @@ namespace commander
                     {
                         RepeatsWindow rp = new RepeatsWindow();
                         rp.MdiParent = mdi.MainForm;
-                        rp.SetRepeats(groups.ToArray());
+                        rp.SetRepeats(d, groups.ToArray());
                         rp.Show();
                     }
-
                 }
             }
-
         }
 
 
@@ -829,6 +809,10 @@ namespace commander
             if (e.KeyCode == Keys.Enter)
             {
                 ExecuteSelected();
+            }
+            if (e.KeyCode == Keys.Delete)
+            {
+                DeleteSelected();
             }
         }
 
@@ -931,18 +915,43 @@ namespace commander
             UpdateList(CurrentDirectory.FullName);
         }
 
-        private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
+        void DeleteSelected()
         {
+            if (!ListView.Focused) return;
+
+
+
+            ////////////
             if (listView1.SelectedItems.Count > 0)
             {
                 if (listView1.SelectedItems[0].Tag is FileInfo)
                 {
+
                     var f = listView1.SelectedItems[0].Tag as FileInfo;
-                    if (MessageBox.Show("Delete " + f.Name + "?", "Commander", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+
+                    if (Stuff.Question("Delete file: " + SelectedFile.FullName + "?") == DialogResult.Yes)
                     {
-                        File.Delete(f.FullName);
-                        UpdateList(CurrentDirectory.FullName);
+                        var attr = File.GetAttributes(SelectedFile.FullName);
+                        bool allow = true;
+                        if (attr.HasFlag(FileAttributes.ReadOnly))
+                        {
+                            if (Stuff.Question("File is read-only, do you want to delete it anyway?") != DialogResult.Yes)
+                            {
+                                allow = false;
+                            }
+                            else
+                            {
+                                File.SetAttributes(SelectedFile.FullName, FileAttributes.Normal);
+                            }
+                        }
+                        if (allow)
+                        {
+                            File.Delete(f.FullName);
+                            UpdateList(CurrentDirectory.FullName);
+
+                        }
                     }
+
                 }
                 else
                 if (listView1.SelectedItems[0].Tag is DirectoryInfo)
@@ -955,6 +964,11 @@ namespace commander
                     }
                 }
             }
+        }
+
+        private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DeleteSelected();
         }
 
         public Action<FileInfo> SelectedFileChanged;

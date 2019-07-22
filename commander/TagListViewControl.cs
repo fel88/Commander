@@ -28,7 +28,14 @@ namespace commander
 
         private void ListView1_KeyDown(object sender, KeyEventArgs e)
         {
-            ExecuteSelected();
+            if (e.KeyCode == Keys.Enter)
+            {
+                ExecuteSelected();
+            }
+            else if (e.KeyCode == Keys.Delete)
+            {
+                DeleteSelected();
+            }
         }
 
         FileListControl parent;
@@ -50,6 +57,8 @@ namespace commander
                 return null;
             }
         }
+
+        public TagInfo CurrentTag = null;
         public void UpdateList(TagInfo tag)
         {
             if (tag == null)
@@ -74,6 +83,7 @@ namespace commander
                 //   fc.SetPath(path);
                 //textBox1.Text = path;
                 parent.CurrentTag = tag;
+                CurrentTag = tag;
                 parent.SetPath(tag.Name);
                 var filter = parent.Filter;
 
@@ -118,7 +128,7 @@ namespace commander
                             })
                             {
                                 BackColor = Color.LightPink,
-                                Tag = ex,
+                                Tag = new Tuple<FileInfo, Exception>(new FileInfo(finfo), ex),
 
                             });
                     }
@@ -227,7 +237,7 @@ namespace commander
             }
         }
 
-        private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
+        void DeleteSelected()
         {
             if (listView1.SelectedItems.Count > 0)
             {
@@ -245,11 +255,24 @@ namespace commander
                 else if (tag is FileInfo)
                 {
                     var f = tag as FileInfo;
-                
-                    SelectedTag.DeleteFile(f.FullName);
-                    UpdateList(SelectedTag);
+                    if (Stuff.Question("Are you sure to delete tag " + CurrentTag.Name + " from " + f.Name + " file?") == DialogResult.Yes)
+                    {
+                        CurrentTag.DeleteFile(f.FullName);
+                        UpdateList(CurrentTag);
+                    }
+                }
+                else if (tag is Tuple<FileInfo, Exception>)
+                {
+                    var fl = tag as Tuple<FileInfo, Exception>;
+                    var f = fl.Item1;
+                    CurrentTag.DeleteFile(f.FullName);
+                    UpdateList(CurrentTag);
                 }
             }
+        }
+        private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DeleteSelected();
         }
     }
 }

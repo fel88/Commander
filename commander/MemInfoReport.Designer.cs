@@ -95,14 +95,17 @@
             // columnHeader1
             // 
             this.columnHeader1.Text = "Name";
+            this.columnHeader1.Width = 250;
             // 
             // columnHeader2
             // 
             this.columnHeader2.Text = "Size";
+            this.columnHeader2.Width = 80;
             // 
             // columnHeader3
             // 
             this.columnHeader3.Text = "Percentage";
+            this.columnHeader3.Width = 80;
             // 
             // panel1
             // 

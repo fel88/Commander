@@ -1,4 +1,4 @@
-﻿namespace LinesPlugin
+﻿namespace GamesPack1
 {
     partial class Lines
     {

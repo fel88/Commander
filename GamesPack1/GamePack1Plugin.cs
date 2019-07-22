@@ -5,13 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace LinesPlugin
+namespace GamesPack1
 {
-    [PluginInfo(Name = "Lines", AllowMultipleInstances = false)]
-    public class LinesPlugin : IPlugin
+    [PluginInfo(Name = "GamesPack1", AllowMultipleInstances = false)]
+    public class GamePack1Plugin : IPlugin
     {
-        public string Name => "Lines";
-
+        public string Name => "GamesPack1";
         public static IAppContainer Container;
         public void Activate(PluginContext ctx)
         {
@@ -33,10 +32,7 @@ namespace LinesPlugin
             var g = new ToolStripMenuItem("Lines");
             g.Click += G_Click;
             mitem.DropDownItems.Add(g);
-
-            
         }
-        
         private void G_Click(object sender, EventArgs e)
         {
             Container.OpenWindow(new Lines());

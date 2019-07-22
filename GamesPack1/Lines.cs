@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace LinesPlugin
+namespace GamesPack1
 {
     public partial class Lines : Form
     {

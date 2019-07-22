@@ -15,11 +15,30 @@ namespace commander
         public RepeatsWindow()
         {
             InitializeComponent();
+            Stuff.SetDoubleBuffered(listView1);
         }
 
-        public void SetRepeats(FileInfo[][] repeats)
+        public static FileInfo[][] FindRepeats(DirectoryInfo d)
         {
+            List<FileInfo> files = new List<FileInfo>();
+            Stuff.GetAllFiles(d, files);
 
+            var grp1 = files.GroupBy(z => z.Length).Where(z => z.Count() > 1).ToArray();
+            List<FileInfo[]> groups = new List<FileInfo[]>();
+            foreach (var item in grp1)
+            {
+                var arr0 = item.GroupBy(z => Stuff.CalcPartMD5(z.FullName, 1024 * 1024)).ToArray();
+                var cnt0 = arr0.Count(z => z.Count() > 1);
+                if (cnt0 == 0) continue;
+                groups.AddRange(arr0.Select(z => z.ToArray()).ToArray());
+            }
+
+            return groups.ToArray();
+        }
+        public DirectoryInfo Directory;
+        public void SetRepeats(DirectoryInfo dir, FileInfo[][] repeats)
+        {
+            Directory = dir;
             listView1.Items.Clear();
             foreach (var fileInfo in repeats.OrderByDescending(z => z.First().Length * z.Length))
             {
@@ -81,6 +100,37 @@ namespace commander
         private void ExecuteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ExecuteSelected();
+        }
+
+        private void FolowInExplorerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView2.SelectedItems.Count == 0) return;
+            if (!(listView2.SelectedItems[0].Tag is FileInfo)) return;
+
+            var finfo = listView2.SelectedItems[0].Tag as FileInfo;
+
+            var arr = mdi.MainForm.MdiChildren.OfType<Explorer>().ToArray();
+            if (arr.Count() == 0)
+            {
+                Stuff.Warning("Explorer not opened.");
+                return;
+            }
+            var a = arr[0];
+            var f = (a as Explorer).FileListControls[0];
+            f.NavigateTo(finfo.DirectoryName);
+            f.SetFilter(finfo.Name, true);
+            a.Activate();
+        }
+
+        private void Button1_Click(object sender, EventArgs e)
+        {
+            listView1.Items.Clear();
+            var grps = FindRepeats(Directory);
+            if (grps.Count() == 0)
+            {
+                Stuff.Info("No repeats found.");
+            }
+            SetRepeats(Directory, grps);
         }
     }
 }

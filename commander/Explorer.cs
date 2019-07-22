@@ -50,8 +50,9 @@ namespace commander
                     }
                 }
             };
-            
+
         }
+        public FileListControl[] FileListControls => new[] { fileListControl1, fileListControl2 };
 
         private void UpdateTabs()
         {
@@ -94,27 +95,42 @@ namespace commander
 
             }
 
-            if (e.KeyCode == Keys.Delete)
-            {
-                FileListControl fc = null;
-                if (fileListControl1.ContainsFocus)
-                {
-                    fc = fileListControl1;
-                }
-                if (fileListControl2.ContainsFocus)
-                {
-                    fc = fileListControl2;
-                }
+            //if (e.KeyCode == Keys.Delete)
+            //{
+            //    FileListControl fc = null;
+            //    if (fileListControl1.ContainsFocus)
+            //    {
+            //        fc = fileListControl1;
+            //    }
+            //    if (fileListControl2.ContainsFocus)
+            //    {
+            //        fc = fileListControl2;
+            //    }
 
-                if (fc != null && fc.ListView.Focused)
-                {
-                    if (MessageBox.Show("Delete file: " + fc.SelectedFile.FullName + "?", Text,
-                            MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                    {
-                        File.Delete(fc.SelectedFile.FullName);
-                    }
-                }
-            }
+            //    if (fc != null && fc.ListView.Focused)
+            //    {
+            //        if (Stuff.Question("Delete file: " + fc.SelectedFile.FullName + "?") == DialogResult.Yes)
+            //        {
+            //            var attr = File.GetAttributes(fc.SelectedFile.FullName);
+            //            bool allow = true;
+            //            if (attr.HasFlag(FileAttributes.ReadOnly))
+            //            {
+            //                if (Stuff.Question("File is read-only, do you want to delete it anyway?") != DialogResult.Yes)
+            //                {
+            //                    allow = false;
+            //                }
+            //                else
+            //                {
+            //                    File.SetAttributes(fc.SelectedFile.FullName, FileAttributes.Normal);
+            //                }
+            //            }
+            //            if (allow)
+            //            {
+            //                File.Delete(fc.SelectedFile.FullName);
+            //            }
+            //        }
+            //    }
+            //}
 
             if (e.KeyCode == Keys.F2)
             {//rename
@@ -169,7 +185,7 @@ namespace commander
                         if (!fileListControl2.CurrentTag.Files.Contains(fn))
                         {
                             fileListControl2.CurrentTag.AddFile(fn);
-                            MessageBox.Show(Path.GetFileName(fn) + " tagged as " + fileListControl2.CurrentTag.Name);                            
+                            MessageBox.Show(Path.GetFileName(fn) + " tagged as " + fileListControl2.CurrentTag.Name);
                             fileListControl2.UpdateTagsList();
                         }
                     }
@@ -301,7 +317,7 @@ namespace commander
 
         private void Explorer_FormClosing(object sender, FormClosingEventArgs e)
         {
-          
+
         }
 
         private void HideToolStripMenuItem_Click(object sender, EventArgs e)

@@ -248,5 +248,10 @@ namespace commander
         {
             LayoutMdi(MdiLayout.TileVertical);
         }
+
+        private void DesktopToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenWindow(new Desktop());
+        }
     }
 }

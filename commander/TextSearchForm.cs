@@ -276,22 +276,23 @@ namespace commander
                     richTextBox1.Lines = lns;
 
                     int cnt = 0;
-                    foreach (var ln in lns)
+                    if (!string.IsNullOrEmpty(textBox2.Text))
                     {
-
-                        if (ln.ToLower().Contains(textBox2.Text.ToLower()))
+                        foreach (var ln in lns)
                         {
-                            listView3.Items.Add(new ListViewItem(new string[] { ln }) { Tag = cnt });
-                        }
+                            if (ln.ToLower().Contains(textBox2.Text.ToLower()))
+                            {
+                                listView3.Items.Add(new ListViewItem(new string[] { ln }) { Tag = cnt });
+                            }
 
-                        cnt++;
+                            cnt++;
+                        }
                     }
                 }
                 else
                 {
                     richTextBox1.Text = "File size exceeded";
                 }
-
             }
         }
 

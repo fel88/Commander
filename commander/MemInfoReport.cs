@@ -89,8 +89,8 @@ namespace commander
             {
                 listView1.Items.Add(new ListViewItem(new string[] { item.Name, Stuff.GetUserFriendlyFileSize(item.Length), (item.Percentage * 100).ToString("F") + "%" }) { Tag = item });
             }
-            listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
-            listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+            //listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+            //listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
         }
 
         public List<ReportSectorInfo> Sectors = new List<ReportSectorInfo>();
@@ -172,7 +172,7 @@ namespace commander
             }
             gr.Clear(Color.White);
             sang = 0;
-
+            
             foreach (var item in sectors)
             {
 
@@ -202,6 +202,7 @@ namespace commander
 
                 sang += item.Angle;
             }
+            
             sang = 0;
             foreach (var item in sectors)
             {
