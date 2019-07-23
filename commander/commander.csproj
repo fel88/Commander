@@ -124,6 +124,9 @@
     <Compile Include="MemInfoReport.Designer.cs">
       <DependentUpon>MemInfoReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="MyToolStripButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="PasswordDialog.cs">
       <SubType>Form</SubType>
     </Compile>

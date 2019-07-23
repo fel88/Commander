@@ -696,7 +696,7 @@ namespace commander
                     else
                     {
                         d = listView1.SelectedItems[0].Tag as DirectoryInfo;
-                    }                    
+                    }
 
                     var groups = RepeatsWindow.FindRepeats(d);
                     if (groups.Count() == 0)
@@ -1072,6 +1072,10 @@ namespace commander
                     setTagsToolStripMenuItem.DropDownItems.Add(ss);
                 }
             }
+            if (listView1.SelectedItems.Count> 1)
+            {
+                //todo:set multiple tags assign
+            }
         }
 
         private void Ss_CheckedChanged(object sender, EventArgs e)
@@ -1105,6 +1109,19 @@ namespace commander
             forceCloseMenu = true;
             contextMenuStrip2.Close();
         }
+
+        private void AddShortcutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SelectedFile != null)
+            {
+                Stuff.Shortcuts.Add(new ShortcutInfo(SelectedFile.FullName , SelectedFile.Name  ));
+                Stuff.IsDirty = true;
+                mdi.MainForm.AppendShortCutPanelButton(Stuff.Shortcuts.Last());
+
+            }
+        }
+
+        
     }
 
     public class TabInfo

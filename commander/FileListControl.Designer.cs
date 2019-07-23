@@ -34,6 +34,7 @@
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.executeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openExplorerHereToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -50,6 +51,7 @@
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.makeLibraryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setTagsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addShortcutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
@@ -64,7 +66,6 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.removeTabToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contextMenuStrip2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -114,6 +115,10 @@
             // 
             this.columnHeader4.Text = "MD5";
             // 
+            // columnHeader5
+            // 
+            this.columnHeader5.Text = "Flags";
+            // 
             // contextMenuStrip2
             // 
             this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -129,9 +134,10 @@
             this.newToolStripMenuItem,
             this.deleteToolStripMenuItem,
             this.makeLibraryToolStripMenuItem,
-            this.setTagsToolStripMenuItem});
+            this.setTagsToolStripMenuItem,
+            this.addShortcutToolStripMenuItem});
             this.contextMenuStrip2.Name = "contextMenuStrip2";
-            this.contextMenuStrip2.Size = new System.Drawing.Size(188, 290);
+            this.contextMenuStrip2.Size = new System.Drawing.Size(188, 334);
             this.contextMenuStrip2.Closing += new System.Windows.Forms.ToolStripDropDownClosingEventHandler(this.ContextMenuStrip2_Closing);
             // 
             // executeToolStripMenuItem
@@ -239,8 +245,15 @@
             // 
             this.setTagsToolStripMenuItem.Name = "setTagsToolStripMenuItem";
             this.setTagsToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
-            this.setTagsToolStripMenuItem.Text = "Set tags";
+            this.setTagsToolStripMenuItem.Text = "tags";
             this.setTagsToolStripMenuItem.DropDownOpening += new System.EventHandler(this.SetTagsToolStripMenuItem_DropDownOpening);
+            // 
+            // addShortcutToolStripMenuItem
+            // 
+            this.addShortcutToolStripMenuItem.Name = "addShortcutToolStripMenuItem";
+            this.addShortcutToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.addShortcutToolStripMenuItem.Text = "add shortcut";
+            this.addShortcutToolStripMenuItem.Click += new System.EventHandler(this.AddShortcutToolStripMenuItem_Click);
             // 
             // tableLayoutPanel1
             // 
@@ -392,10 +405,6 @@
             this.removeTabToolStripMenuItem.Text = "Remove tab";
             this.removeTabToolStripMenuItem.Click += new System.EventHandler(this.removeTabToolStripMenuItem_Click);
             // 
-            // columnHeader5
-            // 
-            this.columnHeader5.Text = "Flags";
-            // 
             // FileListControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -451,5 +460,6 @@
         private System.Windows.Forms.ToolStripMenuItem executeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setTagsToolStripMenuItem;
         private System.Windows.Forms.ColumnHeader columnHeader5;
+        private System.Windows.Forms.ToolStripMenuItem addShortcutToolStripMenuItem;
     }
 }

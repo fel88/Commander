@@ -140,7 +140,7 @@ namespace commander
                 var owner = descendant.Attribute("owner").Value;
                 var path = descendant.Attribute("path").Value;
                 var filter = descendant.Attribute("filter").Value;
-                
+
                 var tab = new TabInfo() { Filter = filter, Path = path, Hint = hint };
                 tab.Owner = owner;
                 Stuff.AddTab(tab);
@@ -152,7 +152,12 @@ namespace commander
                 var path = descendant.Attribute("path").Value;
                 Stuff.Libraries.Add(new FilesystemLibrary() { Name = name, BaseDirectory = path });
             }
-
+            foreach (var descendant in s.Descendants("shortcut"))
+            {
+                var name = descendant.Attribute("name").Value;
+                var path = descendant.Attribute("path").Value;
+                Stuff.Shortcuts.Add(new ShortcutInfo(path, name));
+            }
             foreach (var descendant in s.Descendants("tag"))
             {
                 var name = descendant.Attribute("name").Value;
@@ -179,7 +184,7 @@ namespace commander
             {
                 sb.AppendLine($"<tab hint=\"{item.Hint}\" owner=\"{item.Owner}\" path=\"{item.Path}\" filter=\"{item.Filter}\"/>");
             }
-            
+
             sb.AppendLine("</tabs>");
             sb.AppendLine("<libraries>");
             foreach (var item in Stuff.Libraries.OfType<FilesystemLibrary>())
@@ -199,6 +204,15 @@ namespace commander
                 sb.AppendLine($"</tag>");
             }
             sb.AppendLine("</tags>");
+
+            sb.AppendLine("<shortcuts>");
+            foreach (var item in Stuff.Shortcuts)
+            {
+                sb.AppendLine($"<shortcut name=\"{item.Name}\" path=\"{item.Path}\" />");
+
+            }
+            sb.AppendLine("</shortcuts>");
+
             sb.AppendLine("</settings>");
             File.WriteAllText("settings.xml", sb.ToString());
         }
@@ -246,5 +260,18 @@ namespace commander
             return MessageBox.Show(v, mdi.MainForm.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
         public static string PasswordHash { get; internal set; }
+
+        public static List<ShortcutInfo> Shortcuts = new List<ShortcutInfo>();
+    }
+
+    public class ShortcutInfo
+    {
+        public ShortcutInfo(string p, string n)
+        {
+            Path = p;
+            Name = n;
+        }
+        public string Path;
+        public string Name;
     }
 }

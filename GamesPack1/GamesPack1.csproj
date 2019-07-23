@@ -57,6 +57,12 @@
       <DependentUpon>PuzzleGame.cs</DependentUpon>
     </Compile>
     <Compile Include="PuzzleItem.cs" />
+    <Compile Include="PuzzleSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PuzzleSelector.Designer.cs">
+      <DependentUpon>PuzzleSelector.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PluginLib\PluginLib.csproj">
@@ -70,6 +76,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="PuzzleGame.resx">
       <DependentUpon>PuzzleGame.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PuzzleSelector.resx">
+      <DependentUpon>PuzzleSelector.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

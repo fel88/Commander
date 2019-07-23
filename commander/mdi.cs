@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -14,25 +16,52 @@ namespace commander
         public mdi()
         {
             InitializeComponent();
-
+            MainForm = this;
             LoadPlugins();
-          
 
-            /*MemInfoReport test = new MemInfoReport();
-            test.MdiParent = this;
-            test.Sectors.Add(new ReportSectorInfo() {   Percentage=250f/360, Name = "test" });
-            test.Sectors.Add(new ReportSectorInfo() {  Percentage=100/360f, Name = "test1" });
-            test.Show();
-            */
-            //f.WindowState = FormWindowState.Maximized;
+
             Stuff.LoadSettings();
             Stuff.IsDirty = false;
-            MainForm = this;
+            
 
-            OpenWindow(new Explorer());            
+            OpenWindow(new Explorer());
+            
+            foreach (var item in Stuff.Shortcuts)
+            {
+                AppendShortCutPanelButton(item);
+            }
+
+
         }
+        public void AppendShortCutPanelButton(ShortcutInfo item)
+        {
+            toolStrip1.Visible = true;
+            var fn = new FileInfo(item.Path);
 
-        
+
+            MyToolStripButton tsb1 = new MyToolStripButton() { TextImageRelation = TextImageRelation.ImageAboveText };
+            tsb1.ContextMenuStrip = contextMenuStrip1;
+            tsb1.AutoSize = true;
+            tsb1.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
+            tsb1.Text = item.Name;
+            tsb1.Tag = item;
+            toolStrip1.Items.Add(tsb1);
+            tsb1.Click += Tsb1_Click;
+
+            //toolStrip1.ContextMenuStrip = contextMenuStrip1;
+            var bb = Bitmap.FromHicon(Icon.ExtractAssociatedIcon(fn.FullName).Handle);
+            bb.MakeTransparent();
+            //toolStrip1.ImageScalingSize = new Size((int)(10), (int)(10));
+            tsb1.Image = bb;
+        }
+        private void Tsb1_Click(object sender, EventArgs e)
+        {
+            var fn = (sender as ToolStripButton).Tag as ShortcutInfo;
+            ProcessStartInfo psi = new ProcessStartInfo();
+            psi.WorkingDirectory = new FileInfo(fn.Path).DirectoryName;
+            psi.FileName = fn.Path;
+            Process.Start(psi);
+        }
 
         private void LoadPlugins()
         {
@@ -180,7 +209,7 @@ namespace commander
                 windowsToolStripMenuItem.DropDownItems.Remove(windowsToolStripMenuItem.DropDownItems[i]);
             }
             windowsToolStripMenuItem.DropDownItems.Add(new ToolStripSeparator());
-            
+
             foreach (var item in MdiChildren)
             {
                 var w = new ToolStripMenuItem(item.Text) { Tag = item };
@@ -255,5 +284,22 @@ namespace commander
         {
             OpenWindow(new Desktop());
         }
+
+        private void ContextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+
+        }
+
+        private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (contextMenuStrip1.Tag == null) return;
+            var mtb = (contextMenuStrip1.Tag as MyToolStripButton);
+            var s = mtb.Tag as ShortcutInfo;
+            Stuff.Shortcuts.Remove(s);
+            Stuff.IsDirty = true;
+            toolStrip1.Items.Remove(mtb);
+            if (toolStrip1.Items.Count == 0) { toolStrip1.Visible = false; }
+        }
     }
+
 }
