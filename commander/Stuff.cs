@@ -111,6 +111,11 @@ namespace commander
             return v.ToString("F") + sfxs.Last();
         }
 
+        public static TagInfo[] GetTagsOfFile(string fullName)
+        {
+            return Stuff.Tags.Where(z => (!z.IsHidden || Stuff.ShowHidden) && z.Files.Contains(fullName)).ToArray();
+        }
+
         public static bool IsDirty = false;
         public static List<string> RecentPathes = new List<string>();
         public static List<TabInfo> Tabs = new List<TabInfo>();
@@ -155,8 +160,39 @@ namespace commander
             foreach (var descendant in s.Descendants("shortcut"))
             {
                 var name = descendant.Attribute("name").Value;
-                var path = descendant.Attribute("path").Value;
-                Stuff.Shortcuts.Add(new ShortcutInfo(path, name));
+
+                if (descendant.Attribute("type") != null)
+                {
+                    var tp = descendant.Attribute("type").Value;
+                    switch (tp)
+                    {
+                        case "url":
+                            var url = descendant.Element("url").Value;
+                            Stuff.Shortcuts.Add(new UrlShortcutInfo(name, url));
+                            break;
+                        case "cmd":
+                            var wd = descendant.Attribute("workdir").Value;
+                            string args = null;
+                            if (descendant.Element("args") != null)
+                            {
+                                args = descendant.Element("args").Value;
+                            }
+
+                            string appName = null;
+                            if (descendant.Element("app") != null)
+                            {
+                                appName = descendant.Element("app").Value;
+                            }
+                            Stuff.Shortcuts.Add(new CmdShortcutInfo(name, args, wd, appName));
+                            break;
+                    }
+
+                }
+                else
+                {
+                    var path = descendant.Attribute("path").Value;
+                    Stuff.Shortcuts.Add(new AppShortcutInfo(path, name));
+                }
             }
             foreach (var descendant in s.Descendants("tag"))
             {
@@ -206,9 +242,24 @@ namespace commander
             sb.AppendLine("</tags>");
 
             sb.AppendLine("<shortcuts>");
-            foreach (var item in Stuff.Shortcuts)
+            foreach (var item in Stuff.Shortcuts.OfType<AppShortcutInfo>())
             {
                 sb.AppendLine($"<shortcut name=\"{item.Name}\" path=\"{item.Path}\" />");
+            }
+            foreach (var item in Stuff.Shortcuts.OfType<CmdShortcutInfo>())
+            {
+                sb.AppendLine($"<shortcut type=\"cmd\" name=\"{item.Name}\" workdir=\"{item.WorkDir}\" >");
+                sb.Append("<args><![CDATA[" + item.Args);
+                sb.Append("]]></args>");
+                sb.AppendLine("</shortcut>");
+
+            }
+            foreach (var item in Stuff.Shortcuts.OfType<UrlShortcutInfo>())
+            {
+                sb.AppendLine($"<shortcut type=\"url\" name=\"{item.Name}\" >");
+                sb.Append("<url><![CDATA[" + item.Url);
+                sb.Append("]]></url>");
+                sb.AppendLine("</shortcut>");
 
             }
             sb.AppendLine("</shortcuts>");
@@ -260,18 +311,85 @@ namespace commander
             return MessageBox.Show(v, mdi.MainForm.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
         public static string PasswordHash { get; internal set; }
+        public static string GitBashPath { get; internal set; }
+        public static string VsCmdBatPath { get; internal set; } 
 
         public static List<ShortcutInfo> Shortcuts = new List<ShortcutInfo>();
     }
 
-    public class ShortcutInfo
+    public abstract class ShortcutInfo
     {
-        public ShortcutInfo(string p, string n)
+
+        public string Name;
+
+        public abstract void Run();
+
+    }
+    public class AppShortcutInfo : ShortcutInfo
+    {
+
+        public AppShortcutInfo(string p, string n)
         {
             Path = p;
             Name = n;
         }
         public string Path;
-        public string Name;
+
+
+        public override void Run()
+        {
+            ProcessStartInfo psi = new ProcessStartInfo();
+            psi.WorkingDirectory = new FileInfo(Path).DirectoryName;
+            psi.FileName = Path;
+            Process.Start(psi);
+        }
+    }
+    public class CmdShortcutInfo : ShortcutInfo
+    {
+        public CmdShortcutInfo(string name, string args, string wd, string appName = null)
+        {
+            if (appName != null)
+            {
+                AppName = appName;
+            }
+
+            WorkDir = wd;
+            Args = args;
+            Name = name;
+        }
+
+        public string AppName = "cmd.exe";
+        public string WorkDir;
+        public string Args;
+
+
+        public override void Run()
+        {
+
+            ProcessStartInfo psi = new ProcessStartInfo();
+            psi.FileName = AppName;
+            if (Args != null)
+            {
+                psi.Arguments = Args;
+            }
+
+            psi.WorkingDirectory = WorkDir;
+            Process.Start(psi);
+        }
+    }
+
+    public class UrlShortcutInfo : ShortcutInfo
+    {
+        public string Url;
+        public UrlShortcutInfo(string name, string url)
+        {
+            Url = url;
+            Name = name;
+        }
+
+        public override void Run()
+        {
+            Process.Start(Url);
+        }
     }
 }

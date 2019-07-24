@@ -110,6 +110,7 @@ namespace GamesPack1
             {
 
             }
+            gr.DrawString("Game under construction.", new Font("Arial", 8), Brushes.White, 2, 2);
             pictureBox1.Image = bmp;
         }
 

@@ -4,11 +4,14 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Data;
 using System.Diagnostics;
+using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Reflection;
+using System.Threading;
+using System.Drawing.Imaging;
 
 namespace commander
 {
@@ -21,6 +24,7 @@ namespace commander
             watcher.Changed += Watcher_Changed;
             Stuff.SetDoubleBuffered(listView1);
             tagControl.Init(this);
+            listView1.MouseLeave += ListView1_MouseLeave;
             watcher.Created += Watcher_Changed;
             watcher.Deleted += Watcher_Changed;
             watcher.Renamed += Watcher_Changed;
@@ -35,9 +39,321 @@ namespace commander
                 list.Images.Add(bmp.ToBitmap());
             }
 
+            RunPreview();
+        }
+
+        void RunPreview()
+        {
+            PreviewThreadLoader = new Thread(ThreadLoader);
+            PreviewThreadLoader.IsBackground = true;
+            PreviewThreadLoader.Start();
+        }
+
+        private void ListView1_MouseLeave(object sender, EventArgs e)
+        {
+            HideHint();
+        }
+        #region preview
+        private ListViewItem lastHovered = null;
+        private void HideHint()
+        {
+            if (lastHighlighted != null)
+            {
+                lastHighlighted.BackColor = lastColor;
+            }
+            preview.Parent = null;
+        }
+        PreviewControl preview = new PreviewControl();
+        public bool ShowPreview = true;
+
+        public static bool AllowHints = true;
+        public static HintModeEnum HintMode = HintModeEnum.Tags;
+        public enum HintModeEnum
+        {
+            Tags, Image
+        }
+
+        private void listView1_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!AllowHints) return;
+
+            //preview.Location = new Point(e.X + 20, e.Y);
+            var itemat = listView1.GetItemAt(e.Location.X, e.Location.Y);
+            if (itemat == null) { HideHint(); return; }
+            if (!(itemat.Tag is FileInfo)) { HideHint(); return; }
+
+            if (itemat == lastHovered)
+            {
+                return;
+            }
+
+            lastHovered = itemat;
+            var s = itemat.Tag as FileInfo;
+
+            if (HintMode == HintModeEnum.Tags)
+            {
+                var ss = Stuff.GetTagsOfFile(s.FullName);
+                if (!ss.Any())
+                {
+                    HideHint();
+                    return;
+                }
+            }
+            if (HintMode == HintModeEnum.Image)
+            {
+                if (!File.Exists(s.FullName) || !(s.Extension.ToLower().EndsWith("png") || s.Extension.ToLower().EndsWith("jpg") || s.Extension.ToLower().EndsWith("bmp")))
+                {
+                    HideHint();
+                    return;
+                }
+            }
+            if (ShowPreview) ShowHint(e, itemat, s);
+        }
+
+        private int _previewWidth = 200;
+        private object FLoaderPathLocker = new object();
+        private int _previewHeight = 200;
+        private ListViewItem lastHighlighted = null;
+        private Color lastColor;
+        private FileInfo previewCut;
+        private string loaderPath = "";
+        private string previewPath = "";
+
+        private void LoadAsyncPreview(FileInfo cut)
+        {
+            previewPath = cut.FullName;
+            lock (FLoaderPathLocker)
+            {
+                previewCut = cut;
+                loaderPath = cut.FullName;
+            }
+
+            if (preview.Bitmap != null)
+            {
+                Bitmap bmp = preview.Bitmap;
+                preview.Bitmap = null;
+                bmp.Dispose();
+            }
+        }
+
+        private void ShowHint(MouseEventArgs e, ListViewItem node, FileInfo fi)
+        {
+            if (lastHighlighted != null)
+            {
+
+                lastHighlighted.BackColor = lastColor;
+            }
+            lastHighlighted = node;
+
+            lastColor = node.BackColor;
+            node.BackColor = SystemColors.Highlight;
+
+            Control toplevel = this.TopLevelControl;
+            toplevel = listView1;
+            if (toplevel != null)
+            {
+                LoadAsyncPreview(fi);
+
+                preview.BackColor = SystemColors.Highlight;
+                preview.Width = _previewWidth + PreviewControl.PreviewGap * 2;
+                preview.Height = _previewHeight + PreviewControl.PreviewGap * 2;
+
+                UpdatePreviewLocation(node);
+
+                toplevel.Controls.Add(preview);
+                toplevel.Controls.SetChildIndex(preview, 0);
+            }
+            else
+            {
+                preview.Parent = null;
+            }
+        }
+
+        void UpdatePreviewLocation(ListViewItem node)
+        {
+            Control toplevel = this.TopLevelControl;
+            toplevel = listView1;
+            Point p_node = toplevel.PointToClient(listView1.PointToScreen(node.Bounds.Location));
+            var bnds = node.Bounds;
+            preview.Location =
+                  new Point(
+                      Math.Min(
+                          listView1.Left + listView1.Width - preview.Width - SystemInformation.VerticalScrollBarWidth - 10,
+                          listView1.Left + bnds.Width
+                      ),
+                      Math.Min(p_node.Y, listView1.Height - preview.Height));
+        }
+
+        private Thread PreviewThreadLoader;
+
+        private bool StopThreadLoader = false;
+
+        private void ThreadLoader()
+        {
+            while (!StopThreadLoader)
+            {
+                Thread.MemoryBarrier();
+                try
+                {
+                    string lp = "";
+                    lock (FLoaderPathLocker)
+                    {
+                        lp = loaderPath;
+                        loaderPath = "";
+                    }
+
+                    if (lp != "")
+                    {
+                        string lpbuff = lp;
+
+                        string ext = Path.GetExtension(lp);
+
+                        Bitmap bmp = null;
+                        if (HintMode == HintModeEnum.Tags)
+                        {
+                            bmp = GetTagHint(this, lp);
+                        }
+
+                        if (HintMode == HintModeEnum.Image)
+                        {
+                            bmp = GetPreviewBmp(this, lp);
+                        }
+
+                        BeginInvoke((MethodInvoker)delegate { PreviewLoadedInvoked(lpbuff, bmp); });
+                    }
+                }
+                catch { }
+                Thread.Sleep(10);
+            }
+        }
+
+        private Bitmap GetTagHint(FileListControl fileListControl, string lp)
+        {
+
+            var tags = Stuff.GetTagsOfFile(previewCut.FullName);
+            var grr = CreateGraphics();
+            float w = 0;
+            var font = new Font("Arial", 8);
+            List<List<TagInfo>> ttt = new List<List<TagInfo>>();
+
+            for (int i = 0; i < tags.Length; i++)
+            {
+                if ((i % 3) == 0) { ttt.Add(new List<TagInfo>()); }
+                ttt.Last().Add(tags[i]);
+            }
+            foreach (var item in ttt)
+            {
+
+                float w0 = 0;
+                foreach (var zitem in item)
+                {
+                    var ms = grr.MeasureString(zitem.Name, font);
+                    w0 += ms.Width + 5;
+                }
+                w = Math.Max(w, w0);
+            }
+
+            grr.Dispose();
+
+            var bmp = new Bitmap((int)w, ttt.Count() * 14, PixelFormat.Format32bppArgb);
+            var gr = Graphics.FromImage(bmp);
+            gr.Clear(Color.Transparent);
+            gr.SmoothingMode = SmoothingMode.HighQuality;
+            gr.PixelOffsetMode = PixelOffsetMode.HighQuality;
+            float xx = 0;
+            float yy = 0;
+            foreach (var zitem in ttt)
+            {
+                foreach (var item in zitem)
+                {
+                    var ms = gr.MeasureString(item.Name, font);
+
+                    gr.FillRectangle(Brushes.White, xx, yy, ms.Width + 3, ms.Height);
+                    gr.DrawRectangle(Pens.Black, xx, yy, ms.Width + 3, ms.Height);
+                    gr.DrawString(item.Name, font, Brushes.Blue, xx, yy);
+                    xx += gr.MeasureString(item.Name, font).Width + 5;
+                }
+                yy += 14;
+                xx = 0;
+            }
+            gr.Dispose();
+            _previewWidth = bmp.Width;
+            _previewHeight = bmp.Height;
+            preview.Width = _previewWidth + PreviewControl.PreviewGap * 2;
+            preview.Height = _previewHeight + PreviewControl.PreviewGap * 2;
+            UpdatePreviewLocation(lastHovered);
+            return bmp;
         }
 
 
+        private void PreviewLoadedInvoked(string drawingname, Bitmap bmp)
+        {
+
+            try
+            {
+                if (previewPath == drawingname)
+                {
+                    if (preview.Bitmap != null)
+                    {
+                        Bitmap bmp_old = preview.Bitmap;
+                        preview.Bitmap = bmp;
+                        bmp_old.Dispose();
+                    }
+                    else
+                    {
+                        preview.Bitmap = bmp;
+                    }
+                }
+            }
+            catch
+            { }
+        }
+
+        private Bitmap GetPreviewBmp(object sender, string drawingName)
+        {
+            try
+            {
+
+                var bmp0 = Bitmap.FromFile(previewCut.FullName);
+                var aspect = bmp0.Height / (float)bmp0.Width;
+                _previewHeight = (int)(_previewWidth * aspect);
+
+                Bitmap bmp = new Bitmap(_previewWidth, _previewHeight);
+                var gr = Graphics.FromImage(bmp);
+                var koef = bmp.Width / (float)bmp0.Width;
+                gr.ScaleTransform(koef, koef);
+
+
+                gr.DrawImage(bmp0, 0, 0);
+
+                string dim = bmp0.Width.ToString("0.#") + "x" + bmp0.Height.ToString("0.#");
+                bmp0.Dispose();
+                gr.SmoothingMode = SmoothingMode.HighQuality;
+                gr.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                Font fontDim = new Font("Arial", 8, FontStyle.Regular);
+                Brush brushDim = new SolidBrush(Color.FromArgb(255, 255, 255));
+                Brush brushDimBack = new SolidBrush(Color.FromArgb(164, 64, 64, 164));
+                var sfDim = new StringFormat();
+
+                sfDim.LineAlignment = StringAlignment.Far;
+                sfDim.Alignment = StringAlignment.Near;
+                gr.ResetTransform();
+                gr.FillRectangle(brushDimBack, new RectangleF(0, bmp.Height - 14, gr.MeasureString(dim, fontDim).Width, 14));
+                gr.DrawString(dim, fontDim, brushDim, new PointF(0, bmp.Height), sfDim);
+                gr.Dispose();
+
+                preview.Width = _previewWidth + 10;
+                preview.Height = _previewHeight + 10;
+
+                return bmp;
+            }
+            catch (Exception ex)
+            {
+                Bitmap bmp = new Bitmap(_previewWidth, _previewHeight);
+                return bmp;
+            }
+        }
+        #endregion
 
         private void DropDown_Closing(object sender, ToolStripDropDownClosingEventArgs e)
         {
@@ -449,63 +765,43 @@ namespace commander
         {
 
             Tabs.Add(tinf);
-            var b = new Button() { Text = tinf.Hint };
+            var b = new MyToolStripButton() { Text = tinf.Hint, DisplayStyle = ToolStripItemDisplayStyle.Text };
+
             b.ContextMenuStrip = contextMenuStrip1;
             b.Click += (x, z) =>
             {
-                var bb = x as Button;
+                var bb = x as ToolStripButton;
                 var tabinf = bb.Tag as TabInfo;
                 textBox2.Text = tabinf.Filter;
                 UpdateList(tabinf.Path, tabinf.Filter);
 
             };
             b.Tag = tinf;
-            //b.Width = 140;
-            int ww = 0;
-            for (int i = 0; i < panel2.Controls.Count; i++)
-            {
-                ww += panel2.Controls[i].Width;
-            }
-
-            b.Left = ww;//panel2.Controls.Count * 140;
+            b.ToolTipText = tinf.Path;
             using (var gr = CreateGraphics())
             {
                 var msr = gr.MeasureString(b.Text, b.Font, new SizeF(500, 40));
                 b.Width = (int)msr.Width + 20;
             }
 
-            //b.AutoSize = true;
-            panel2.Controls.Add(b);
+
+            toolStrip1.Items.Add(b);
         }
         private void button1_Click(object sender, EventArgs e)
         {
-            AddTabWindow atw = new AddTabWindow();
-            atw.Path = textBox1.Text;
-            var dir = new DirectoryInfo(textBox1.Text);
-            atw.Hint = dir.Name;
-            if (atw.ShowDialog() == DialogResult.OK)
-            {
-                var tab = new TabInfo()
-                {
-                    Hint = atw.Hint,
-                    Path = atw.Path,
-                    Filter = atw.Filter,
-                    Owner = TabOwnerString
-                };
-                Stuff.AddTab(tab);
-                AddTab(tab);
-            }
+
         }
 
         public string TabOwnerString;
         private Control todel;
         private void removeTabToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var p = contextMenuStrip1.SourceControl;
+
+            var p = contextMenuStrip1.Tag as MyToolStripButton;
             Stuff.Tabs.Remove(p.Tag as TabInfo);
             Tabs.Remove(p.Tag as TabInfo);
             Stuff.IsDirty = true;
-            panel2.Controls.Remove(p);
+            toolStrip1.Items.Remove(p);
         }
 
         private void openExplorerHereToolStripMenuItem_Click(object sender, EventArgs e)
@@ -558,7 +854,6 @@ namespace commander
                     var d = listView1.SelectedItems[0].Tag as DirectoryInfo;
                     TextSearchForm tsf = new TextSearchForm();
                     tsf.SetPath(d.FullName);
-                    tsf.FileListControl = this;
                     tsf.Show();
 
                 }
@@ -568,12 +863,9 @@ namespace commander
                     var d = listView1.SelectedItems[0].Tag as FileInfo;
                     TextSearchForm tsf = new TextSearchForm();
                     tsf.SetPath(d.DirectoryName);
-                    tsf.FileListControl = this;
                     tsf.Show();
                 }
-
             }
-
         }
 
         private void openInImageViewerToolStripMenuItem_Click(object sender, EventArgs e)
@@ -659,21 +951,30 @@ namespace commander
                 }
                 else
                 {
-                    bool allFiles = true;
+                    //bool allFiles = true;
                     List<FileInfo> files = new List<FileInfo>();
+                    long total = 0;
                     for (int i = 0; i < listView1.SelectedItems.Count; i++)
                     {
                         var tag1 = listView1.SelectedItems[i].Tag;
-                        if (!(tag1 is FileInfo))
+                        if (tag1 is DirectoryInfo)
                         {
-                            allFiles = false;
-                            break;
+                            var list = Stuff.GetAllFiles(tag1 as DirectoryInfo);
+                            total += list.Sum(z => z.Length);
                         }
-                        files.Add(tag1 as FileInfo);
+                        if (tag1 is FileInfo)
+                        {
+                            files.Add(tag1 as FileInfo);
+                            // allFiles = false;
+                            //break;
+                        }
+
                     }
-                    if (allFiles)
+
+                    total += files.Sum(z => z.Length);
+                    //if (allFiles)
                     {
-                        Stuff.Info("Total size: " + Stuff.GetUserFriendlyFileSize(files.Sum(z => z.Length)));
+                        Stuff.Info("Total size: " + Stuff.GetUserFriendlyFileSize(total));
                     }
                 }
             }
@@ -1072,7 +1373,7 @@ namespace commander
                     setTagsToolStripMenuItem.DropDownItems.Add(ss);
                 }
             }
-            if (listView1.SelectedItems.Count> 1)
+            if (listView1.SelectedItems.Count > 1)
             {
                 //todo:set multiple tags assign
             }
@@ -1114,14 +1415,78 @@ namespace commander
         {
             if (SelectedFile != null)
             {
-                Stuff.Shortcuts.Add(new ShortcutInfo(SelectedFile.FullName , SelectedFile.Name  ));
+                Stuff.Shortcuts.Add(new AppShortcutInfo(SelectedFile.FullName, SelectedFile.Name));
                 Stuff.IsDirty = true;
                 mdi.MainForm.AppendShortCutPanelButton(Stuff.Shortcuts.Last());
 
             }
         }
 
-        
+        private void runVsCmdHereToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(Stuff.VsCmdBatPath))
+            {
+                Stuff.Warning("VsCmdBat path not setted. Set path in settings.");
+                return;
+            }
+            var dir = CurrentDirectory.FullName;
+            string str =
+
+                $"%comspec% /k \"{Stuff.VsCmdBatPath}\"";
+
+            if (!File.Exists($"{Stuff.VsCmdBatPath}"))
+            {
+                Stuff.Warning("VSDevCmd.bat file not found");
+                return;
+            }
+            ProcessStartInfo psi = new ProcessStartInfo();
+            psi.FileName = "cmd.exe";
+            psi.Arguments = str;
+            psi.WorkingDirectory = dir;
+            Process.Start(psi);
+        }
+
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            AddTabWindow atw = new AddTabWindow();
+            atw.Path = textBox1.Text;
+            var dir = new DirectoryInfo(textBox1.Text);
+            atw.Hint = dir.Name;
+            if (atw.ShowDialog() == DialogResult.OK)
+            {
+                var tab = new TabInfo()
+                {
+                    Hint = atw.Hint,
+                    Path = atw.Path,
+                    Filter = atw.Filter,
+                    Owner = TabOwnerString
+                };
+                Stuff.AddTab(tab);
+                AddTab(tab);
+            }
+        }
+    
+        private void runGitbashHereToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(Stuff.GitBashPath))
+            {
+                Stuff.Warning("Git-bash path not setted. Set path in settings.");
+                return;
+            }
+
+            var dir = CurrentDirectory.FullName;
+
+            ProcessStartInfo psi = new ProcessStartInfo();
+            if (!File.Exists(Stuff.GitBashPath))
+            {
+                Stuff.Warning("Git-bash.exe not found.");
+                return;
+            }
+            psi.FileName = Stuff.GitBashPath;
+
+            psi.WorkingDirectory = dir;
+            Process.Start(psi);
+        }
     }
 
     public class TabInfo
@@ -1144,5 +1509,5 @@ namespace commander
         {
             return Name;
         }
-    }
+    }    
 }

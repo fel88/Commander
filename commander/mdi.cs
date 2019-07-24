@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -22,10 +23,10 @@ namespace commander
 
             Stuff.LoadSettings();
             Stuff.IsDirty = false;
-            
+
 
             OpenWindow(new Explorer());
-            
+
             foreach (var item in Stuff.Shortcuts)
             {
                 AppendShortCutPanelButton(item);
@@ -36,7 +37,8 @@ namespace commander
         public void AppendShortCutPanelButton(ShortcutInfo item)
         {
             toolStrip1.Visible = true;
-            var fn = new FileInfo(item.Path);
+           
+
 
 
             MyToolStripButton tsb1 = new MyToolStripButton() { TextImageRelation = TextImageRelation.ImageAboveText };
@@ -49,18 +51,46 @@ namespace commander
             tsb1.Click += Tsb1_Click;
 
             //toolStrip1.ContextMenuStrip = contextMenuStrip1;
-            var bb = Bitmap.FromHicon(Icon.ExtractAssociatedIcon(fn.FullName).Handle);
-            bb.MakeTransparent();
-            //toolStrip1.ImageScalingSize = new Size((int)(10), (int)(10));
-            tsb1.Image = bb;
+
+            if (item is AppShortcutInfo)
+            {
+                var apps = item as AppShortcutInfo;
+                var fn = new FileInfo(apps.Path);
+
+                if (fn.Exists)
+                {
+                    var bb = Bitmap.FromHicon(Icon.ExtractAssociatedIcon(fn.FullName).Handle);
+                    bb.MakeTransparent();
+                    //toolStrip1.ImageScalingSize = new Size((int)(10), (int)(10));
+                    tsb1.Image = bb;
+                }
+            }
+            else if (item is UrlShortcutInfo)
+            {
+                Bitmap bb = new Bitmap(64, 64, PixelFormat.Format32bppArgb);
+                var gr = Graphics.FromImage(bb);
+                gr.Clear(Color.Transparent);
+                gr.DrawString(item.Name, new Font("Arial", 32), Brushes.Black, 0, 0);
+                bb.MakeTransparent();
+                tsb1.ToolTipText = item.Name + " : " + (item as UrlShortcutInfo).Url ;
+                tsb1.Image = bb;
+            }
+            else
+            {
+                Bitmap bb = new Bitmap(64, 64, PixelFormat.Format32bppArgb);
+                var gr = Graphics.FromImage(bb);
+                gr.Clear(Color.Transparent);
+                gr.DrawString(item.Name, new Font("Arial", 32), Brushes.Black, 0, 0);
+                bb.MakeTransparent();
+                tsb1.ToolTipText = item.Name + " : " + (item as CmdShortcutInfo).Args + " workdir: " + (item as CmdShortcutInfo).WorkDir;
+                tsb1.Image = bb;
+            }
         }
         private void Tsb1_Click(object sender, EventArgs e)
         {
             var fn = (sender as ToolStripButton).Tag as ShortcutInfo;
-            ProcessStartInfo psi = new ProcessStartInfo();
-            psi.WorkingDirectory = new FileInfo(fn.Path).DirectoryName;
-            psi.FileName = fn.Path;
-            Process.Start(psi);
+            fn.Run();
+
         }
 
         private void LoadPlugins()
@@ -299,6 +329,12 @@ namespace commander
             Stuff.IsDirty = true;
             toolStrip1.Items.Remove(mtb);
             if (toolStrip1.Items.Count == 0) { toolStrip1.Visible = false; }
+        }
+
+        private void SettingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SettingsWindow s = new SettingsWindow();
+            s.ShowDialog();
         }
     }
 

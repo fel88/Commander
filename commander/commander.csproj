@@ -148,6 +148,12 @@
       <DependentUpon>RepeatsWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="ReportSectorInfo.cs" />
+    <Compile Include="SettingsWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SettingsWindow.Designer.cs">
+      <DependentUpon>SettingsWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="Sorter1.cs" />
     <Compile Include="Sorter2.cs" />
     <Compile Include="Sorter3.cs" />
@@ -170,6 +176,9 @@
     </Compile>
     <Compile Include="TextSearchForm.Designer.cs">
       <DependentUpon>TextSearchForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PreviewControl.cs">
+      <SubType>Component</SubType>
     </Compile>
     <EmbeddedResource Include="AboutBox1.resx">
       <DependentUpon>AboutBox1.cs</DependentUpon>
@@ -224,6 +233,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="RepeatsWindow.resx">
       <DependentUpon>RepeatsWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SettingsWindow.resx">
+      <DependentUpon>SettingsWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TagListViewControl.resx">
       <DependentUpon>TagListViewControl.cs</DependentUpon>

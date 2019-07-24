@@ -43,15 +43,14 @@ namespace commander
                 if (splitContainer1.Panel2.Controls.Contains(previewer))
                 {
                     string[] exts = new string[] { ".jpg", ".png", ".bmp" };
-                    if (exts.Contains(x.Extension))
+                    if (exts.Contains(x.Extension.ToLower()))
                     {
-
                         previewer.SetImage(Bitmap.FromFile(x.FullName));
                     }
                 }
             };
-
         }
+
         public FileListControl[] FileListControls => new[] { fileListControl1, fileListControl2 };
 
         private void UpdateTabs()
@@ -201,13 +200,11 @@ namespace commander
             TextSearchForm tsf = new TextSearchForm();
             tsf.MdiParent = MdiParent;
             if (fileListControl2.ContainsFocus)
-            {
-                tsf.FileListControl = fileListControl2;
+            {                
                 tsf.SetPath(fileListControl2.CurrentDirectory.FullName);
             }
             else
-            {
-                tsf.FileListControl = fileListControl1;
+            {                
                 tsf.SetPath(fileListControl1.CurrentDirectory.FullName);
             }
             tsf.Show();

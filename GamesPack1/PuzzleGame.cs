@@ -24,6 +24,7 @@ namespace GamesPack1
             pictureBox1.MouseDown += PictureBox1_MouseDown;
             pictureBox1.MouseUp += PictureBox1_MouseUp;
             gr.SmoothingMode = SmoothingMode.AntiAlias;
+            gr.PixelOffsetMode = PixelOffsetMode.HighQuality;
             SizeChanged += PuzzleGame_SizeChanged;
 
 
@@ -356,6 +357,7 @@ namespace GamesPack1
             bmp = new Bitmap(Width, Height);
             gr = Graphics.FromImage(bmp);
             gr.SmoothingMode = SmoothingMode.AntiAlias;
+            gr.PixelOffsetMode = PixelOffsetMode.HighQuality;
         }
 
         public List<PuzzleItem> Items = new List<PuzzleItem>();

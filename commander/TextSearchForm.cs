@@ -133,8 +133,14 @@ namespace commander
             // write new style
             SendMessage(control.Handle, (int)ListViewMessages.SetExtendedStyle, 0, (int)styles);
         }
-        public FileListControl FileListControl;
+        //public FileListControl FileListControl;
 
+
+        public bool IsExtFilterPass(string filter, string name)
+        {
+            var aa = filter.Split(new char[] { ';', ' ' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
+            return aa.Any(z => name.Contains(z));
+        }
         public void loop(DirectoryInfo _d, Action fileProcessed)
         {
 
@@ -144,43 +150,51 @@ namespace commander
             {
                 var d = q.Dequeue();
                 label4.Text = d.FullName;
-                foreach (var item in d.GetFiles())
+                try
                 {
-                    try
+                    foreach (var item in d.GetFiles())
                     {
-                        fileProcessed();
-                        if (!item.Extension.Contains(textBox3.Text)) continue;
-                        if (!item.Name.ToLower().Contains(textBox4.Text.ToLower())) continue;
-                        bool add = false;
-                        if (!string.IsNullOrEmpty(textBox2.Text))
+                        try
                         {
+                            fileProcessed();
+                            if (!IsExtFilterPass(textBox3.Text, item.Extension)) continue;
+                            //if (!item.Extension.Contains(textBox3.Text)) continue;
+                            if (!item.Name.ToLower().Contains(textBox4.Text.ToLower())) continue;
+                            bool add = false;
+                            if (!string.IsNullOrEmpty(textBox2.Text))
+                            {
 
-                            var t = File.ReadAllLines(item.FullName);
-                            if (t.Any(z => z.ToUpper().Contains(textBox2.Text.ToUpper())))
+                                var t = File.ReadAllLines(item.FullName);
+                                if (t.Any(z => z.ToUpper().Contains(textBox2.Text.ToUpper())))
+                                {
+                                    add = true;
+                                }
+                            }
+                            else
                             {
                                 add = true;
                             }
-                        }
-                        else
-                        {
-                            add = true;
-                        }
 
-                        if (add)
+                            if (add)
+                            {
+                                listView2.BeginUpdate();
+                                listView2.Items.Add(new ListViewItem(new string[] { item.Name }) { Tag = item });
+                                listView2.EndUpdate();
+                            }
+                        }
+                        catch (Exception ex)
                         {
-                            listView2.BeginUpdate();
-                            listView2.Items.Add(new ListViewItem(new string[] { item.Name }) { Tag = item });
-                            listView2.EndUpdate();
+
                         }
                     }
-                    catch (Exception ex)
+                    foreach (var item in d.GetDirectories())
                     {
-
+                        q.Enqueue(item);
                     }
                 }
-                foreach (var item in d.GetDirectories())
+                catch (UnauthorizedAccessException ex)
                 {
-                    q.Enqueue(item);
+
                 }
             }
         }
@@ -192,7 +206,8 @@ namespace commander
             foreach (var item in d.GetFiles())
             {
                 fileProcessed();
-                if (!item.Extension.Contains(textBox3.Text)) continue;
+                if (!IsExtFilterPass(textBox3.Text, item.Extension)) continue;
+                //if (!item.Extension.Contains(textBox3.Text)) continue;
                 if (!item.Name.ToLower().Contains(textBox4.Text.ToLower())) continue;
                 bool add = false;
                 if (!string.IsNullOrEmpty(textBox2.Text))
@@ -350,25 +365,32 @@ namespace commander
         void Execute()
         {
             if (listView2.SelectedItems.Count > 0)
-            {                
+            {
                 var f = listView2.SelectedItems[0].Tag as FileInfo;
-                Stuff.ExecuteFile(f);                
+                Stuff.ExecuteFile(f);
             }
         }
 
         private void GoToToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (searchThread != null)
+            /*if (searchThread != null)
             {
                 MessageBox.Show("First stop the search.");
                 return;
-            }
+            }*/
             if (listView2.SelectedItems.Count > 0)
             {
                 var f = listView2.SelectedItems[0].Tag as FileInfo;
-                FileListControl.UpdateList(f.DirectoryName);
-                FileListControl.SetFilter(f.Name);
-                Close();
+                var exps = mdi.MainForm.MdiChildren.OfType<Explorer>().ToArray();
+                if (exps.Any())
+                {
+                    var e1 = exps.First();
+
+                    e1.FileListControls[0].UpdateList(f.DirectoryName);
+                    e1.FileListControls[0].SetFilter(f.Name, true);
+                    e1.Activate();
+                }
+                // Close();
             }
         }
 
