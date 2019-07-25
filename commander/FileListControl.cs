@@ -39,7 +39,37 @@ namespace commander
                 list.Images.Add(bmp.ToBitmap());
             }
 
+
+            foreach (var item in Stuff.FileContextMenuItems)
+            {
+                var v = new ToolStripMenuItem() { Text = item.Title, Tag = item };
+                v.Click += V_Click;
+                contextMenuStrip2.Items.Add(v);
+            }
             RunPreview();
+        }
+
+        private void V_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var t = (sender as ToolStripMenuItem);
+                var m = (t.Tag as FileContextMenuItem);
+
+                ProcessStartInfo psi = new ProcessStartInfo();
+                psi.FileName = m.AppName;
+                if (m.Arguments != null)
+                {
+                    psi.Arguments = m.Arguments;
+                }
+                psi.WorkingDirectory = CurrentDirectory.FullName;
+                Process.Start(psi);
+            }
+            catch (Exception ex)
+            {
+                Stuff.Error("Error: " + ex.Message);
+            }
+
         }
 
         void RunPreview()
@@ -459,10 +489,24 @@ namespace commander
                 {
                     listView1.Sorting = SortOrder.Ascending;
                 }
-                listView1.ListViewItemSorter = new Sorter3(listView1.Sorting);
+                listView1.ListViewItemSorter = new TypeSorter(listView1.Sorting);
                 listView1.Sort();
             }
             if (e.Column == 2)
+            {
+
+                if (listView1.Sorting == SortOrder.Ascending)
+                {
+                    listView1.Sorting = SortOrder.Descending;
+                }
+                else
+                {
+                    listView1.Sorting = SortOrder.Ascending;
+                }
+                listView1.ListViewItemSorter = new Sorter3(listView1.Sorting);
+                listView1.Sort();
+            }
+            if (e.Column == 3)
             {
 
                 if (listView1.Sorting == SortOrder.Ascending)
@@ -508,7 +552,7 @@ namespace commander
             var d = Path.GetExtension(fn);
             if (!Icons.ContainsKey(d))
             {
-                var bb = Bitmap.FromHicon(Icon.ExtractAssociatedIcon(fn).Handle);
+                var bb = Bitmap.FromHicon(Stuff.ExtractAssociatedIcon(fn).Handle);
                 bb.MakeTransparent();
                 list.Images.Add(bb);
                 IconDictionary.Add(d, list.Images.Count - 1);
@@ -533,6 +577,8 @@ namespace commander
 
                 listView1.BeginUpdate();
                 listView1.Items.Clear();
+                listView1.ListViewItemSorter = null;
+                listView1.Sorting = SortOrder.None;
                 textBox1.Text = path;
 
                 var p = new DirectoryInfo(path);
@@ -566,7 +612,7 @@ namespace commander
             foreach (var directoryInfo in dirs)
             {
                 if (checkBox1.Checked && !IsFilterPass(directoryInfo.Name, fltrs)) continue;
-                listView1.Items.Add(new ListViewItem(new string[] { directoryInfo.Name, "", directoryInfo.LastWriteTime.ToString() })
+                listView1.Items.Add(new ListViewItem(new string[] { directoryInfo.Name,"", "", directoryInfo.LastWriteTime.ToString() })
                 {
                     Tag = directoryInfo,
                     ImageIndex = 0
@@ -593,7 +639,10 @@ namespace commander
                     listView1.Items.Add(
                         new ListViewItem(new string[]
                         {
-                        directoryInfo.Name, Stuff.GetUserFriendlyFileSize(directoryInfo.Length) , directoryInfo.LastWriteTime.ToString(),"",
+                        directoryInfo.Name,
+                        directoryInfo.Extension,
+                            Stuff.GetUserFriendlyFileSize(directoryInfo.Length) ,
+                            directoryInfo.LastWriteTime.ToString(),"",
                         astr
                         })
                         {
@@ -1422,29 +1471,6 @@ namespace commander
             }
         }
 
-        private void runVsCmdHereToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (string.IsNullOrEmpty(Stuff.VsCmdBatPath))
-            {
-                Stuff.Warning("VsCmdBat path not setted. Set path in settings.");
-                return;
-            }
-            var dir = CurrentDirectory.FullName;
-            string str =
-
-                $"%comspec% /k \"{Stuff.VsCmdBatPath}\"";
-
-            if (!File.Exists($"{Stuff.VsCmdBatPath}"))
-            {
-                Stuff.Warning("VSDevCmd.bat file not found");
-                return;
-            }
-            ProcessStartInfo psi = new ProcessStartInfo();
-            psi.FileName = "cmd.exe";
-            psi.Arguments = str;
-            psi.WorkingDirectory = dir;
-            Process.Start(psi);
-        }
 
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
@@ -1465,28 +1491,8 @@ namespace commander
                 AddTab(tab);
             }
         }
-    
-        private void runGitbashHereToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (string.IsNullOrEmpty(Stuff.GitBashPath))
-            {
-                Stuff.Warning("Git-bash path not setted. Set path in settings.");
-                return;
-            }
 
-            var dir = CurrentDirectory.FullName;
 
-            ProcessStartInfo psi = new ProcessStartInfo();
-            if (!File.Exists(Stuff.GitBashPath))
-            {
-                Stuff.Warning("Git-bash.exe not found.");
-                return;
-            }
-            psi.FileName = Stuff.GitBashPath;
-
-            psi.WorkingDirectory = dir;
-            Process.Start(psi);
-        }
     }
 
     public class TabInfo
@@ -1509,5 +1515,12 @@ namespace commander
         {
             return Name;
         }
-    }    
+    }
+
+    public class FileContextMenuItem
+    {
+        public string Title;
+        public string AppName;
+        public string Arguments;
+    }
 }

@@ -20,10 +20,8 @@ namespace commander
             MainForm = this;
             LoadPlugins();
 
-
             Stuff.LoadSettings();
             Stuff.IsDirty = false;
-
 
             OpenWindow(new Explorer());
 
@@ -31,15 +29,11 @@ namespace commander
             {
                 AppendShortCutPanelButton(item);
             }
-
-
         }
+
         public void AppendShortCutPanelButton(ShortcutInfo item)
         {
             toolStrip1.Visible = true;
-           
-
-
 
             MyToolStripButton tsb1 = new MyToolStripButton() { TextImageRelation = TextImageRelation.ImageAboveText };
             tsb1.ContextMenuStrip = contextMenuStrip1;
@@ -336,6 +330,36 @@ namespace commander
             SettingsWindow s = new SettingsWindow();
             s.ShowDialog();
         }
-    }
 
+        private void RenameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (contextMenuStrip1.Tag == null) return;
+            var mtb = (contextMenuStrip1.Tag as MyToolStripButton);
+            var s = mtb.Tag as ShortcutInfo;
+            RenameDialog rnd = new RenameDialog();
+            rnd.Value = s.Name;
+            if (rnd.ShowDialog() == DialogResult.OK)
+            {                
+                s.Name = rnd.Value;
+                mtb.Text = rnd.Value;
+                Stuff.IsDirty = true;           
+            }            
+        }
+
+        private void CopyPathToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (contextMenuStrip1.Tag == null) return;
+            var mtb = (contextMenuStrip1.Tag as MyToolStripButton);
+            
+            var s = mtb.Tag as ShortcutInfo;
+            if(s is AppShortcutInfo)
+            {
+                Clipboard.SetText((s as AppShortcutInfo).Path);
+            }
+            if(s is UrlShortcutInfo)
+            {
+                Clipboard.SetText((s as UrlShortcutInfo).Url);
+            }            
+        }
+    }
 }

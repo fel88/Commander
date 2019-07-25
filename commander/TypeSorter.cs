@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.IO;
 using System.Windows.Forms;
 
 namespace commander
 {
-    public class Sorter1 : IComparer
+    public class TypeSorter : IComparer
     {
         private SortOrder sorting;
 
-        public Sorter1(SortOrder sorting)
+        public TypeSorter(SortOrder sorting)
         {
             this.sorting = sorting;
         }
@@ -18,8 +17,7 @@ namespace commander
         {
             var lv1 = x as ListViewItem;
             var lv2 = y as ListViewItem;
-            DateTime dt1 = DateTime.Now;
-            DateTime dt2 = DateTime.Now;
+
             if (lv1.SubItems[0].Text == "..")
             {
                 return -1;
@@ -28,28 +26,20 @@ namespace commander
             {
                 return 1;
             }
-            
+            string sz1 = "";
+            string sz2 = "";
             if (lv1.Tag is FileInfo)
             {
                 var fin = lv1.Tag as FileInfo;
-                dt1 = fin.LastWriteTime;
-            }
-            if (lv1.Tag is DirectoryInfo)
-            {
-                var fin = lv1.Tag as DirectoryInfo;
-                dt1 = fin.LastWriteTime;
+                sz1 = fin.Extension;
             }
             if (lv2.Tag is FileInfo)
             {
                 var fin = lv2.Tag as FileInfo;
-                dt2 = fin.LastWriteTime;
+                sz2 = fin.Extension;
             }
-            if (lv2.Tag is DirectoryInfo)
-            {
-                var fin = lv2.Tag as DirectoryInfo;
-                dt2 = fin.LastWriteTime;
-            }
-            var res = dt1.CompareTo(dt2);
+
+            var res = sz1.CompareTo(sz2);
             if (sorting == SortOrder.Descending)
             {
                 res = -res;

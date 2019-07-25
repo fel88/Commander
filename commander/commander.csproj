@@ -148,6 +148,7 @@
       <DependentUpon>RepeatsWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="ReportSectorInfo.cs" />
+    <Compile Include="SafeNativeMethods.cs" />
     <Compile Include="SettingsWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -180,6 +181,7 @@
     <Compile Include="PreviewControl.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="TypeSorter.cs" />
     <EmbeddedResource Include="AboutBox1.resx">
       <DependentUpon>AboutBox1.cs</DependentUpon>
     </EmbeddedResource>

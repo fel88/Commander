@@ -2,9 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
@@ -14,6 +16,49 @@ namespace commander
 {
     public class Stuff
     {
+        public static Icon ExtractAssociatedIcon(String filePath)
+        {
+            int index = 0;
+
+            Uri uri;
+            if (filePath == null)
+            {
+                throw new ArgumentException(String.Format("'{0}' is not valid for '{1}'", "null", "filePath"), "filePath");
+            }
+            try
+            {
+                uri = new Uri(filePath);
+            }
+            catch (UriFormatException)
+            {
+                filePath = Path.GetFullPath(filePath);
+                uri = new Uri(filePath);
+            }
+            //if (uri.IsUnc)
+            //{
+            //  throw new ArgumentException(String.Format("'{0}' is not valid for '{1}'", filePath, "filePath"), "filePath");
+            //}
+            if (uri.IsFile)
+            {
+                if (!File.Exists(filePath))
+                {
+                    //IntSecurity.DemandReadFileIO(filePath);
+                    throw new FileNotFoundException(filePath);
+                }
+
+                StringBuilder iconPath = new StringBuilder(260);
+                iconPath.Append(filePath);
+
+                IntPtr handle = SafeNativeMethods.ExtractAssociatedIcon(new HandleRef(null, IntPtr.Zero), iconPath, ref index);
+                if (handle != IntPtr.Zero)
+                {
+                    //IntSecurity.ObjectFromWin32Handle.Demand();
+                    return Icon.FromHandle(handle);
+                }
+            }
+            return null;
+        }
+
         public static List<FileInfo> GetAllFiles(DirectoryInfo dir, List<FileInfo> files = null)
         {
             if (files == null)
@@ -208,7 +253,21 @@ namespace commander
                     tag.AddFile(item.Value);
                 }
             }
+
+            foreach (var descendant in s.Descendants("fileContextMenuItem"))
+            {
+                var title = descendant.Attribute("title").Value;
+                var appName = descendant.Attribute("appName").Value;
+                string args = null;
+                if (descendant.Element("arguments") != null)
+                {
+                    args = descendant.Element("arguments").Value;
+                }
+                var f = new FileContextMenuItem() { Title = title, AppName = appName, Arguments = args };
+                Stuff.FileContextMenuItems.Add(f);
+            }
         }
+
         public static void SaveSettings()
         {
             StringBuilder sb = new StringBuilder();
@@ -264,6 +323,19 @@ namespace commander
             }
             sb.AppendLine("</shortcuts>");
 
+            sb.AppendLine("<fileContextMenuItems>");
+            foreach (var item in Stuff.FileContextMenuItems)
+            {
+                if (item.Arguments == null)
+                {
+                    sb.AppendLine($"<fileContextMenuItem title=\"{item.Title}\" appName=\"{item.AppName}\" />");
+                }
+                else
+                {
+                    sb.AppendLine($"<fileContextMenuItem title=\"{item.Title}\" appName=\"{item.AppName}\" arguments=\"{item.Arguments}\" />");
+                }
+            }
+            sb.AppendLine("</fileContextMenuItems>");
             sb.AppendLine("</settings>");
             File.WriteAllText("settings.xml", sb.ToString());
         }
@@ -310,9 +382,8 @@ namespace commander
         {
             return MessageBox.Show(v, mdi.MainForm.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
-        public static string PasswordHash { get; internal set; }
-        public static string GitBashPath { get; internal set; }
-        public static string VsCmdBatPath { get; internal set; } 
+        public static string PasswordHash { get; internal set; }        
+        public static List<FileContextMenuItem> FileContextMenuItems { get; internal set; } = new List<FileContextMenuItem>();
 
         public static List<ShortcutInfo> Shortcuts = new List<ShortcutInfo>();
     }

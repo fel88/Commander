@@ -14,8 +14,6 @@ namespace commander
         public SettingsWindow()
         {
             InitializeComponent();
-            textBox1.Text = Stuff.GitBashPath;
-            textBox2.Text = Stuff.VsCmdBatPath;
             checkBox1.Checked = FileListControl.AllowHints;
             switch (FileListControl.HintMode)
             {
@@ -27,6 +25,15 @@ namespace commander
                     break;
             }
 
+            foreach (var item in Stuff.FileContextMenuItems)
+            {
+                AppendMenuItem(item);
+            }
+        }
+
+        public void AppendMenuItem(FileContextMenuItem item)
+        {
+            listView1.Items.Add(new ListViewItem(new string[] { item.Title, item.AppName, item.Arguments }) { Tag = item });
         }
 
         public static string VsCmdPath;
@@ -43,14 +50,25 @@ namespace commander
             if (comboBox1.SelectedIndex == 1) { FileListControl.HintMode = FileListControl.HintModeEnum.Tags; }
         }
 
-        private void TextBox1_TextChanged(object sender, EventArgs e)
+        private void AddItemToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Stuff.GitBashPath = textBox1.Text;
+
+            var f = new FileContextMenuItem() { Title="new item",AppName="cmd.exe"};            
+            Stuff.FileContextMenuItems.Add(f);
+            AppendMenuItem(f);
+            Stuff.IsDirty = true;
+
         }
 
-        private void TextBox2_TextChanged(object sender, EventArgs e)
+        private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Stuff.VsCmdBatPath = textBox2.Text;
+            if (listView1.SelectedItems.Count > 0)
+            {
+                var f = listView1.SelectedItems[0].Tag as FileContextMenuItem;
+                Stuff.FileContextMenuItems.Remove(f);
+                Stuff.IsDirty = true;
+                listView1.Items.Remove(listView1.SelectedItems[0]);
+            }
         }
     }
 }
