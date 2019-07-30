@@ -29,24 +29,31 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(mdi));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fgToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.desktopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.webToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.extractorsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.youtubeToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.containersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.isoEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pluginsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.installToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.arrangeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cascadeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.horizontalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.verticalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pluginsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.installToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.proxyServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.renameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyPathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mountListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -58,9 +65,12 @@
             this.toolStripMenuItem1,
             this.desktopToolStripMenuItem,
             this.webToolStripMenuItem,
+            this.extractorsToolStripMenuItem,
+            this.containersToolStripMenuItem,
             this.settingsToolStripMenuItem,
+            this.pluginsToolStripMenuItem,
             this.windowsToolStripMenuItem,
-            this.pluginsToolStripMenuItem});
+            this.proxyServerToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1071, 24);
@@ -96,15 +106,63 @@
             this.webToolStripMenuItem.Text = "Web";
             this.webToolStripMenuItem.Click += new System.EventHandler(this.WebToolStripMenuItem_Click);
             // 
+            // extractorsToolStripMenuItem
+            // 
+            this.extractorsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.youtubeToolStripMenuItem1});
+            this.extractorsToolStripMenuItem.Name = "extractorsToolStripMenuItem";
+            this.extractorsToolStripMenuItem.Size = new System.Drawing.Size(70, 20);
+            this.extractorsToolStripMenuItem.Text = "Extractors";
+            // 
+            // youtubeToolStripMenuItem1
+            // 
+            this.youtubeToolStripMenuItem1.Name = "youtubeToolStripMenuItem1";
+            this.youtubeToolStripMenuItem1.Size = new System.Drawing.Size(118, 22);
+            this.youtubeToolStripMenuItem1.Text = "youtube";
+            this.youtubeToolStripMenuItem1.Click += new System.EventHandler(this.YoutubeToolStripMenuItem1_Click);
+            // 
+            // containersToolStripMenuItem
+            // 
+            this.containersToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.isoEditorToolStripMenuItem,
+            this.mountListToolStripMenuItem});
+            this.containersToolStripMenuItem.Name = "containersToolStripMenuItem";
+            this.containersToolStripMenuItem.Size = new System.Drawing.Size(76, 20);
+            this.containersToolStripMenuItem.Text = "Containers";
+            // 
+            // isoEditorToolStripMenuItem
+            // 
+            this.isoEditorToolStripMenuItem.Name = "isoEditorToolStripMenuItem";
+            this.isoEditorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.isoEditorToolStripMenuItem.Text = "iso editor";
+            // 
             // settingsToolStripMenuItem
             // 
+            this.settingsToolStripMenuItem.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.settingsToolStripMenuItem.Text = "Settings";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.SettingsToolStripMenuItem_Click);
             // 
+            // pluginsToolStripMenuItem
+            // 
+            this.pluginsToolStripMenuItem.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.pluginsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.installToolStripMenuItem});
+            this.pluginsToolStripMenuItem.Name = "pluginsToolStripMenuItem";
+            this.pluginsToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
+            this.pluginsToolStripMenuItem.Text = "Plugins";
+            // 
+            // installToolStripMenuItem
+            // 
+            this.installToolStripMenuItem.Name = "installToolStripMenuItem";
+            this.installToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
+            this.installToolStripMenuItem.Text = "Install";
+            this.installToolStripMenuItem.Click += new System.EventHandler(this.InstallToolStripMenuItem_Click);
+            // 
             // windowsToolStripMenuItem
             // 
+            this.windowsToolStripMenuItem.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.windowsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.arrangeToolStripMenuItem});
             this.windowsToolStripMenuItem.Name = "windowsToolStripMenuItem";
@@ -144,20 +202,12 @@
             this.verticalToolStripMenuItem.Text = "Vertical";
             this.verticalToolStripMenuItem.Click += new System.EventHandler(this.VerticalToolStripMenuItem_Click);
             // 
-            // pluginsToolStripMenuItem
+            // proxyServerToolStripMenuItem
             // 
-            this.pluginsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.installToolStripMenuItem});
-            this.pluginsToolStripMenuItem.Name = "pluginsToolStripMenuItem";
-            this.pluginsToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
-            this.pluginsToolStripMenuItem.Text = "Plugins";
-            // 
-            // installToolStripMenuItem
-            // 
-            this.installToolStripMenuItem.Name = "installToolStripMenuItem";
-            this.installToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
-            this.installToolStripMenuItem.Text = "Install";
-            this.installToolStripMenuItem.Click += new System.EventHandler(this.InstallToolStripMenuItem_Click);
+            this.proxyServerToolStripMenuItem.Name = "proxyServerToolStripMenuItem";
+            this.proxyServerToolStripMenuItem.Size = new System.Drawing.Size(82, 20);
+            this.proxyServerToolStripMenuItem.Text = "Proxy server";
+            this.proxyServerToolStripMenuItem.Click += new System.EventHandler(this.ProxyServerToolStripMenuItem_Click);
             // 
             // toolStrip1
             // 
@@ -174,29 +224,36 @@
             this.renameToolStripMenuItem,
             this.copyPathToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 92);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(128, 70);
             this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.ContextMenuStrip1_Opening);
             // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
             this.deleteToolStripMenuItem.Text = "delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.DeleteToolStripMenuItem_Click);
             // 
             // renameToolStripMenuItem
             // 
             this.renameToolStripMenuItem.Name = "renameToolStripMenuItem";
-            this.renameToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.renameToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
             this.renameToolStripMenuItem.Text = "rename";
             this.renameToolStripMenuItem.Click += new System.EventHandler(this.RenameToolStripMenuItem_Click);
             // 
             // copyPathToolStripMenuItem
             // 
             this.copyPathToolStripMenuItem.Name = "copyPathToolStripMenuItem";
-            this.copyPathToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.copyPathToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
             this.copyPathToolStripMenuItem.Text = "copy path";
             this.copyPathToolStripMenuItem.Click += new System.EventHandler(this.CopyPathToolStripMenuItem_Click);
+            // 
+            // mountListToolStripMenuItem
+            // 
+            this.mountListToolStripMenuItem.Name = "mountListToolStripMenuItem";
+            this.mountListToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.mountListToolStripMenuItem.Text = "mount list";
+            this.mountListToolStripMenuItem.Click += new System.EventHandler(this.MountListToolStripMenuItem_Click);
             // 
             // mdi
             // 
@@ -206,10 +263,11 @@
             this.ClientSize = new System.Drawing.Size(1071, 653);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.IsMdiContainer = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "mdi";
-            this.Text = "Commander";
+            this.Text = "Russian Commander";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Mdi_FormClosing);
             this.Load += new System.EventHandler(this.Mdi_Load);
             this.menuStrip1.ResumeLayout(false);
@@ -239,5 +297,11 @@
         private System.Windows.Forms.ToolStripMenuItem renameToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyPathToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem extractorsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem youtubeToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem containersToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem isoEditorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem proxyServerToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mountListToolStripMenuItem;
     }
 }

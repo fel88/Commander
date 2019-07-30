@@ -29,24 +29,24 @@ namespace commander
                 return 1;
             }
             
-            if (lv1.Tag is FileInfo)
+            if (lv1.Tag is IFileInfo)
             {
-                var fin = lv1.Tag as FileInfo;
+                var fin = lv1.Tag as IFileInfo;
                 dt1 = fin.LastWriteTime;
             }
-            if (lv1.Tag is DirectoryInfo)
+            if (lv1.Tag is IDirectoryInfo)
             {
-                var fin = lv1.Tag as DirectoryInfo;
+                var fin = lv1.Tag as IDirectoryInfo;
                 dt1 = fin.LastWriteTime;
             }
-            if (lv2.Tag is FileInfo)
+            if (lv2.Tag is IFileInfo)
             {
-                var fin = lv2.Tag as FileInfo;
+                var fin = lv2.Tag as IFileInfo;
                 dt2 = fin.LastWriteTime;
             }
-            if (lv2.Tag is DirectoryInfo)
+            if (lv2.Tag is IDirectoryInfo)
             {
-                var fin = lv2.Tag as DirectoryInfo;
+                var fin = lv2.Tag as IDirectoryInfo;
                 dt2 = fin.LastWriteTime;
             }
             var res = dt1.CompareTo(dt2);

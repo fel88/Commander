@@ -38,6 +38,8 @@
             this.trueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.falseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.packToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toIsoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -74,9 +76,10 @@
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addTagToolStripMenuItem,
             this.setHiddenToolStripMenuItem,
-            this.deleteToolStripMenuItem});
+            this.deleteToolStripMenuItem,
+            this.packToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 92);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 114);
             // 
             // addTagToolStripMenuItem
             // 
@@ -92,7 +95,7 @@
             this.falseToolStripMenuItem});
             this.setHiddenToolStripMenuItem.Name = "setHiddenToolStripMenuItem";
             this.setHiddenToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.setHiddenToolStripMenuItem.Text = "set hide";            
+            this.setHiddenToolStripMenuItem.Text = "set hide";
             // 
             // trueToolStripMenuItem
             // 
@@ -114,6 +117,21 @@
             this.deleteToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.deleteToolStripMenuItem.Text = "delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.DeleteToolStripMenuItem_Click);
+            // 
+            // packToolStripMenuItem
+            // 
+            this.packToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toIsoToolStripMenuItem});
+            this.packToolStripMenuItem.Name = "packToolStripMenuItem";
+            this.packToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.packToolStripMenuItem.Text = "pack";
+            // 
+            // toIsoToolStripMenuItem
+            // 
+            this.toIsoToolStripMenuItem.Name = "toIsoToolStripMenuItem";
+            this.toIsoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.toIsoToolStripMenuItem.Text = "to iso";
+            this.toIsoToolStripMenuItem.Click += new System.EventHandler(this.ToIsoToolStripMenuItem_Click);
             // 
             // TagListViewControl
             // 
@@ -138,5 +156,7 @@
         private System.Windows.Forms.ToolStripMenuItem trueToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem falseToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem packToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toIsoToolStripMenuItem;
     }
 }

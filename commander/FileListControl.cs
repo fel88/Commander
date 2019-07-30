@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using System.Reflection;
 using System.Threading;
 using System.Drawing.Imaging;
+using commander.Properties;
 
 namespace commander
 {
@@ -24,19 +25,24 @@ namespace commander
             watcher.Changed += Watcher_Changed;
             Stuff.SetDoubleBuffered(listView1);
             tagControl.Init(this);
+
+            listView1.MouseUp += ListView1_MouseUp;
             listView1.MouseLeave += ListView1_MouseLeave;
+            listView1.MouseMove += ListView1_MouseMove;
             watcher.Created += Watcher_Changed;
             watcher.Deleted += Watcher_Changed;
             watcher.Renamed += Watcher_Changed;
             watcher.NotifyFilter = NotifyFilters.CreationTime | NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.LastAccess;
             filesControl = listView1;
             setTagsToolStripMenuItem.DropDown.Closing += DropDown_Closing;
-            if (list == null)
+            if (Stuff.list == null)
             {
-                list = new ImageList();
+                Stuff.list = new ImageList();
                 var bmp = DefaultIcons.FolderLarge;
-                list.TransparentColor = Color.Black;
-                list.Images.Add(bmp.ToBitmap());
+
+                Stuff.list.TransparentColor = Color.Black;
+                Stuff.list.Images.Add(bmp.ToBitmap());
+                Stuff.list.Images.Add(Resources._4dS9v);
             }
 
 
@@ -47,6 +53,25 @@ namespace commander
                 contextMenuStrip2.Items.Add(v);
             }
             RunPreview();
+        }
+
+        private void ListView1_MouseUp(object sender, MouseEventArgs e)
+        {
+            pressed = false;
+        }
+
+        bool pressed = false;
+        Point lastDragPos = new Point(0, 0);
+        private void ListView1_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!pressed) return;
+            if (lastDragPos.X != e.Location.X || lastDragPos.Y != e.Location.Y)
+            {
+                if (fileDrag != null)
+                {
+                    listView1.DoDragDrop(fileDrag.FullName, DragDropEffects.Copy | DragDropEffects.Move);
+                }
+            }
         }
 
         private void V_Click(object sender, EventArgs e)
@@ -82,6 +107,7 @@ namespace commander
         private void ListView1_MouseLeave(object sender, EventArgs e)
         {
             HideHint();
+            pressed = false;
         }
         #region preview
         private ListViewItem lastHovered = null;
@@ -110,7 +136,7 @@ namespace commander
             //preview.Location = new Point(e.X + 20, e.Y);
             var itemat = listView1.GetItemAt(e.Location.X, e.Location.Y);
             if (itemat == null) { HideHint(); return; }
-            if (!(itemat.Tag is FileInfo)) { HideHint(); return; }
+            if (!(itemat.Tag is IFileInfo)) { HideHint(); return; }
 
             if (itemat == lastHovered)
             {
@@ -118,7 +144,7 @@ namespace commander
             }
 
             lastHovered = itemat;
-            var s = itemat.Tag as FileInfo;
+            var s = itemat.Tag as IFileInfo;
 
             if (HintMode == HintModeEnum.Tags)
             {
@@ -145,11 +171,11 @@ namespace commander
         private int _previewHeight = 200;
         private ListViewItem lastHighlighted = null;
         private Color lastColor;
-        private FileInfo previewCut;
+        private IFileInfo previewCut;
         private string loaderPath = "";
         private string previewPath = "";
 
-        private void LoadAsyncPreview(FileInfo cut)
+        private void LoadAsyncPreview(IFileInfo cut)
         {
             previewPath = cut.FullName;
             lock (FLoaderPathLocker)
@@ -166,7 +192,7 @@ namespace commander
             }
         }
 
-        private void ShowHint(MouseEventArgs e, ListViewItem node, FileInfo fi)
+        private void ShowHint(MouseEventArgs e, ListViewItem node, IFileInfo fi)
         {
             if (lastHighlighted != null)
             {
@@ -440,7 +466,7 @@ namespace commander
 
         private void Watcher_Changed(object sender, FileSystemEventArgs e)
         {
-            UpdateList(textBox1.Text, textBox2.Text);
+            UpdateList(new DirectoryInfoWrapper(CurrentDirectory.FullName), textBox2.Text);
         }
 
         public void SetPath(string path)
@@ -452,7 +478,7 @@ namespace commander
         public void NavigateTo(string path)
         {
             SetPath(path);
-            UpdateList(textBox1.Text, textBox2.Text);
+            UpdateList(new DirectoryInfoWrapper(textBox1.Text), textBox2.Text);
         }
 
         public bool DirFilterEnable
@@ -522,7 +548,7 @@ namespace commander
             }
         }
 
-        public DirectoryInfo CurrentDirectory;
+        public IDirectoryInfo CurrentDirectory;
         public TagInfo CurrentTag;
         public bool IsFilterPass(string str, string[] filters)
         {
@@ -542,7 +568,7 @@ namespace commander
             {
 
             }
-            UpdateList(path, textBox2.Text);
+            UpdateList(new DirectoryInfoWrapper(path), textBox2.Text);
         }
 
         public static Dictionary<string, Bitmap> Icons = new Dictionary<string, Bitmap>();
@@ -554,8 +580,8 @@ namespace commander
             {
                 var bb = Bitmap.FromHicon(Stuff.ExtractAssociatedIcon(fn).Handle);
                 bb.MakeTransparent();
-                list.Images.Add(bb);
-                IconDictionary.Add(d, list.Images.Count - 1);
+              Stuff.list.Images.Add(bb);
+                IconDictionary.Add(d,  Stuff.list.Images.Count - 1);
                 Icons.Add(d, bb);
             }
 
@@ -563,38 +589,78 @@ namespace commander
         }
 
         public static Dictionary<string, int> IconDictionary = new Dictionary<string, int>();
+        public bool SaveSorting = false;
         public void UpdateList(string path, string filter)
         {
-            if (!Directory.Exists(path))
+            if (Stuff.MountInfos.Any(z => path.StartsWith(z.FullPath)))
+            {
+                var fr = Stuff.MountInfos.First(z => path.StartsWith(z.Path));
+                UpdateList(new IsoDirectoryInfoWrapper(fr, fr.Reader.Pvds.Last().RootDir), filter);
+            }
+            else
+            {
+                UpdateList(new DirectoryInfoWrapper(path), filter);
+            }
+        }
+        public void UpdateList(IDirectoryInfo path, string filter)
+        {
+            if (!path.Exists)
             {
                 MessageBox.Show("Directory is not exist. ", "Commander", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             try
             {
-                watcher.Path = path;
-                watcher.EnableRaisingEvents = true;
+                if (path is DirectoryInfoWrapper)
+                {
+                    watcher.Path = path.FullName;
+                    watcher.EnableRaisingEvents = true;
+                }
+                else
+                {
+                    watcher.EnableRaisingEvents = false;
+                }
+
 
                 listView1.BeginUpdate();
                 listView1.Items.Clear();
-                listView1.ListViewItemSorter = null;
-                listView1.Sorting = SortOrder.None;
-                textBox1.Text = path;
+                if (!SaveSorting)
+                {
+                    listView1.ListViewItemSorter = null;
+                    listView1.Sorting = SortOrder.None;
+                }
+                textBox1.Text = path.FullName;
 
-                var p = new DirectoryInfo(path);
-                CurrentDirectory = p;
+
+                CurrentDirectory = path;
 
 
                 var fltrs = filter.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(z => z.ToLower()).ToArray();
 
-                listView1.SmallImageList = list;
-                listView1.LargeImageList = list;
-                listView1.Items.Add(new ListViewItem(new string[] { "..", "", "" }) { Tag = p.Parent });
+                listView1.SmallImageList = Stuff.list;
+                listView1.LargeImageList = Stuff.list;
+                listView1.Items.Add(new ListViewItem(new string[] { "..", "", "" }) { Tag = path.Parent });
 
+                var dd = path.GetDirectories().ToList();
 
+                var fr = Stuff.MountInfos.Where(z => Path.Equals(z.Path.Trim(new char[] { '\\' }), path.FullName.Trim(new char[] { '\\' })));
+                if (fr.Any())
+                {
+                    foreach (var f in fr)
+                    {
+                        if (f.Reader == null)
+                        {
+                            isoViewer.IsoReader reader = new isoViewer.IsoReader();
+                            reader.Parse(f.IsoPath.FullName);
+                            f.Reader = reader;
+                        }
+                        var r = new IsoDirectoryInfoWrapper(f, f.Reader.WorkPvd.RootDir);
+                        dd.Add(r);
+                    }
+                }
 
-                AppendDirsToList(p.GetDirectories(), fltrs);
-                AppendFilesToList(p.GetFiles(), fltrs);
+                AppendDirsToList(dd.ToArray(), fltrs);
+                AppendFilesToList(path.GetFiles().ToArray(), fltrs);
                 listView1.EndUpdate();
             }
             catch (Exception ex)
@@ -607,47 +673,62 @@ namespace commander
             }
         }
 
-        public void AppendDirsToList(DirectoryInfo[] dirs, string[] fltrs)
+        public void AppendDirsToList(IDirectoryInfo[] dirs, string[] fltrs)
         {
             foreach (var directoryInfo in dirs)
             {
+                int imgind = 0;
+                if (directoryInfo is IsoDirectoryInfoWrapper)
+                {
+                    if ((directoryInfo as IsoDirectoryInfoWrapper).Parent is DirectoryInfoWrapper)
+                    {
+                        imgind = 1;
+                    }
+                }
+
                 if (checkBox1.Checked && !IsFilterPass(directoryInfo.Name, fltrs)) continue;
-                listView1.Items.Add(new ListViewItem(new string[] { directoryInfo.Name,"", "", directoryInfo.LastWriteTime.ToString() })
+                listView1.Items.Add(new ListViewItem(new string[] { directoryInfo.Name, "", "", directoryInfo.LastWriteTime.ToString() })
                 {
                     Tag = directoryInfo,
-                    ImageIndex = 0
+                    ImageIndex = imgind
                 });
             }
         }
 
-        public void AppendFilesToList(FileInfo[] files, string[] fltrs)
+        public void AppendFilesToList(IFileInfo[] files, string[] fltrs)
         {
-            foreach (var directoryInfo in files)
+            foreach (var fileInfo in files)
             {
                 try
                 {
-                    var bmp = GetBitmapOfFile(directoryInfo.FullName);
-                    var ext = Path.GetExtension(directoryInfo.FullName);
-
-                    if (!IsFilterPass(directoryInfo.Name, fltrs)) continue;
-                    var astr = File.GetAttributes(directoryInfo.FullName).ToString();
-                    if (astr.ToLower().Contains("spar"))
+                    if (File.Exists(fileInfo.FullName))
                     {
+                        GetBitmapOfFile(fileInfo.FullName);
+                    }
 
+                    var ext = Path.GetExtension(fileInfo.FullName);
+
+                    if (!IsFilterPass(fileInfo.Name, fltrs)) continue;
+                    var astr = (fileInfo.Attributes).ToString();
+
+                    int iindex = -1;
+                    if (IconDictionary.ContainsKey(ext))
+                    {
+                        iindex = IconDictionary[ext];
                     }
                     var attrs = astr.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries).Aggregate("", (x, y) => x + y[0]);
                     listView1.Items.Add(
                         new ListViewItem(new string[]
                         {
-                        directoryInfo.Name,
-                        directoryInfo.Extension,
-                            Stuff.GetUserFriendlyFileSize(directoryInfo.Length) ,
-                            directoryInfo.LastWriteTime.ToString(),"",
+                        fileInfo.Name,
+                        fileInfo.Extension,
+                            Stuff.GetUserFriendlyFileSize(fileInfo.Length) ,
+                            fileInfo.LastWriteTime.ToString(),"",
                         astr
                         })
                         {
-                            Tag = directoryInfo,
-                            ImageIndex = IconDictionary[ext]
+                            Tag = fileInfo,
+                            ImageIndex = iindex
 
                         });
                 }
@@ -658,13 +739,16 @@ namespace commander
             }
         }
 
+
+
         public void UpdateTagsList()
         {
             tagControl.UpdateList(CurrentTag);
         }
-        public static ImageList list = null;
-        public void UpdateLibrariesList(string path, string filter = "")
+        
+        public void UpdateLibrariesList(IDirectoryInfo path, string filter = "")
         {
+            
             if (path == null)
             {
                 listView1.Items.Clear();
@@ -676,20 +760,20 @@ namespace commander
             }
             else
             {
-                watcher.Path = path;
+                watcher.Path = path.FullName;
                 watcher.EnableRaisingEvents = true;
                 listView1.Items.Clear();
-                textBox1.Text = path;
+                textBox1.Text = path.FullName;
 
-                var p = new DirectoryInfo(path);
-                CurrentDirectory = p;
+
+                CurrentDirectory = path;
 
 
                 var fltrs = filter.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(z => z.ToLower()).ToArray();
 
-                listView1.SmallImageList = list;
-                listView1.LargeImageList = list;
-                if (Stuff.Libraries.OfType<FilesystemLibrary>().Any(z => z.BaseDirectory == p.FullName))
+                listView1.SmallImageList = Stuff.list;
+                listView1.LargeImageList =  Stuff.list;
+                if (Stuff.Libraries.OfType<FilesystemLibrary>().Any(z => z.BaseDirectory == path.FullName))
                 {
 
 
@@ -698,8 +782,8 @@ namespace commander
 
 
 
-                AppendDirsToList(p.GetDirectories(), fltrs);
-                AppendFilesToList(p.GetFiles(), fltrs);
+                AppendDirsToList(path.GetDirectories().ToArray(), fltrs);
+                AppendFilesToList(path.GetFiles().ToArray(), fltrs);
             }
         }
 
@@ -708,16 +792,16 @@ namespace commander
             tagControl.UpdateList(CurrentTag);
         }
 
-        public DirectoryInfo SelectedDirectory
+        public IDirectoryInfo SelectedDirectory
         {
             get
             {
                 if (listView1.SelectedItems.Count > 0)
                 {
                     var si = listView1.SelectedItems[0].Tag;
-                    if (si is DirectoryInfo)
+                    if (si is IDirectoryInfo)
                     {
-                        return si as DirectoryInfo;
+                        return si as IDirectoryInfo;
                     }
                 }
 
@@ -725,16 +809,16 @@ namespace commander
             }
         }
 
-        public FileInfo SelectedFile
+        public IFileInfo SelectedFile
         {
             get
             {
                 if (listView1.SelectedItems.Count > 0)
                 {
                     var si = listView1.SelectedItems[0].Tag;
-                    if (si is FileInfo)
+                    if (si is IFileInfo)
                     {
-                        return si as FileInfo;
+                        return si as IFileInfo;
                     }
                 }
 
@@ -857,15 +941,15 @@ namespace commander
         {
             if (listView1.SelectedItems.Count > 0)
             {
-                if (listView1.SelectedItems[0].Tag is DirectoryInfo)
+                if (listView1.SelectedItems[0].Tag is IDirectoryInfo)
                 {
-                    var d = listView1.SelectedItems[0].Tag as DirectoryInfo;
+                    var d = listView1.SelectedItems[0].Tag as IDirectoryInfo;
                     Process.Start(d.FullName);
                 }
                 else
-                if (listView1.SelectedItems[0].Tag is FileInfo)
+                if (listView1.SelectedItems[0].Tag is IFileInfo)
                 {
-                    var d = listView1.SelectedItems[0].Tag as FileInfo;
+                    var d = listView1.SelectedItems[0].Tag as IFileInfo;
                     Process.Start(d.DirectoryName);
                 }
 
@@ -898,18 +982,18 @@ namespace commander
         {
             if (listView1.SelectedItems.Count > 0)
             {
-                if (listView1.SelectedItems[0].Tag is DirectoryInfo)
+                if (listView1.SelectedItems[0].Tag is IDirectoryInfo)
                 {
-                    var d = listView1.SelectedItems[0].Tag as DirectoryInfo;
+                    var d = listView1.SelectedItems[0].Tag as IDirectoryInfo;
                     TextSearchForm tsf = new TextSearchForm();
                     tsf.SetPath(d.FullName);
                     tsf.Show();
 
                 }
                 else
-                if (listView1.SelectedItems[0].Tag is FileInfo)
+                if (listView1.SelectedItems[0].Tag is IFileInfo)
                 {
-                    var d = listView1.SelectedItems[0].Tag as FileInfo;
+                    var d = listView1.SelectedItems[0].Tag as IFileInfo;
                     TextSearchForm tsf = new TextSearchForm();
                     tsf.SetPath(d.DirectoryName);
                     tsf.Show();
@@ -947,15 +1031,15 @@ namespace commander
         {
             if (listView1.SelectedItems.Count > 0)
             {
-                if (listView1.SelectedItems[0].Tag is DirectoryInfo)
+                if (listView1.SelectedItems[0].Tag is IDirectoryInfo)
                 {
-                    var d = listView1.SelectedItems[0].Tag as DirectoryInfo;
+                    var d = listView1.SelectedItems[0].Tag as IDirectoryInfo;
                     RunCmd(d.FullName);
                 }
                 else
-                if (listView1.SelectedItems[0].Tag is FileInfo)
+                if (listView1.SelectedItems[0].Tag is IFileInfo)
                 {
-                    var d = listView1.SelectedItems[0].Tag as FileInfo;
+                    var d = listView1.SelectedItems[0].Tag as IFileInfo;
                     RunCmd(d.DirectoryName);
                 }
             }
@@ -975,7 +1059,7 @@ namespace commander
             if (listView1.SelectedItems.Count > 0)
             {
                 var tag = listView1.SelectedItems[0].Tag;
-                if (listView1.SelectedItems.Count == 1 && (tag is DirectoryInfo || tag is FilesystemLibrary))
+                if (listView1.SelectedItems.Count == 1 && (tag is DirectoryInfoWrapper || tag is FilesystemLibrary))
                 {
                     DirectoryInfo d = null;
                     if (tag is FilesystemLibrary)
@@ -985,7 +1069,7 @@ namespace commander
                     }
                     else
                     {
-                        d = listView1.SelectedItems[0].Tag as DirectoryInfo;
+                        d = (listView1.SelectedItems[0].Tag as DirectoryInfoWrapper).DirectoryInfo;
                     }
                     List<FileInfo> files = new List<FileInfo>();
                     Stuff.GetAllFiles(d, files);
@@ -1069,9 +1153,9 @@ namespace commander
         {
             if (listView1.SelectedItems.Count > 0)
             {
-                if (listView1.SelectedItems[0].Tag is FileInfo)
+                if (listView1.SelectedItems[0].Tag is IFileInfo)
                 {
-                    var f = listView1.SelectedItems[0].Tag as FileInfo;
+                    var f = listView1.SelectedItems[0].Tag as IFileInfo;
                     if (f.Extension.Contains("bat") && MessageBox.Show("show internal console?", Text, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
                         ConsoleOutputWindow cow = new ConsoleOutputWindow();
@@ -1105,6 +1189,26 @@ namespace commander
 
                         mdi.MainForm.OpenWindow(cow);
                     }
+                    else if (f.Extension.ToLower().EndsWith(".iso") && MessageBox.Show("use internal viewer?", Text, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    {
+                        IsoLibViewer frm = new IsoLibViewer() { Dock = DockStyle.Fill };
+
+                        frm.LoadIso(f.FullName);
+                        frm.MdiParent = mdi.MainForm;
+
+                        frm.Show();
+                    }
+                    /*else if (f.Extension.Contains("mp4") && MessageBox.Show("use internal player?", Text, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    {
+                        VideoPlayer vp = new VideoPlayer() { Dock=DockStyle.Fill};
+                        var frm = new Form();
+                        frm.Width = 600;
+                        frm.Height = 600;
+                        vp.RunVideo(f.FullName);
+                        frm.MdiParent = mdi.MainForm;
+                        frm.Controls.Add(vp);
+                        frm.Show();
+                    }*/
                     else
                     {
                         ProcessStartInfo psi = new ProcessStartInfo();
@@ -1115,12 +1219,12 @@ namespace commander
                     }
                 }
                 else
-                if (listView1.SelectedItems[0].Tag is DirectoryInfo)
+                if (listView1.SelectedItems[0].Tag is IDirectoryInfo)
                 {
                     try
                     {
-                        var f = listView1.SelectedItems[0].Tag as DirectoryInfo;
-                        UpdateList(f.FullName, textBox2.Text);
+                        var f = listView1.SelectedItems[0].Tag as IDirectoryInfo;
+                        UpdateList(f, textBox2.Text);
                     }
                     catch (Exception ex)
                     {
@@ -1141,7 +1245,7 @@ namespace commander
                         else
                         {
                             var f = listView1.SelectedItems[0].Tag as FilesystemLibrary;
-                            UpdateLibrariesList(f.BaseDirectory, textBox2.Text);
+                            UpdateLibrariesList(new DirectoryInfoWrapper(f.BaseDirectory), textBox2.Text);
                         }
                     }
                     catch (UnauthorizedAccessException ex)
@@ -1274,10 +1378,10 @@ namespace commander
             ////////////
             if (listView1.SelectedItems.Count > 0)
             {
-                if (listView1.SelectedItems[0].Tag is FileInfo)
+                if (listView1.SelectedItems[0].Tag is IFileInfo)
                 {
 
-                    var f = listView1.SelectedItems[0].Tag as FileInfo;
+                    var f = listView1.SelectedItems[0].Tag as IFileInfo;
 
                     if (Stuff.Question("Delete file: " + SelectedFile.FullName + "?") == DialogResult.Yes)
                     {
@@ -1311,9 +1415,9 @@ namespace commander
 
                 }
                 else
-                if (listView1.SelectedItems[0].Tag is DirectoryInfo)
+                if (listView1.SelectedItems[0].Tag is IDirectoryInfo)
                 {
-                    var f = listView1.SelectedItems[0].Tag as DirectoryInfo;
+                    var f = listView1.SelectedItems[0].Tag as IDirectoryInfo;
                     if (MessageBox.Show("Delete " + f.Name + " directory and all contents?", "Commander", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
                         Directory.Delete(f.FullName, true);
@@ -1328,7 +1432,7 @@ namespace commander
             DeleteSelected();
         }
 
-        public Action<FileInfo> SelectedFileChanged;
+        public Action<IFileInfo> SelectedFileChanged;
         private void ListView1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (SelectedFile == null) return;
@@ -1458,7 +1562,20 @@ namespace commander
         {
             forceCloseMenu = true;
             contextMenuStrip2.Close();
+            var item = listView1.GetItemAt(e.Location.X, e.Location.Y);
+
+            if (item != null && e.Button == MouseButtons.Left)
+            {
+                var f = item.Tag as IFileInfo;
+                if (f != null)
+                {
+                    pressed = true;
+                    lastDragPos = e.Location;
+                    fileDrag = f;
+                }
+            }
         }
+        IFileInfo fileDrag;
 
         private void AddShortcutToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -1492,7 +1609,83 @@ namespace commander
             }
         }
 
+        private void PackToIsoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
 
+        }
+
+        public Action<FileListControl, IFileInfo> MountIsoAction;
+        private void MountIsoToRightToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ContextMenuStrip2_Opening(object sender, CancelEventArgs e)
+        {
+            var l = contextMenuStrip2.Left;
+            var t = contextMenuStrip2.Top;
+            var p = listView1.PointToClient(new Point(l, t));
+            p = listView1.PointToClient(Cursor.Position);
+            var ch = listView1.GetItemAt(p.X, p.Y);
+            bool en = true;
+            if (ch == null) { en = false; }
+            else
+            {
+                var ff = (ch.Tag as IFileInfo);
+                if (ff == null) { en = false; }
+                else
+                {
+                    if (!ff.Extension.EndsWith("iso")) { en = false; }
+                }
+            }
+            mountToolStripMenuItem.Enabled = en;
+        }
+
+        private void CheckBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            SaveSorting = checkBox2.Checked;
+        }
+
+        private void TextBox1_ImeModeChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void PackToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SelectedDirectory == null) return;
+            SaveFileDialog sfd = new SaveFileDialog();
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                //todo: pack SelectedDirectory to iso
+            }
+        }
+
+        private void MountToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SelectedFile == null) return;
+            if (!SelectedFile.Extension.Contains("iso")) return;
+            if (MountIsoAction != null)
+            {
+                MountIsoAction(this, SelectedFile);
+            }
+        }
+
+        private void ExtractToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void UnmountToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SelectedDirectory == null) return;
+            var fr = Stuff.MountInfos.FirstOrDefault(z => z.FullPath == SelectedDirectory.FullName);
+            if (fr != null)
+            {
+                Stuff.MountInfos.Remove(fr);
+                UpdateList(CurrentDirectory.FullName);
+            }
+        }
     }
 
     public class TabInfo

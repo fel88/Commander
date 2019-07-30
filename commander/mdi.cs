@@ -7,8 +7,11 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Windows.Forms;
+using YoutubeExtractor;
 
 namespace commander
 {
@@ -20,8 +23,13 @@ namespace commander
             MainForm = this;
             LoadPlugins();
 
+
             Stuff.LoadSettings();
             Stuff.IsDirty = false;
+
+            AllowDrop = true;
+            toolStrip1.AllowDrop = true;
+            toolStrip1.DragEnter += Tsb1_DragEnter;
 
             OpenWindow(new Explorer());
 
@@ -30,6 +38,8 @@ namespace commander
                 AppendShortCutPanelButton(item);
             }
         }
+
+
 
         public void AppendShortCutPanelButton(ShortcutInfo item)
         {
@@ -43,7 +53,9 @@ namespace commander
             tsb1.Tag = item;
             toolStrip1.Items.Add(tsb1);
             tsb1.Click += Tsb1_Click;
-
+            tsb1.AllowDrop = true;
+            tsb1.DragDrop += Tsb1_DragDrop;
+            tsb1.DragEnter += Tsb1_DragEnter;
             //toolStrip1.ContextMenuStrip = contextMenuStrip1;
 
             if (item is AppShortcutInfo)
@@ -66,7 +78,7 @@ namespace commander
                 gr.Clear(Color.Transparent);
                 gr.DrawString(item.Name, new Font("Arial", 32), Brushes.Black, 0, 0);
                 bb.MakeTransparent();
-                tsb1.ToolTipText = item.Name + " : " + (item as UrlShortcutInfo).Url ;
+                tsb1.ToolTipText = item.Name + " : " + (item as UrlShortcutInfo).Url;
                 tsb1.Image = bb;
             }
             else
@@ -80,6 +92,44 @@ namespace commander
                 tsb1.Image = bb;
             }
         }
+
+        private void Tsb1_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.Text))
+                e.Effect = DragDropEffects.Copy;
+            else if (e.Data.GetDataPresent(DataFormats.Text))
+                e.Effect = DragDropEffects.Copy;
+            else
+                e.Effect = DragDropEffects.None;
+        }
+
+        private void Tsb1_DragDrop(object sender, DragEventArgs e)
+        {
+            var fn = (sender as ToolStripButton).Tag as ShortcutInfo;
+            if (e.Data.GetData(DataFormats.FileDrop) != null)
+            {
+                var str = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+                if (fn is AppShortcutInfo)
+                {
+                    (fn as AppShortcutInfo).TempArguments = str.First();
+                    fn.Run();
+                }
+            }
+
+            if (e.Data.GetData(DataFormats.Text) != null)
+            {
+                var str = (string)e.Data.GetData(DataFormats.Text);
+                if (fn is AppShortcutInfo)
+                {
+                    (fn as AppShortcutInfo).TempArguments = str;
+                    fn.Run();
+                }
+            }
+
+
+        }
+
         private void Tsb1_Click(object sender, EventArgs e)
         {
             var fn = (sender as ToolStripButton).Tag as ShortcutInfo;
@@ -251,7 +301,7 @@ namespace commander
         private void InstallToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "Plugins|*.dll";
+            ofd.Filter = "Plugins|*.dll;*.exe";
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 var res = TryLoadPlugin(ofd.FileName);
@@ -339,27 +389,67 @@ namespace commander
             RenameDialog rnd = new RenameDialog();
             rnd.Value = s.Name;
             if (rnd.ShowDialog() == DialogResult.OK)
-            {                
+            {
                 s.Name = rnd.Value;
                 mtb.Text = rnd.Value;
-                Stuff.IsDirty = true;           
-            }            
+                Stuff.IsDirty = true;
+            }
         }
 
         private void CopyPathToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (contextMenuStrip1.Tag == null) return;
             var mtb = (contextMenuStrip1.Tag as MyToolStripButton);
-            
+
             var s = mtb.Tag as ShortcutInfo;
-            if(s is AppShortcutInfo)
+            if (s is AppShortcutInfo)
             {
                 Clipboard.SetText((s as AppShortcutInfo).Path);
             }
-            if(s is UrlShortcutInfo)
+            if (s is UrlShortcutInfo)
             {
                 Clipboard.SetText((s as UrlShortcutInfo).Url);
-            }            
+            }
         }
+
+        private void YoutubeToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            Form1 f = new Form1();
+            f.MdiParent = this;
+            f.Show();
+        }
+
+        
+        private void ProxyServerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
+            ProxyManagerWindow pm = new ProxyManagerWindow();
+            pm.MdiParent = this;
+            
+            pm.Show();
+        }
+
+        private void MountListToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MountListWindow mlw = new MountListWindow();
+            mlw.MdiParent = this;
+            mlw.Show();
+        }
+    }
+
+    public class ConnectionInfo
+    {
+        public List<string> Log = new List<string>();
+        public NetworkStream Stream;
+        public TcpClient Client;
+        public IPAddress Ip;
+        public int Port;
+        public object Tag;
+
+    }
+
+    public class UserInfo
+    {
+        public string Name;
     }
 }

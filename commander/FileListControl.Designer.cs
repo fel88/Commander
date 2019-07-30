@@ -32,6 +32,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FileListControl));
             this.listView1 = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -53,8 +54,13 @@
             this.makeLibraryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setTagsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addShortcutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.isoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.packToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mountToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.extractToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.label2 = new System.Windows.Forms.Label();
@@ -67,7 +73,7 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.removeTabToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.unmountToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -107,6 +113,10 @@
             this.columnHeader1.Text = "Name";
             this.columnHeader1.Width = 180;
             // 
+            // columnHeader6
+            // 
+            this.columnHeader6.Text = "Type";
+            // 
             // columnHeader2
             // 
             this.columnHeader2.Text = "Size";
@@ -140,10 +150,12 @@
             this.deleteToolStripMenuItem,
             this.makeLibraryToolStripMenuItem,
             this.setTagsToolStripMenuItem,
-            this.addShortcutToolStripMenuItem});
+            this.addShortcutToolStripMenuItem,
+            this.isoToolStripMenuItem});
             this.contextMenuStrip2.Name = "contextMenuStrip2";
-            this.contextMenuStrip2.Size = new System.Drawing.Size(188, 312);
+            this.contextMenuStrip2.Size = new System.Drawing.Size(188, 356);
             this.contextMenuStrip2.Closing += new System.Windows.Forms.ToolStripDropDownClosingEventHandler(this.ContextMenuStrip2_Closing);
+            this.contextMenuStrip2.Opening += new System.ComponentModel.CancelEventHandler(this.ContextMenuStrip2_Opening);
             // 
             // executeToolStripMenuItem
             // 
@@ -199,7 +211,7 @@
             // 
             this.findFileRepeatsToolStripMenuItem.Name = "findFileRepeatsToolStripMenuItem";
             this.findFileRepeatsToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
-            this.findFileRepeatsToolStripMenuItem.Text = "find file repeats";
+            this.findFileRepeatsToolStripMenuItem.Text = "deduplication";
             this.findFileRepeatsToolStripMenuItem.Click += new System.EventHandler(this.findFileRepeatsToolStripMenuItem_Click);
             // 
             // calcMd5ToolStripMenuItem
@@ -260,6 +272,38 @@
             this.addShortcutToolStripMenuItem.Text = "add shortcut";
             this.addShortcutToolStripMenuItem.Click += new System.EventHandler(this.AddShortcutToolStripMenuItem_Click);
             // 
+            // isoToolStripMenuItem
+            // 
+            this.isoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.packToolStripMenuItem,
+            this.mountToolStripMenuItem,
+            this.extractToolStripMenuItem,
+            this.unmountToolStripMenuItem});
+            this.isoToolStripMenuItem.Name = "isoToolStripMenuItem";
+            this.isoToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.isoToolStripMenuItem.Text = "iso";
+            // 
+            // packToolStripMenuItem
+            // 
+            this.packToolStripMenuItem.Name = "packToolStripMenuItem";
+            this.packToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.packToolStripMenuItem.Text = "pack";
+            this.packToolStripMenuItem.Click += new System.EventHandler(this.PackToolStripMenuItem_Click);
+            // 
+            // mountToolStripMenuItem
+            // 
+            this.mountToolStripMenuItem.Name = "mountToolStripMenuItem";
+            this.mountToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.mountToolStripMenuItem.Text = "mount";
+            this.mountToolStripMenuItem.Click += new System.EventHandler(this.MountToolStripMenuItem_Click);
+            // 
+            // extractToolStripMenuItem
+            // 
+            this.extractToolStripMenuItem.Name = "extractToolStripMenuItem";
+            this.extractToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.extractToolStripMenuItem.Text = "extract";
+            this.extractToolStripMenuItem.Click += new System.EventHandler(this.ExtractToolStripMenuItem_Click);
+            // 
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.ColumnCount = 1;
@@ -278,6 +322,7 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.checkBox2);
             this.panel1.Controls.Add(this.toolStrip1);
             this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.comboBox2);
@@ -293,6 +338,18 @@
             this.panel1.Size = new System.Drawing.Size(521, 75);
             this.panel1.TabIndex = 2;
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.Panel1_Paint);
+            // 
+            // checkBox2
+            // 
+            this.checkBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.checkBox2.AutoSize = true;
+            this.checkBox2.Location = new System.Drawing.Point(305, 29);
+            this.checkBox2.Name = "checkBox2";
+            this.checkBox2.Size = new System.Drawing.Size(83, 17);
+            this.checkBox2.TabIndex = 12;
+            this.checkBox2.Text = "save sorting";
+            this.checkBox2.UseVisualStyleBackColor = true;
+            this.checkBox2.CheckedChanged += new System.EventHandler(this.CheckBox2_CheckedChanged);
             // 
             // toolStrip1
             // 
@@ -355,7 +412,7 @@
             // 
             this.checkBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(324, 32);
+            this.checkBox1.Location = new System.Drawing.Point(240, 30);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(59, 17);
             this.checkBox1.TabIndex = 7;
@@ -380,7 +437,7 @@
             this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.textBox2.Location = new System.Drawing.Point(47, 28);
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(271, 20);
+            this.textBox2.Size = new System.Drawing.Size(187, 20);
             this.textBox2.TabIndex = 1;
             this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             // 
@@ -395,6 +452,7 @@
             this.textBox1.TabIndex = 0;
             this.textBox1.TextChanged += new System.EventHandler(this.TextBox1_TextChanged);
             this.textBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox1_KeyDown);
+            this.textBox1.ImeModeChanged += new System.EventHandler(this.TextBox1_ImeModeChanged);
             // 
             // panel3
             // 
@@ -419,9 +477,12 @@
             this.removeTabToolStripMenuItem.Text = "Remove tab";
             this.removeTabToolStripMenuItem.Click += new System.EventHandler(this.removeTabToolStripMenuItem_Click);
             // 
-            // columnHeader6
+            // unmountToolStripMenuItem
             // 
-            this.columnHeader6.Text = "Type";
+            this.unmountToolStripMenuItem.Name = "unmountToolStripMenuItem";
+            this.unmountToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.unmountToolStripMenuItem.Text = "unmount";
+            this.unmountToolStripMenuItem.Click += new System.EventHandler(this.UnmountToolStripMenuItem_Click);
             // 
             // FileListControl
             // 
@@ -482,5 +543,11 @@
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton toolStripButton1;
         private System.Windows.Forms.ColumnHeader columnHeader6;
+        private System.Windows.Forms.CheckBox checkBox2;
+        private System.Windows.Forms.ToolStripMenuItem isoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem packToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mountToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem extractToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem unmountToolStripMenuItem;
     }
 }

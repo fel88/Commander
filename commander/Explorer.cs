@@ -17,38 +17,68 @@ namespace commander
         {
             InitializeComponent();
             var drvs = DriveInfo.GetDrives();
-            fileListControl1.UpdateList(drvs[0].Name, "");
+            fileListControl1.UpdateList(new DirectoryInfoWrapper(drvs[0].Name), "");
             fileListControl1.TabOwnerString = "left";
-            fileListControl2.UpdateList(drvs[0].Name, "");
+            fileListControl2.UpdateList(new DirectoryInfoWrapper(drvs[0].Name), "");
             fileListControl2.TabOwnerString = "right";
+            fileListControl1.MountIsoAction = mouseIsoAction;
             UpdateTabs();
 
             previewer = new ImgViewerPanel() { Dock = DockStyle.Fill };
+            gpreviewer = new GifViewerPanel() { Dock = DockStyle.Fill };
+            vpreviewer = new VideoPlayer() { Dock = DockStyle.Fill };
             textPreviewer = new TextPreviewer() { Dock = DockStyle.Fill };
 
             fileListControl1.SelectedFileChanged = (x) =>
             {
-                if (splitContainer1.Panel2.Controls.Contains(textPreviewer))
+                if (!IsPreviewMode) return;
+
+                string[] exts = new string[] { ".txt", ".cs", ".js", ".xml", ".htm", ".bat", ".html", ".log", ".csproj", ".config", ".resx", ".sln", ".settings", ".md", ".cpp", ".h", ".asm" };
+                splitContainer1.Panel2.Controls.Remove(gpreviewer);
+                splitContainer1.Panel2.Controls.Remove(previewer);
+                splitContainer1.Panel2.Controls.Remove(vpreviewer);
+                splitContainer1.Panel2.Controls.Remove(textPreviewer);
+                if (exts.Contains(x.Extension))
                 {
-                    string[] exts = new string[] { ".txt", ".cs", ".js", ".xml", ".htm", ".bat", ".html", ".log", ".csproj", ".config", ".resx", ".sln", ".settings", ".md", ".cpp", ".h", ".asm" };
-                    if (exts.Contains(x.Extension))
-                    {
-                        textPreviewer.LoadFile(x);
-                    }
-                    else
-                    {
-                        textPreviewer.Disable();
-                    }
+                    splitContainer1.Panel2.Controls.Add(textPreviewer);
+                    textPreviewer.LoadFile(x);
                 }
-                if (splitContainer1.Panel2.Controls.Contains(previewer))
+                else
                 {
-                    string[] exts = new string[] { ".jpg", ".png", ".bmp" };
-                    if (exts.Contains(x.Extension.ToLower()))
-                    {
-                        previewer.SetImage(Bitmap.FromFile(x.FullName));
-                    }
+                    textPreviewer.Disable();
                 }
+
+
+                string[] gexts = new string[] { ".jpg", ".png", ".bmp" };
+
+                if (gexts.Contains(x.Extension.ToLower()))
+                {
+                    splitContainer1.Panel2.Controls.Add(previewer);
+                    previewer.SetImage(Bitmap.FromFile(x.FullName));
+                }
+                if (new string[] { ".gif" }.Contains(x.Extension.ToLower()))
+                {
+                    splitContainer1.Panel2.Controls.Add(gpreviewer);
+                    gpreviewer.SetImage(x.FullName);
+                }
+                if (new string[] { ".wmv", ".mp4", ".avi", ".mkv" }.Contains(x.Extension.ToLower()))
+                {
+                    splitContainer1.Panel2.Controls.Add(vpreviewer);
+                    vpreviewer.RunVideo(x.FullName);
+                }
+
             };
+        }
+
+        private void mouseIsoAction(FileListControl sender, IFileInfo obj)
+        {
+            var t = fileListControl1;
+            if (t == sender)
+            {
+                t = fileListControl2;
+            }
+            Stuff.MountInfos.Add(new MountInfo() { IsoPath = obj, Path = t.CurrentDirectory.FullName });
+            t.UpdateList(t.CurrentDirectory.FullName);
         }
 
         public FileListControl[] FileListControls => new[] { fileListControl1, fileListControl2 };
@@ -152,11 +182,19 @@ namespace commander
 
                 if (fileListControl1.Mode == ViewModeEnum.Filesystem && fileListControl2.Mode == ViewModeEnum.Filesystem)
                 {
-                    if (fileListControl1.SelectedFile != null)
+
+                    var from = fileListControl1;
+                    var to = fileListControl2;
+                    if (fileListControl2.ContainsFocus)
+                    {
+                        from = fileListControl2;
+                        to = fileListControl1;
+                    }
+                    if (from.SelectedFile != null)
                     {
                         bool allow = true;
-                        var p1 = Path.Combine(fileListControl2.CurrentDirectory.FullName,
-                            fileListControl1.SelectedFile.Name);
+                        var p1 = Path.Combine(to.CurrentDirectory.FullName,
+                            from.SelectedFile.Name);
                         if (File.Exists(p1))
                         {
                             if (MessageBox.Show(
@@ -170,11 +208,12 @@ namespace commander
 
                         if (allow)
                         {
-                            File.Copy(fileListControl1.SelectedFile.FullName, p1, true);
-                            fileListControl2.UpdateList(fileListControl2.CurrentDirectory.FullName);
+                            File.Copy(from.SelectedFile.FullName, p1, true);
+                            to.UpdateList(to.CurrentDirectory.FullName);
                         }
                     }
                 }
+
                 if ((fileListControl1.Mode == ViewModeEnum.Filesystem || fileListControl1.Mode == ViewModeEnum.Libraries)
                     && fileListControl2.Mode == ViewModeEnum.Tags)
                 {
@@ -200,11 +239,11 @@ namespace commander
             TextSearchForm tsf = new TextSearchForm();
             tsf.MdiParent = MdiParent;
             if (fileListControl2.ContainsFocus)
-            {                
+            {
                 tsf.SetPath(fileListControl2.CurrentDirectory.FullName);
             }
             else
-            {                
+            {
                 tsf.SetPath(fileListControl1.CurrentDirectory.FullName);
             }
             tsf.Show();
@@ -222,6 +261,7 @@ namespace commander
 
         private void TablesToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            IsPreviewMode = false;
             RemoveSecondTab();
             splitContainer1.Panel2.Controls.Add(fileListControl2);
 
@@ -233,10 +273,13 @@ namespace commander
         }
 
         ImgViewerPanel previewer;
+        GifViewerPanel gpreviewer;
+        VideoPlayer vpreviewer;
         TextPreviewer textPreviewer = new TextPreviewer() { Dock = DockStyle.Fill };
+        bool IsPreviewMode = false;
         private void TablePreviewerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            IsPreviewMode = true;
             RemoveSecondTab();
             splitContainer1.Panel2.Controls.Add(previewer);
         }
@@ -347,3 +390,4 @@ namespace commander
         }
     }
 }
+

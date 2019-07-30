@@ -18,7 +18,7 @@ namespace commander
             richTextBox1.Font = new Font("Consolas", 11);
         }
 
-        internal void LoadFile(FileInfo x)
+        internal void LoadFile(IFileInfo x)
         {
             richTextBox1.Enabled = true;
             richTextBox1.Text = File.ReadAllText(x.FullName);

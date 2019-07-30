@@ -35,7 +35,6 @@
             this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
             this.tablesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tablePreviewerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tableTextEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripDropDownButton2 = new System.Windows.Forms.ToolStripDropDownButton();
             this.compareMD5ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.compareBinaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -99,8 +98,7 @@
             this.toolStripDropDownButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripDropDownButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tablesToolStripMenuItem,
-            this.tablePreviewerToolStripMenuItem,
-            this.tableTextEditorToolStripMenuItem});
+            this.tablePreviewerToolStripMenuItem});
             this.toolStripDropDownButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton1.Image")));
             this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
@@ -110,23 +108,16 @@
             // tablesToolStripMenuItem
             // 
             this.tablesToolStripMenuItem.Name = "tablesToolStripMenuItem";
-            this.tablesToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.tablesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.tablesToolStripMenuItem.Text = "table -> table";
             this.tablesToolStripMenuItem.Click += new System.EventHandler(this.TablesToolStripMenuItem_Click);
             // 
             // tablePreviewerToolStripMenuItem
             // 
             this.tablePreviewerToolStripMenuItem.Name = "tablePreviewerToolStripMenuItem";
-            this.tablePreviewerToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.tablePreviewerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.tablePreviewerToolStripMenuItem.Text = "table -> previewer";
             this.tablePreviewerToolStripMenuItem.Click += new System.EventHandler(this.TablePreviewerToolStripMenuItem_Click);
-            // 
-            // tableTextEditorToolStripMenuItem
-            // 
-            this.tableTextEditorToolStripMenuItem.Name = "tableTextEditorToolStripMenuItem";
-            this.tableTextEditorToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
-            this.tableTextEditorToolStripMenuItem.Text = "table -> text editor";
-            this.tableTextEditorToolStripMenuItem.Click += new System.EventHandler(this.TableTextEditorToolStripMenuItem_Click);
             // 
             // toolStripDropDownButton2
             // 
@@ -143,14 +134,14 @@
             // compareMD5ToolStripMenuItem
             // 
             this.compareMD5ToolStripMenuItem.Name = "compareMD5ToolStripMenuItem";
-            this.compareMD5ToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.compareMD5ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.compareMD5ToolStripMenuItem.Text = "Compare MD5";
             this.compareMD5ToolStripMenuItem.Click += new System.EventHandler(this.CompareMD5ToolStripMenuItem_Click);
             // 
             // compareBinaryToolStripMenuItem
             // 
             this.compareBinaryToolStripMenuItem.Name = "compareBinaryToolStripMenuItem";
-            this.compareBinaryToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.compareBinaryToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.compareBinaryToolStripMenuItem.Text = "Compare binary";
             this.compareBinaryToolStripMenuItem.Click += new System.EventHandler(this.CompareBinaryToolStripMenuItem_Click);
             // 
@@ -266,7 +257,6 @@
         private System.Windows.Forms.ToolStripMenuItem compareMD5ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem compareBinaryToolStripMenuItem;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.ToolStripMenuItem tableTextEditorToolStripMenuItem;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton3;
         private System.Windows.Forms.ToolStripMenuItem hiddenToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem hideToolStripMenuItem;

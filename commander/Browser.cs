@@ -63,5 +63,10 @@ namespace commander
                 MessageBox.Show("File was added.");
             }
         }
+
+        private void ToolStripButton1_Click(object sender, EventArgs e)
+        {
+            
+        }
     }
 }

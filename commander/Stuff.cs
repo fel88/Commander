@@ -16,6 +16,8 @@ namespace commander
 {
     public class Stuff
     {
+        public static List<MountInfo> MountInfos = new List<MountInfo>();
+        public static ImageList list = null;
         public static Icon ExtractAssociatedIcon(String filePath)
         {
             int index = 0;
@@ -326,13 +328,15 @@ namespace commander
             sb.AppendLine("<fileContextMenuItems>");
             foreach (var item in Stuff.FileContextMenuItems)
             {
-                if (item.Arguments == null)
+                if (string.IsNullOrEmpty(item.Arguments))
                 {
                     sb.AppendLine($"<fileContextMenuItem title=\"{item.Title}\" appName=\"{item.AppName}\" />");
                 }
                 else
                 {
-                    sb.AppendLine($"<fileContextMenuItem title=\"{item.Title}\" appName=\"{item.AppName}\" arguments=\"{item.Arguments}\" />");
+                    sb.AppendLine($"<fileContextMenuItem title=\"{item.Title}\" appName=\"{item.AppName}\" >");
+                    sb.AppendLine($"<arguments><![CDATA[{item.Arguments}]]></arguments>");
+                    sb.AppendLine($"</fileContextMenuItem>");
                 }
             }
             sb.AppendLine("</fileContextMenuItems>");
@@ -382,85 +386,9 @@ namespace commander
         {
             return MessageBox.Show(v, mdi.MainForm.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
-        public static string PasswordHash { get; internal set; }        
+        public static string PasswordHash { get; internal set; }
         public static List<FileContextMenuItem> FileContextMenuItems { get; internal set; } = new List<FileContextMenuItem>();
 
         public static List<ShortcutInfo> Shortcuts = new List<ShortcutInfo>();
-    }
-
-    public abstract class ShortcutInfo
-    {
-
-        public string Name;
-
-        public abstract void Run();
-
-    }
-    public class AppShortcutInfo : ShortcutInfo
-    {
-
-        public AppShortcutInfo(string p, string n)
-        {
-            Path = p;
-            Name = n;
-        }
-        public string Path;
-
-
-        public override void Run()
-        {
-            ProcessStartInfo psi = new ProcessStartInfo();
-            psi.WorkingDirectory = new FileInfo(Path).DirectoryName;
-            psi.FileName = Path;
-            Process.Start(psi);
-        }
-    }
-    public class CmdShortcutInfo : ShortcutInfo
-    {
-        public CmdShortcutInfo(string name, string args, string wd, string appName = null)
-        {
-            if (appName != null)
-            {
-                AppName = appName;
-            }
-
-            WorkDir = wd;
-            Args = args;
-            Name = name;
-        }
-
-        public string AppName = "cmd.exe";
-        public string WorkDir;
-        public string Args;
-
-
-        public override void Run()
-        {
-
-            ProcessStartInfo psi = new ProcessStartInfo();
-            psi.FileName = AppName;
-            if (Args != null)
-            {
-                psi.Arguments = Args;
-            }
-
-            psi.WorkingDirectory = WorkDir;
-            Process.Start(psi);
-        }
-    }
-
-    public class UrlShortcutInfo : ShortcutInfo
-    {
-        public string Url;
-        public UrlShortcutInfo(string name, string url)
-        {
-            Url = url;
-            Name = name;
-        }
-
-        public override void Run()
-        {
-            Process.Start(Url);
-        }
     }
 }

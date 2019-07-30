@@ -28,14 +28,14 @@ namespace commander
             }
             string sz1 = "";
             string sz2 = "";
-            if (lv1.Tag is FileInfo)
+            if (lv1.Tag is IFileInfo)
             {
-                var fin = lv1.Tag as FileInfo;
+                var fin = lv1.Tag as IFileInfo;
                 sz1 = fin.Extension;
             }
-            if (lv2.Tag is FileInfo)
+            if (lv2.Tag is IFileInfo)
             {
-                var fin = lv2.Tag as FileInfo;
+                var fin = lv2.Tag as IFileInfo;
                 sz2 = fin.Extension;
             }
 

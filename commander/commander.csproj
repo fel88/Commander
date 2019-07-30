@@ -31,7 +31,13 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>matr.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.6\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -56,6 +62,7 @@
     <Compile Include="AddTabWindow.Designer.cs">
       <DependentUpon>AddTabWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="AppShortcutInfo.cs" />
     <Compile Include="Browser.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -68,6 +75,7 @@
     <Compile Include="ChangePasswordDialog.Designer.cs">
       <DependentUpon>ChangePasswordDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="CmdShortcutInfo.cs" />
     <Compile Include="ConsoleOutputWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -81,6 +89,8 @@
     <Compile Include="Desktop.Designer.cs">
       <DependentUpon>Desktop.cs</DependentUpon>
     </Compile>
+    <Compile Include="DirectoryInfoWrapper.cs" />
+    <Compile Include="FileInfoWrapper.cs" />
     <Compile Include="FileListControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -94,12 +104,19 @@
       <DependentUpon>Explorer.cs</DependentUpon>
     </Compile>
     <Compile Include="FilesystemLibrary.cs" />
+    <Compile Include="GifViewerPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GifViewerPanel.Designer.cs">
+      <DependentUpon>GifViewerPanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="HexEditor.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="HexEditor.Designer.cs">
       <DependentUpon>HexEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="IFileInfo.cs" />
     <Compile Include="ImageViewer.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -111,6 +128,14 @@
     </Compile>
     <Compile Include="ImgViewerPanel.Designer.cs">
       <DependentUpon>ImgViewerPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IsoDirectoryInfoWrapper.cs" />
+    <Compile Include="IsoFileWrapper.cs" />
+    <Compile Include="IsoLibViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="IsoLibViewer.Designer.cs">
+      <DependentUpon>IsoLibViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="mdi.cs">
       <SubType>Form</SubType>
@@ -124,6 +149,13 @@
     <Compile Include="MemInfoReport.Designer.cs">
       <DependentUpon>MemInfoReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="MountInfo.cs" />
+    <Compile Include="MountListWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MountListWindow.Designer.cs">
+      <DependentUpon>MountListWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="MyToolStripButton.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -135,6 +167,12 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProxyManagerWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ProxyManagerWindow.Designer.cs">
+      <DependentUpon>ProxyManagerWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="RenameDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -149,12 +187,14 @@
     </Compile>
     <Compile Include="ReportSectorInfo.cs" />
     <Compile Include="SafeNativeMethods.cs" />
+    <Compile Include="Server.cs" />
     <Compile Include="SettingsWindow.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="SettingsWindow.Designer.cs">
       <DependentUpon>SettingsWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="ShortcutInfo.cs" />
     <Compile Include="Sorter1.cs" />
     <Compile Include="Sorter2.cs" />
     <Compile Include="Sorter3.cs" />
@@ -166,6 +206,7 @@
     <Compile Include="TagListViewControl.Designer.cs">
       <DependentUpon>TagListViewControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="TcpRoutine.cs" />
     <Compile Include="TextPreviewer.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -182,6 +223,19 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="TypeSorter.cs" />
+    <Compile Include="UrlShortcutInfo.cs" />
+    <Compile Include="VideoPlayer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="VideoPlayer.Designer.cs">
+      <DependentUpon>VideoPlayer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="YoutubeExtractorWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="YoutubeExtractorWindow.Designer.cs">
+      <DependentUpon>YoutubeExtractorWindow.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="AboutBox1.resx">
       <DependentUpon>AboutBox1.cs</DependentUpon>
     </EmbeddedResource>
@@ -203,6 +257,9 @@
     <EmbeddedResource Include="Explorer.resx">
       <DependentUpon>Explorer.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GifViewerPanel.resx">
+      <DependentUpon>GifViewerPanel.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="HexEditor.resx">
       <DependentUpon>HexEditor.cs</DependentUpon>
     </EmbeddedResource>
@@ -212,11 +269,17 @@
     <EmbeddedResource Include="ImgViewerPanel.resx">
       <DependentUpon>ImgViewerPanel.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="IsoLibViewer.resx">
+      <DependentUpon>IsoLibViewer.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="mdi.resx">
       <DependentUpon>mdi.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MemInfoReport.resx">
       <DependentUpon>MemInfoReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MountListWindow.resx">
+      <DependentUpon>MountListWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PasswordDialog.resx">
       <DependentUpon>PasswordDialog.cs</DependentUpon>
@@ -229,7 +292,11 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="ProxyManagerWindow.resx">
+      <DependentUpon>ProxyManagerWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="RenameDialog.resx">
       <DependentUpon>RenameDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -248,6 +315,14 @@
     <EmbeddedResource Include="TextSearchForm.resx">
       <DependentUpon>TextSearchForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="VideoPlayer.resx">
+      <DependentUpon>VideoPlayer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="YoutubeExtractorWindow.resx">
+      <DependentUpon>YoutubeExtractorWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="app.config" />
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -259,6 +334,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\matr.png" />
+    <Content Include="matr.ico" />
+    <None Include="Resources\4dS9v.png" />
     <Content Include="settings.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
@@ -267,10 +345,41 @@
     <Content Include="todo.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Users\felix\Downloads\YoutubeExtractor-master\YoutubeExtractor-master\YoutubeExtractor\YoutubeExtractor\YoutubeExtractor.csproj">
+      <Project>{ECDC127F-8DEF-4F99-8300-72C13597339D}</Project>
+      <Name>YoutubeExtractor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\CommonLibs\GifLib\GifLib.csproj">
+      <Project>{034228f5-7bcd-4137-adff-2a6cb530453a}</Project>
+      <Name>GifLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Libs\IsoLib\IsoLib.csproj">
+      <Project>{A97FDEF8-C93B-46DF-BBED-8EE4BB6C9323}</Project>
+      <Name>IsoLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PluginLib\PluginLib.csproj">
       <Project>{90e6e142-c201-4918-9d48-6e0e041ea40d}</Project>
       <Name>PluginLib</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="AxWMPLib">
+      <Guid>{6BF52A50-394A-11D3-B153-00C04F79FAA6}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>aximp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <COMReference Include="WMPLib">
+      <Guid>{6BF52A50-394A-11D3-B153-00C04F79FAA6}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

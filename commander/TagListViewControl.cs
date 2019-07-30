@@ -141,16 +141,16 @@ namespace commander
             if (filters.Length == 0) return true;
             return filters.Any(z => str.Contains(z));
         }
-        public FileInfo SelectedFile
+        public IFileInfo SelectedFile
         {
             get
             {
                 if (listView1.SelectedItems.Count > 0)
                 {
                     var si = listView1.SelectedItems[0].Tag;
-                    if (si is FileInfo)
+                    if (si is IFileInfo)
                     {
-                        return si as FileInfo;
+                        return si as IFileInfo;
                     }
                 }
 
@@ -273,6 +273,11 @@ namespace commander
         private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DeleteSelected();
+        }
+
+        private void ToIsoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
