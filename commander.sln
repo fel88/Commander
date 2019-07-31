@@ -19,9 +19,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External Libs", "External L
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GifLib", "..\CommonLibs\GifLib\GifLib.csproj", "{034228F5-7BCD-4137-ADFF-2A6CB530453A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YoutubeExtractor", "..\..\Users\felix\Downloads\YoutubeExtractor-master\YoutubeExtractor-master\YoutubeExtractor\YoutubeExtractor\YoutubeExtractor.csproj", "{ECDC127F-8DEF-4F99-8300-72C13597339D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IsoLib", "Libs\IsoLib\IsoLib.csproj", "{A97FDEF8-C93B-46DF-BBED-8EE4BB6C9323}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YoutubeExtractor", "YoutubeExtractor\YoutubeExtractor.csproj", "{ECDC127F-8DEF-4F99-8300-72C13597339D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,14 +49,14 @@ Global
 		{034228F5-7BCD-4137-ADFF-2A6CB530453A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{034228F5-7BCD-4137-ADFF-2A6CB530453A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{034228F5-7BCD-4137-ADFF-2A6CB530453A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ECDC127F-8DEF-4F99-8300-72C13597339D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ECDC127F-8DEF-4F99-8300-72C13597339D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ECDC127F-8DEF-4F99-8300-72C13597339D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ECDC127F-8DEF-4F99-8300-72C13597339D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A97FDEF8-C93B-46DF-BBED-8EE4BB6C9323}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A97FDEF8-C93B-46DF-BBED-8EE4BB6C9323}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A97FDEF8-C93B-46DF-BBED-8EE4BB6C9323}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A97FDEF8-C93B-46DF-BBED-8EE4BB6C9323}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECDC127F-8DEF-4F99-8300-72C13597339D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECDC127F-8DEF-4F99-8300-72C13597339D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECDC127F-8DEF-4F99-8300-72C13597339D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECDC127F-8DEF-4F99-8300-72C13597339D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

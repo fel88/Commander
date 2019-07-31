@@ -116,6 +116,7 @@
     <Compile Include="HexEditor.Designer.cs">
       <DependentUpon>HexEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="IDirectoryInfo.cs" />
     <Compile Include="IFileInfo.cs" />
     <Compile Include="ImageViewer.cs">
       <SubType>Form</SubType>
@@ -345,10 +346,6 @@
     <Content Include="todo.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Users\felix\Downloads\YoutubeExtractor-master\YoutubeExtractor-master\YoutubeExtractor\YoutubeExtractor\YoutubeExtractor.csproj">
-      <Project>{ECDC127F-8DEF-4F99-8300-72C13597339D}</Project>
-      <Name>YoutubeExtractor</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\CommonLibs\GifLib\GifLib.csproj">
       <Project>{034228f5-7bcd-4137-adff-2a6cb530453a}</Project>
       <Name>GifLib</Name>
@@ -360,6 +357,10 @@
     <ProjectReference Include="..\PluginLib\PluginLib.csproj">
       <Project>{90e6e142-c201-4918-9d48-6e0e041ea40d}</Project>
       <Name>PluginLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\YoutubeExtractor\YoutubeExtractor.csproj">
+      <Project>{ecdc127f-8def-4f99-8300-72c13597339d}</Project>
+      <Name>YoutubeExtractor</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

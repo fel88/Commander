@@ -22,6 +22,31 @@ namespace isoViewer
 
             return records;
         }
+        public string FullPath
+        {
+            get
+            {
+                DirectoryRecord p = this;
+                StringBuilder sb = new StringBuilder();
+                while (p != null)
+                {
+                    if (p.Parent == null) break;
+                    if (p.IsFile)
+                    {
+                        var spl = p.Name.Split(';').ToArray();
+                        sb.Insert(0, spl[0]);
+                    }
+                    else
+                    {
+                        sb.Insert(0, p.Name + "\\");
+                    }
+
+                    p = p.Parent;
+                }
+
+                return sb.ToString();
+            }
+        }
 
         public static void ReadRecursive(FileStream fs, DirectoryRecord rec, PVD pvdd)
         {
@@ -86,6 +111,14 @@ namespace isoViewer
             return true;
         }
 
+        public byte[] GetFileData(FileStream fs, PVD pvd)
+        {
+            var address = LBA * pvd.LogicBlockSize;
+            fs.Seek(address, SeekOrigin.Begin);
+            var bb = new byte[DataLength];
+            fs.Read(bb, 0, (int)DataLength);
+            return bb;
+        }
 
         public List<DirectoryRecord> Records = new List<DirectoryRecord>();
         public void ReadRecords(FileStream fs, PVD pvd)

@@ -37,6 +37,7 @@
             this.mountToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.unmountToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.followToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.unmountAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -86,9 +87,10 @@
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mountToolStripMenuItem,
             this.unmountToolStripMenuItem,
-            this.followToolStripMenuItem});
+            this.followToolStripMenuItem,
+            this.unmountAllToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(126, 70);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 114);
             // 
             // mountToolStripMenuItem
             // 
@@ -109,6 +111,13 @@
             this.followToolStripMenuItem.Name = "followToolStripMenuItem";
             this.followToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.followToolStripMenuItem.Text = "Follow ";
+            // 
+            // unmountAllToolStripMenuItem
+            // 
+            this.unmountAllToolStripMenuItem.Name = "unmountAllToolStripMenuItem";
+            this.unmountAllToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.unmountAllToolStripMenuItem.Text = "Unmount all";
+            this.unmountAllToolStripMenuItem.Click += new System.EventHandler(this.UnmountAllToolStripMenuItem_Click);
             // 
             // MountListWindow
             // 
@@ -134,5 +143,6 @@
         private System.Windows.Forms.ToolStripMenuItem mountToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem unmountToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem followToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem unmountAllToolStripMenuItem;
     }
 }

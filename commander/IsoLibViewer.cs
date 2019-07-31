@@ -53,7 +53,8 @@ namespace commander
                 else
                 {
                     lvi = new ListViewItem(
-                        new string[] { directoryRecord.Name, directoryRecord.DataLength / 1024 + "Kb" })
+                        new string[] { directoryRecord.Name,
+                        Stuff.GetUserFriendlyFileSize(directoryRecord.DataLength ) })
                     { Tag = directoryRecord };
                 }
 
@@ -151,31 +152,7 @@ namespace commander
             }
         }
 
-        private void toolStripButton2_Click_1(object sender, EventArgs e)
-        {
-            if (pvdd == null) { MessageBox.Show("load image first"); return; }
-            string dummyFileName = "Save Here";
 
-            SaveFileDialog sf = new SaveFileDialog();
-
-            sf.FileName = dummyFileName;
-
-            if (sf.ShowDialog() == DialogResult.OK)
-            {
-
-                string savePath = Path.GetDirectoryName(sf.FileName);
-                var ret = DirectoryRecord.GetAllRecords(pvdd.RootDir);
-
-                foreach (var directoryRecord in ret)
-                {
-                    throw new NotImplementedException();
-                    //get path ,create dirs, save files
-                    //var pp=Path.Combine   (path,)
-                }
-
-            }
-
-        }
 
         public List<DirectoryInfo> GetAllDirs(DirectoryInfo dir, List<DirectoryInfo> dirs = null)
         {
@@ -250,6 +227,11 @@ namespace commander
             {
                 MessageBox.Show("Access error.", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void ProgressBar1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

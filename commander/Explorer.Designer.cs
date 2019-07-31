@@ -46,6 +46,7 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.fileListControl1 = new commander.FileListControl();
             this.fileListControl2 = new commander.FileListControl();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.tableLayoutPanel1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -76,7 +77,8 @@
             this.toolStripButton3,
             this.toolStripDropDownButton1,
             this.toolStripDropDownButton2,
-            this.toolStripDropDownButton3});
+            this.toolStripDropDownButton3,
+            this.toolStripButton1});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(1004, 25);
@@ -108,14 +110,14 @@
             // tablesToolStripMenuItem
             // 
             this.tablesToolStripMenuItem.Name = "tablesToolStripMenuItem";
-            this.tablesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.tablesToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
             this.tablesToolStripMenuItem.Text = "table -> table";
             this.tablesToolStripMenuItem.Click += new System.EventHandler(this.TablesToolStripMenuItem_Click);
             // 
             // tablePreviewerToolStripMenuItem
             // 
             this.tablePreviewerToolStripMenuItem.Name = "tablePreviewerToolStripMenuItem";
-            this.tablePreviewerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.tablePreviewerToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
             this.tablePreviewerToolStripMenuItem.Text = "table -> previewer";
             this.tablePreviewerToolStripMenuItem.Click += new System.EventHandler(this.TablePreviewerToolStripMenuItem_Click);
             // 
@@ -134,14 +136,14 @@
             // compareMD5ToolStripMenuItem
             // 
             this.compareMD5ToolStripMenuItem.Name = "compareMD5ToolStripMenuItem";
-            this.compareMD5ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.compareMD5ToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.compareMD5ToolStripMenuItem.Text = "Compare MD5";
             this.compareMD5ToolStripMenuItem.Click += new System.EventHandler(this.CompareMD5ToolStripMenuItem_Click);
             // 
             // compareBinaryToolStripMenuItem
             // 
             this.compareBinaryToolStripMenuItem.Name = "compareBinaryToolStripMenuItem";
-            this.compareBinaryToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.compareBinaryToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.compareBinaryToolStripMenuItem.Text = "Compare binary";
             this.compareBinaryToolStripMenuItem.Click += new System.EventHandler(this.CompareBinaryToolStripMenuItem_Click);
             // 
@@ -221,6 +223,16 @@
             this.fileListControl2.Size = new System.Drawing.Size(495, 529);
             this.fileListControl2.TabIndex = 1;
             // 
+            // toolStripButton1
+            // 
+            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(46, 22);
+            this.toolStripButton1.Text = "Switch";
+            this.toolStripButton1.Click += new System.EventHandler(this.ToolStripButton1_Click_1);
+            // 
             // Explorer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -262,6 +274,7 @@
         private System.Windows.Forms.ToolStripMenuItem hideToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem unhideToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem changePasswordToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton toolStripButton1;
     }
 }
 

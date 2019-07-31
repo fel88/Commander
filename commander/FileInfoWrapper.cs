@@ -10,6 +10,13 @@ namespace commander
             FileInfo = ff;
             dwrapper = new DirectoryInfoWrapper(ff.Directory);
         }
+
+        public FileInfoWrapper(string finfo)
+        {
+            FileInfo = new FileInfo(finfo);
+            dwrapper = new DirectoryInfoWrapper(FileInfo.Directory);
+        }
+
         public FileInfo FileInfo;
 
         public string FullName => FileInfo.FullName;
@@ -25,6 +32,8 @@ namespace commander
         public string DirectoryName => FileInfo.DirectoryName;
 
         IDirectoryInfo dwrapper;
+        private string finfo;
+
         public IDirectoryInfo Directory => dwrapper;
 
         public FileAttributes Attributes => File.GetAttributes(FullName);

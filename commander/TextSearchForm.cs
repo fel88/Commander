@@ -138,6 +138,7 @@ namespace commander
 
         public bool IsExtFilterPass(string filter, string name)
         {
+            if (string.IsNullOrEmpty(filter)) return true;
             var aa = filter.Split(new char[] { ';', ' ' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
             return aa.Any(z => name.Contains(z));
         }
@@ -149,7 +150,11 @@ namespace commander
             while (q.Any())
             {
                 var d = q.Dequeue();
-                label4.Text = d.FullName;
+                label4.Invoke((Action)(() =>
+                {
+                    label4.Text = d.FullName;
+                }));
+
                 try
                 {
                     foreach (var item in d.GetFiles())
@@ -251,19 +256,44 @@ namespace commander
 
             }
             button1.Text = "Stop";
-            var d = new DirectoryInfo(textBox1.Text);
+            
+            var spl = textBox1.Text.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
+            var dd = (spl.Select(z => new DirectoryInfo(z)));
+                
 
             searchThread = new Thread(() =>
              {
-                 var files = Stuff.GetAllFiles(d);
-                 progressBar1.Value = 0;
-                 progressBar1.Maximum = files.Count;
+                 List<FileInfo> files = new List<FileInfo>();
+                 foreach (var item in dd)
+                 {
+                     files.AddRange(Stuff.GetAllFiles(item));
+                 }                 
+
+                 progressBar1.Invoke((Action)(() =>
+                 {
+                     progressBar1.Value = 0;
+                     progressBar1.Maximum = files.Count;
+                 }));
+
 
                  listView2.Items.Clear();
-                 loop(d, () => { progressBar1.Value++; });
+                 foreach (var d in dd)
+                 {
+                     loop(d, () =>
+                     {
+                         progressBar1.Invoke((Action)(() =>
+                         {
+                             progressBar1.Value++;
+                         }));
+                     });
+                 }
+                 
                  //rec1(d, () => { progressBar1.Value++; });
-                 toolStripStatusLabel1.Text = "Files found: " + listView2.Items.Count;
-                 button1.Text = "Start";
+                 progressBar1.Invoke((Action)(() =>
+                 {
+                     toolStripStatusLabel1.Text = "Files found: " + listView2.Items.Count;
+                     button1.Text = "Start";
+                 }));
                  searchThread = null;
              });
             searchThread.IsBackground = true;

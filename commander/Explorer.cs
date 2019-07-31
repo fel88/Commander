@@ -1,4 +1,5 @@
-﻿using System;
+﻿using isoViewer;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -22,6 +23,7 @@ namespace commander
             fileListControl2.UpdateList(new DirectoryInfoWrapper(drvs[0].Name), "");
             fileListControl2.TabOwnerString = "right";
             fileListControl1.MountIsoAction = mouseIsoAction;
+            fileListControl1.IsoExtractAction = isoExtractAction;
             UpdateTabs();
 
             previewer = new ImgViewerPanel() { Dock = DockStyle.Fill };
@@ -68,6 +70,59 @@ namespace commander
                 }
 
             };
+        }
+
+        private void isoExtractAction(FileListControl arg1, IFileInfo arg2)
+        {
+            var target = arg1;
+            if (target == fileListControl1)
+            {
+                target = fileListControl2;
+            }
+            else
+            {
+                target = fileListControl1;
+            }
+            using (var fs = new FileStream(arg2.FullName, FileMode.Open, FileAccess.Read))
+            {
+                IsoReader reader = new IsoReader();
+                reader.Parse(fs);
+                var pvd = reader.WorkPvd;
+
+                string savePath = Path.Combine(target.CurrentDirectory.FullName, Path.GetFileNameWithoutExtension(arg2.Name));
+                if (!Directory.Exists(savePath))
+                {
+                    Directory.CreateDirectory(savePath);
+                }
+                var ret = DirectoryRecord.GetAllRecords(pvd.RootDir);
+
+                foreach (var directoryRecord in ret)
+                {
+                    if (!directoryRecord.IsDirectory) continue;
+                    if (directoryRecord.LBA == pvd.RootDir.LBA) continue;
+                    if (directoryRecord.Parent != null && directoryRecord.Parent.LBA == directoryRecord.LBA) continue;
+                    if (directoryRecord.Parent != null &&
+                        directoryRecord.Parent.Parent != null &&
+                        directoryRecord.Parent.Parent.LBA == directoryRecord.LBA) continue;
+
+                    var pp = Path.Combine(savePath, directoryRecord.FullPath);
+                    if (!Directory.Exists(pp))
+                    {
+                        Directory.CreateDirectory(pp);
+                    }
+                }
+
+
+                foreach (var directoryRecord in ret)
+                {
+                    if (!directoryRecord.IsFile) continue;
+                    var data = directoryRecord.GetFileData(fs, pvd);
+                    var pp = Path.Combine(savePath, directoryRecord.FullPath);
+                    File.WriteAllBytes(pp, data);
+                }
+
+                MessageBox.Show("Extraction complete!");
+            }
         }
 
         private void mouseIsoAction(FileListControl sender, IFileInfo obj)
@@ -384,9 +439,15 @@ namespace commander
             p.ShowDialog();
         }
 
-        private void ToolStripButton1_Click(object sender, EventArgs e)
-        {
+        
 
+        private void ToolStripButton1_Click_1(object sender, EventArgs e)
+        {
+            var temp = fileListControl1.CurrentDirectory.FullName;
+            fileListControl1.SetPath(fileListControl2.CurrentDirectory.FullName);
+            fileListControl1.UpdateList();
+            fileListControl2.SetPath(temp);
+            fileListControl2.UpdateList();
         }
     }
 }

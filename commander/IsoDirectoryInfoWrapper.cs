@@ -49,6 +49,9 @@ namespace commander
 
         public bool Exists => true;
 
+        public IDirectoryInfo Root => new DirectoryInfoWrapper(MountInfo.Path);
+                
+
         public IEnumerable<IDirectoryInfo> GetDirectories()
         {
             foreach (var item in record.Records)

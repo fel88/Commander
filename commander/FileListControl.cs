@@ -13,6 +13,7 @@ using System.Reflection;
 using System.Threading;
 using System.Drawing.Imaging;
 using commander.Properties;
+using isoViewer;
 
 namespace commander
 {
@@ -571,24 +572,34 @@ namespace commander
             UpdateList(new DirectoryInfoWrapper(path), textBox2.Text);
         }
 
-        public static Dictionary<string, Bitmap> Icons = new Dictionary<string, Bitmap>();
-
-        public static Bitmap GetBitmapOfFile(string fn)
+        public static Dictionary<string, Tuple<Bitmap, int>> Icons = new Dictionary<string, Tuple<Bitmap, int>>();
+        public static Dictionary<string, Tuple<Bitmap, int>> ExeIcons = new Dictionary<string, Tuple<Bitmap, int>>();
+        public static Tuple<Bitmap, int> GetBitmapOfFile(string fn)
         {
-            var d = Path.GetExtension(fn);
+            var d = Path.GetExtension(fn).ToLower();
+            if (d == ".exe" || d == ".ico")
+            {
+                if (!ExeIcons.ContainsKey(fn))
+                {
+                    var bb = Bitmap.FromHicon(Stuff.ExtractAssociatedIcon(fn).Handle);
+                    bb.MakeTransparent();
+                    Stuff.list.Images.Add(bb);
+                    ExeIcons.Add(fn, new Tuple<Bitmap, int>(bb, Stuff.list.Images.Count - 1));
+                }
+                return ExeIcons[fn];
+            }
             if (!Icons.ContainsKey(d))
             {
                 var bb = Bitmap.FromHicon(Stuff.ExtractAssociatedIcon(fn).Handle);
                 bb.MakeTransparent();
-              Stuff.list.Images.Add(bb);
-                IconDictionary.Add(d,  Stuff.list.Images.Count - 1);
-                Icons.Add(d, bb);
+                Stuff.list.Images.Add(bb);
+                Icons.Add(d, new Tuple<Bitmap, int>(bb, Stuff.list.Images.Count - 1));
             }
 
             return Icons[d];
         }
 
-        public static Dictionary<string, int> IconDictionary = new Dictionary<string, int>();
+
         public bool SaveSorting = false;
         public void UpdateList(string path, string filter)
         {
@@ -639,7 +650,13 @@ namespace commander
 
                 listView1.SmallImageList = Stuff.list;
                 listView1.LargeImageList = Stuff.list;
-                listView1.Items.Add(new ListViewItem(new string[] { "..", "", "" }) { Tag = path.Parent });
+                
+                
+                if (path.FullName!=path.Root.FullName)
+                {
+                    
+                    listView1.Items.Add(new ListViewItem(new string[] { "..", "", "" }) { Tag = path.Parent });
+                }
 
                 var dd = path.GetDirectories().ToList();
 
@@ -701,9 +718,10 @@ namespace commander
             {
                 try
                 {
+                    Tuple<Bitmap, int> tp = null;
                     if (File.Exists(fileInfo.FullName))
                     {
-                        GetBitmapOfFile(fileInfo.FullName);
+                        tp = GetBitmapOfFile(fileInfo.FullName);
                     }
 
                     var ext = Path.GetExtension(fileInfo.FullName);
@@ -712,9 +730,9 @@ namespace commander
                     var astr = (fileInfo.Attributes).ToString();
 
                     int iindex = -1;
-                    if (IconDictionary.ContainsKey(ext))
+                    if (tp != null)
                     {
-                        iindex = IconDictionary[ext];
+                        iindex = tp.Item2;
                     }
                     var attrs = astr.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries).Aggregate("", (x, y) => x + y[0]);
                     listView1.Items.Add(
@@ -745,10 +763,10 @@ namespace commander
         {
             tagControl.UpdateList(CurrentTag);
         }
-        
+
         public void UpdateLibrariesList(IDirectoryInfo path, string filter = "")
         {
-            
+
             if (path == null)
             {
                 listView1.Items.Clear();
@@ -772,7 +790,7 @@ namespace commander
                 var fltrs = filter.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(z => z.ToLower()).ToArray();
 
                 listView1.SmallImageList = Stuff.list;
-                listView1.LargeImageList =  Stuff.list;
+                listView1.LargeImageList = Stuff.list;
                 if (Stuff.Libraries.OfType<FilesystemLibrary>().Any(z => z.BaseDirectory == path.FullName))
                 {
 
@@ -840,9 +858,13 @@ namespace commander
         {
             if (e.KeyCode == Keys.Enter)
             {
-                UpdateList(textBox1.Text, textBox2.Text);
+                UpdateList();
             }
+        }
 
+        public void UpdateList()
+        {
+            UpdateList(textBox1.Text, textBox2.Text);
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
@@ -1513,15 +1535,15 @@ namespace commander
             if (listView1.SelectedItems.Count == 1)
             {
                 var tag = listView1.SelectedItems[0].Tag;
-                if (!(tag is FileInfo)) return;
-                var fi = tag as FileInfo;
+                if (!(tag is IFileInfo)) return;
+                var fi = tag as IFileInfo;
 
                 foreach (var item in Stuff.Tags)
                 {
                     if (item.IsHidden && !Stuff.ShowHidden) continue;
 
                     var ss = new ToolStripMenuItem(item.Name) { CheckOnClick = true, CheckState = item.Files.Contains(fi.FullName) ? CheckState.Checked : CheckState.Unchecked };
-                    ss.Tag = new Tuple<TagInfo, FileInfo>(item, fi);
+                    ss.Tag = new Tuple<TagInfo, IFileInfo>(item, fi);
                     ss.CheckedChanged += Ss_CheckedChanged;
                     setTagsToolStripMenuItem.DropDownItems.Add(ss);
                 }
@@ -1534,7 +1556,7 @@ namespace commander
 
         private void Ss_CheckedChanged(object sender, EventArgs e)
         {
-            var f = (sender as ToolStripMenuItem).Tag as Tuple<TagInfo, FileInfo>;
+            var f = (sender as ToolStripMenuItem).Tag as Tuple<TagInfo, IFileInfo>;
             if (f.Item1.ContainsFile(f.Item2.FullName))
             {
                 f.Item1.DeleteFile(f.Item2.FullName);
@@ -1615,6 +1637,7 @@ namespace commander
         }
 
         public Action<FileListControl, IFileInfo> MountIsoAction;
+        public Action<FileListControl, IFileInfo> IsoExtractAction;
         private void MountIsoToRightToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
@@ -1673,6 +1696,13 @@ namespace commander
 
         private void ExtractToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (SelectedFile == null) return;
+            if (!SelectedFile.Extension.Contains("iso")) return;
+            if (IsoExtractAction != null)
+            {
+                IsoExtractAction(this, SelectedFile);
+            }
+
 
         }
 

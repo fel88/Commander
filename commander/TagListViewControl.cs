@@ -101,12 +101,16 @@ namespace commander
                 {
                     try
                     {
-                        var f = new FileInfo(finfo);
-                        var bmp = FileListControl.GetBitmapOfFile(f.FullName);
-                        bmp.MakeTransparent();
-                        list.Images.Add(bmp);
+                        var f = new FileInfoWrapper(finfo);
+                        var tp = FileListControl.GetBitmapOfFile(f.FullName);
+                        //bmp.MakeTransparent();
+                       // list.Images.Add(bmp);
                         if (!IsFilterPass(f.Name, fltrs)) continue;
-
+                        int iindex = -1;
+                        if (tp != null)
+                        {
+                            iindex = tp.Item2;
+                        }
                         listView1.Items.Add(
                             new ListViewItem(new string[]
                             {
@@ -114,7 +118,7 @@ namespace commander
                             })
                             {
                                 Tag = f,
-                                ImageIndex = list.Images.Count - 1
+                                ImageIndex = iindex
 
                             });
                     }
@@ -186,9 +190,9 @@ namespace commander
                 {
                     UpdateList(null);
                 }
-                else if (tag is FileInfo)
+                else if (tag is IFileInfo)
                 {
-                    var f = tag as FileInfo;
+                    var f = tag as IFileInfo;
                     ProcessStartInfo psi = new ProcessStartInfo();
                     psi.WorkingDirectory = f.DirectoryName;
                     psi.FileName = f.FullName;

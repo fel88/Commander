@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace commander
@@ -14,21 +13,6 @@ namespace commander
         long Length { get; }
         IDirectoryInfo Directory { get; }
         FileAttributes Attributes { get; }
-    }
-
-    public interface IDirectoryInfo
-    {
-        string FullName { get; }
-        string Name { get; }
-
-         IDirectoryInfo Parent { get; }
-
-        IEnumerable<IDirectoryInfo> GetDirectories();
-
-        IEnumerable<IFileInfo> GetFiles();
-       
-        DateTime LastWriteTime { get; }
-        bool Exists { get; }
     }
 
 }

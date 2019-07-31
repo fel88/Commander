@@ -37,7 +37,6 @@
             this.saveFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
@@ -104,8 +103,7 @@
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripButton1,
-            this.toolStripButton2});
+            this.toolStripButton1});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(715, 25);
@@ -121,16 +119,6 @@
             this.toolStripButton1.Size = new System.Drawing.Size(37, 22);
             this.toolStripButton1.Text = "Load";
             this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
-            // 
-            // toolStripButton2
-            // 
-            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
-            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(81, 22);
-            this.toolStripButton2.Text = "Extract iso to ";
-            this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click_1);
             // 
             // tableLayoutPanel1
             // 
@@ -204,6 +192,7 @@
             this.progressBar1.Size = new System.Drawing.Size(243, 23);
             this.progressBar1.TabIndex = 7;
             this.progressBar1.Visible = false;
+            this.progressBar1.Click += new System.EventHandler(this.ProgressBar1_Click);
             // 
             // button3
             // 
@@ -269,14 +258,14 @@
             this.textBox1.TabIndex = 0;
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
-            // Form1
+            // IsoLibViewer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(715, 307);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.toolStrip1);
-            this.Name = "Form1";
+            this.Name = "IsoLibViewer";
             this.Text = "IsoViewer";
             this.contextMenuStrip1.ResumeLayout(false);
             this.toolStrip1.ResumeLayout(false);
@@ -310,7 +299,6 @@
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem saveFileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripButton toolStripButton2;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.ProgressBar progressBar1;

@@ -39,7 +39,16 @@ namespace commander
 
         private void UnmountToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (listView1.SelectedItems.Count == 0) return;
+            var m = listView1.SelectedItems[0].Tag as MountInfo;
+            Stuff.MountInfos.Remove(m);
+            UpdateList();
+        }
 
+        private void UnmountAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Stuff.MountInfos.Clear();
+            UpdateList();
         }
     }
 }

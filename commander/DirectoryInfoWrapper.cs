@@ -30,6 +30,8 @@ namespace commander
 
         public bool Exists => DirectoryInfo.Exists;
 
+        public IDirectoryInfo Root => new DirectoryInfoWrapper( DirectoryInfo.Root);
+
         public IEnumerable<IDirectoryInfo> GetDirectories()
         {
             return DirectoryInfo.GetDirectories().Select(z => new DirectoryInfoWrapper(z));
