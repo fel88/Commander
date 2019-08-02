@@ -64,6 +64,7 @@ namespace commander
             if (tag == null)
             {
                 listView1.Items.Clear();
+                //listView1.View = View.List;
                 parent.CurrentTag = null;
 
                 var filter = parent.Filter;
@@ -80,6 +81,7 @@ namespace commander
             {
 
                 listView1.Items.Clear();
+                //listView1.View = View.Details;                
                 //   fc.SetPath(path);
                 //textBox1.Text = path;
                 parent.CurrentTag = tag;

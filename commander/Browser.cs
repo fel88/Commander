@@ -66,7 +66,24 @@ namespace commander
 
         private void ToolStripButton1_Click(object sender, EventArgs e)
         {
+
+        }
+
+        private void TextBox2_TextChanged(object sender, EventArgs e)
+        {
+            var arr = textBox2.Text.Split(new char[] { '\r', '\n', ' ' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
+            //var c = comboBox1.SelectedItem as ComboBoxItem;
+            //var fsl = c.Tag as FilesystemLibrary;
             
+            foreach (var item in arr)
+            {
+                listView1.Items.Add(new ListViewItem(new string[] { item, "" }) { Tag = item });
+            }
+        }
+
+        private void Button1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

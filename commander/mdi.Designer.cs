@@ -39,6 +39,7 @@
             this.youtubeToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.containersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.isoEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mountListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pluginsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.installToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -53,7 +54,7 @@
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.renameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyPathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.mountListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.vkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -109,7 +110,8 @@
             // extractorsToolStripMenuItem
             // 
             this.extractorsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.youtubeToolStripMenuItem1});
+            this.youtubeToolStripMenuItem1,
+            this.vkToolStripMenuItem});
             this.extractorsToolStripMenuItem.Name = "extractorsToolStripMenuItem";
             this.extractorsToolStripMenuItem.Size = new System.Drawing.Size(70, 20);
             this.extractorsToolStripMenuItem.Text = "Extractors";
@@ -117,7 +119,7 @@
             // youtubeToolStripMenuItem1
             // 
             this.youtubeToolStripMenuItem1.Name = "youtubeToolStripMenuItem1";
-            this.youtubeToolStripMenuItem1.Size = new System.Drawing.Size(118, 22);
+            this.youtubeToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.youtubeToolStripMenuItem1.Text = "youtube";
             this.youtubeToolStripMenuItem1.Click += new System.EventHandler(this.YoutubeToolStripMenuItem1_Click);
             // 
@@ -133,8 +135,15 @@
             // isoEditorToolStripMenuItem
             // 
             this.isoEditorToolStripMenuItem.Name = "isoEditorToolStripMenuItem";
-            this.isoEditorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.isoEditorToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
             this.isoEditorToolStripMenuItem.Text = "iso editor";
+            // 
+            // mountListToolStripMenuItem
+            // 
+            this.mountListToolStripMenuItem.Name = "mountListToolStripMenuItem";
+            this.mountListToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.mountListToolStripMenuItem.Text = "mount list";
+            this.mountListToolStripMenuItem.Click += new System.EventHandler(this.MountListToolStripMenuItem_Click);
             // 
             // settingsToolStripMenuItem
             // 
@@ -248,12 +257,12 @@
             this.copyPathToolStripMenuItem.Text = "copy path";
             this.copyPathToolStripMenuItem.Click += new System.EventHandler(this.CopyPathToolStripMenuItem_Click);
             // 
-            // mountListToolStripMenuItem
+            // vkToolStripMenuItem
             // 
-            this.mountListToolStripMenuItem.Name = "mountListToolStripMenuItem";
-            this.mountListToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.mountListToolStripMenuItem.Text = "mount list";
-            this.mountListToolStripMenuItem.Click += new System.EventHandler(this.MountListToolStripMenuItem_Click);
+            this.vkToolStripMenuItem.Name = "vkToolStripMenuItem";
+            this.vkToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.vkToolStripMenuItem.Text = "vk";
+            this.vkToolStripMenuItem.Click += new System.EventHandler(this.vkToolStripMenuItem_Click);
             // 
             // mdi
             // 
@@ -303,5 +312,6 @@
         private System.Windows.Forms.ToolStripMenuItem isoEditorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem proxyServerToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem mountListToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem vkToolStripMenuItem;
     }
 }

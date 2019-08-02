@@ -142,14 +142,30 @@ namespace commander
             var aa = filter.Split(new char[] { ';', ' ' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
             return aa.Any(z => name.Contains(z));
         }
-        public void loop(DirectoryInfo _d, Action fileProcessed)
+
+        public class QueueItem
+        {
+            public QueueItem(IDirectoryInfo d, int l)
+            {
+                Level = l;
+                Info = d;
+            }
+            public int Level;
+            public IDirectoryInfo Info;
+        }
+        public void loop(IDirectoryInfo _d, Action fileProcessed, int? maxLevel)
         {
 
-            Queue<DirectoryInfo> q = new Queue<DirectoryInfo>();
-            q.Enqueue(_d);
+            Queue<QueueItem> q = new Queue<QueueItem>();
+            q.Enqueue(new commander.TextSearchForm.QueueItem(_d, 0));
             while (q.Any())
             {
-                var d = q.Dequeue();
+                var dd = q.Dequeue();
+                if (maxLevel != null)
+                {
+                    if (dd.Level > maxLevel) continue;
+                }
+                var d = dd.Info;
                 label4.Invoke((Action)(() =>
                 {
                     label4.Text = d.FullName;
@@ -194,7 +210,7 @@ namespace commander
                     }
                     foreach (var item in d.GetDirectories())
                     {
-                        q.Enqueue(item);
+                        q.Enqueue(new QueueItem(item, dd.Level + 1));
                     }
                 }
                 catch (UnauthorizedAccessException ex)
@@ -256,18 +272,18 @@ namespace commander
 
             }
             button1.Text = "Stop";
-            
+
             var spl = textBox1.Text.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
-            var dd = (spl.Select(z => new DirectoryInfo(z)));
-                
+            var dd = (spl.Select(z => new DirectoryInfoWrapper(z)));
+
 
             searchThread = new Thread(() =>
              {
-                 List<FileInfo> files = new List<FileInfo>();
+                 List<IFileInfo> files = new List<IFileInfo>();
                  foreach (var item in dd)
                  {
-                     files.AddRange(Stuff.GetAllFiles(item));
-                 }                 
+                     files.AddRange(Stuff.GetAllFiles(item, level: 0, maxlevel: (int)numericUpDown1.Value));
+                 }
 
                  progressBar1.Invoke((Action)(() =>
                  {
@@ -285,9 +301,9 @@ namespace commander
                          {
                              progressBar1.Value++;
                          }));
-                     });
+                     }, (int)numericUpDown1.Value);
                  }
-                 
+
                  //rec1(d, () => { progressBar1.Value++; });
                  progressBar1.Invoke((Action)(() =>
                  {
@@ -307,7 +323,7 @@ namespace commander
             if (listView2.SelectedItems.Count > 0)
             {
                 var lvi = listView2.SelectedItems[0].Tag;
-                var f = lvi as FileInfo;
+                var f = lvi as IFileInfo;
                 linkLabel1.Text = f.FullName;
                 listView3.Items.Clear();
                 richTextBox1.Clear();
@@ -396,7 +412,7 @@ namespace commander
         {
             if (listView2.SelectedItems.Count > 0)
             {
-                var f = listView2.SelectedItems[0].Tag as FileInfo;
+                var f = listView2.SelectedItems[0].Tag as IFileInfo;
                 Stuff.ExecuteFile(f);
             }
         }

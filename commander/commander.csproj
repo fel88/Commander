@@ -75,6 +75,7 @@
     <Compile Include="ChangePasswordDialog.Designer.cs">
       <DependentUpon>ChangePasswordDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="DedupContext.cs" />
     <Compile Include="CmdShortcutInfo.cs" />
     <Compile Include="ConsoleOutputWindow.cs">
       <SubType>Form</SubType>
@@ -104,6 +105,12 @@
       <DependentUpon>Explorer.cs</DependentUpon>
     </Compile>
     <Compile Include="FilesystemLibrary.cs" />
+    <Compile Include="VkExtractorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VkExtractorForm.Designer.cs">
+      <DependentUpon>VkExtractorForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="GifViewerPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -252,11 +259,17 @@
     <EmbeddedResource Include="ConsoleOutputWindow.resx">
       <DependentUpon>ConsoleOutputWindow.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Desktop.resx">
+      <DependentUpon>Desktop.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FileListControl.resx">
       <DependentUpon>FileListControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Explorer.resx">
       <DependentUpon>Explorer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VkExtractorForm.resx">
+      <DependentUpon>VkExtractorForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GifViewerPanel.resx">
       <DependentUpon>GifViewerPanel.cs</DependentUpon>

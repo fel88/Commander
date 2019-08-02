@@ -17,27 +17,39 @@ namespace commander
         public ProxyManagerWindow()
         {
             InitializeComponent();
+            UpdateOfflineList();
         }
+
+        private void UpdateOfflineList()
+        {
+            listView2.Items.Clear();
+            foreach (var item in Stuff.OfflineSites)
+            {
+                listView2.Items.Add(new ListViewItem(item.Path) { Tag = item });
+            }
+        }
+
         Server server;
         public void Init(Server server)
         {
             this.server = server;
-            server.NewConnectionInfoDelegate = (x) => {
+            server.NewConnectionInfoDelegate = (x) =>
+            {
                 listView1.Invoke((Action)(() =>
                 {
                     listView1.Items.Add(new ListViewItem(new string[] { x.Log.Any() ? x.Log.First() : x.ToString(), "", "" }) { Tag = x });
-                }));                
+                }));
             };
         }
 
-        
+
 
         private void ListView1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (listView1.SelectedItems.Count == 0) return;
             var c = listView1.SelectedItems[0].Tag as ConnectionInfo;
 
-            richTextBox1.Text = c.Log.Aggregate("", (x, y) => x + y+Environment.NewLine);
+            richTextBox1.Text = c.Log.Aggregate("", (x, y) => x + y + Environment.NewLine);
         }
 
         private void Timer1_Tick(object sender, EventArgs e)
@@ -55,7 +67,7 @@ namespace commander
 
             RegistryKey registry = Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", true);
 
-            
+
 
             int proxyStatus = (int)registry.GetValue("ProxyEnable");
             toolStripLabel1.ForeColor = Color.Blue;
@@ -65,14 +77,14 @@ namespace commander
                 toolStripLabel1.Text = "proxy: enable";
         }
 
-      
+
 
         private void ToolStripButton1_Click(object sender, EventArgs e)
         {
             RegistryKey registry = Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", true);
 
             //disable proxy           
-          //  registry.SetValue("ProxyServer", 0);
+            //  registry.SetValue("ProxyServer", 0);
             registry.SetValue
                           ("ProxyServer", "127.0.0.1:8888");
 
@@ -82,8 +94,8 @@ namespace commander
 
             //Proxy Status
 
-            
-            
+
+
         }
 
         private void ToolStripButton2_Click(object sender, EventArgs e)
@@ -97,8 +109,8 @@ namespace commander
 
             registry.SetValue("ProxyEnable", 0);
 
-            
-            
+
+
         }
 
         private void ToolStripButton3_Click(object sender, EventArgs e)
@@ -131,6 +143,13 @@ namespace commander
         private void RichTextBox2_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void listView2_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (listView2.SelectedItems.Count == 0) return;
+            var of = listView2.SelectedItems[0].Tag as OfflineSiteInfo;
+            Stuff.ExecuteFile(new FileInfoWrapper(of.Path));
         }
     }
 }

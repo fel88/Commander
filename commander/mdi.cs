@@ -435,6 +435,13 @@ namespace commander
             mlw.MdiParent = this;
             mlw.Show();
         }
+
+        private void vkToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            VkExtractorForm f = new VkExtractorForm();
+            f.MdiParent = this;
+            f.Show();
+        }
     }
 
     public class ConnectionInfo

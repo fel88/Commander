@@ -612,6 +612,7 @@ namespace commander
             {
                 UpdateList(new DirectoryInfoWrapper(path), filter);
             }
+            UpdateStatus();            
         }
         public void UpdateList(IDirectoryInfo path, string filter)
         {
@@ -641,7 +642,7 @@ namespace commander
                     listView1.Sorting = SortOrder.None;
                 }
                 textBox1.Text = path.FullName;
-
+                itemsCount = 0;
 
                 CurrentDirectory = path;
 
@@ -650,11 +651,11 @@ namespace commander
 
                 listView1.SmallImageList = Stuff.list;
                 listView1.LargeImageList = Stuff.list;
-                
-                
-                if (path.FullName!=path.Root.FullName)
+
+
+                if (path.FullName != path.Root.FullName)
                 {
-                    
+
                     listView1.Items.Add(new ListViewItem(new string[] { "..", "", "" }) { Tag = path.Parent });
                 }
 
@@ -679,6 +680,8 @@ namespace commander
                 AppendDirsToList(dd.ToArray(), fltrs);
                 AppendFilesToList(path.GetFiles().ToArray(), fltrs);
                 listView1.EndUpdate();
+                UpdateStatus();
+                
             }
             catch (Exception ex)
             {
@@ -735,6 +738,7 @@ namespace commander
                         iindex = tp.Item2;
                     }
                     var attrs = astr.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries).Aggregate("", (x, y) => x + y[0]);
+                    itemsCount++;
                     listView1.Items.Add(
                         new ListViewItem(new string[]
                         {
@@ -865,6 +869,7 @@ namespace commander
         public void UpdateList()
         {
             UpdateList(textBox1.Text, textBox2.Text);
+
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
@@ -1083,17 +1088,17 @@ namespace commander
                 var tag = listView1.SelectedItems[0].Tag;
                 if (listView1.SelectedItems.Count == 1 && (tag is DirectoryInfoWrapper || tag is FilesystemLibrary))
                 {
-                    DirectoryInfo d = null;
+                    IDirectoryInfo d = null;
                     if (tag is FilesystemLibrary)
                     {
                         var l = tag as FilesystemLibrary;
-                        d = new DirectoryInfo(l.BaseDirectory);
+                        d = new DirectoryInfoWrapper(l.BaseDirectory);
                     }
                     else
                     {
-                        d = (listView1.SelectedItems[0].Tag as DirectoryInfoWrapper).DirectoryInfo;
+                        d = (listView1.SelectedItems[0].Tag as DirectoryInfoWrapper);
                     }
-                    List<FileInfo> files = new List<FileInfo>();
+                    List<IFileInfo> files = new List<IFileInfo>();
                     Stuff.GetAllFiles(d, files);
                     var total = files.Sum(z => z.Length);
                     if (Stuff.Question("Total size: " + Stuff.GetUserFriendlyFileSize(total) + ", show report?") == DialogResult.Yes)
@@ -1107,19 +1112,19 @@ namespace commander
                 else
                 {
                     //bool allFiles = true;
-                    List<FileInfo> files = new List<FileInfo>();
+                    List<IFileInfo> files = new List<IFileInfo>();
                     long total = 0;
                     for (int i = 0; i < listView1.SelectedItems.Count; i++)
                     {
                         var tag1 = listView1.SelectedItems[i].Tag;
-                        if (tag1 is DirectoryInfo)
+                        if (tag1 is IDirectoryInfo)
                         {
-                            var list = Stuff.GetAllFiles(tag1 as DirectoryInfo);
+                            var list = Stuff.GetAllFiles(tag1 as IDirectoryInfo);
                             total += list.Sum(z => z.Length);
                         }
-                        if (tag1 is FileInfo)
+                        if (tag1 is IFileInfo)
                         {
-                            files.Add(tag1 as FileInfo);
+                            files.Add(tag1 as IFileInfo);
                             // allFiles = false;
                             //break;
                         }
@@ -1140,21 +1145,21 @@ namespace commander
             if (listView1.SelectedItems.Count > 0)
             {
                 var tag = listView1.SelectedItems[0].Tag;
-                if (tag is DirectoryInfo || tag is FilesystemLibrary)
+                if (tag is IDirectoryInfo || tag is FilesystemLibrary)
                 {
 
-                    DirectoryInfo d = null;
+                    IDirectoryInfo d = null;
                     if (tag is FilesystemLibrary)
                     {
                         var l = tag as FilesystemLibrary;
-                        d = new DirectoryInfo(l.BaseDirectory);
+                        d = new DirectoryInfoWrapper(l.BaseDirectory);
                     }
                     else
                     {
-                        d = listView1.SelectedItems[0].Tag as DirectoryInfo;
+                        d = listView1.SelectedItems[0].Tag as IDirectoryInfo;
                     }
-
-                    var groups = RepeatsWindow.FindRepeats(d);
+                    DedupContext ctx = new DedupContext(new[] { d }, new IFileInfo[] { });
+                    var groups = RepeatsWindow.FindRepeats(ctx);
                     if (groups.Count() == 0)
                     {
                         Stuff.Info("No repeates found.");
@@ -1163,7 +1168,37 @@ namespace commander
                     {
                         RepeatsWindow rp = new RepeatsWindow();
                         rp.MdiParent = mdi.MainForm;
-                        rp.SetRepeats(d, groups.ToArray());
+                        rp.SetRepeats(ctx, groups.ToArray());
+                        rp.Show();
+                    }
+                }
+                else
+                {
+                    List<IFileInfo> ff = new List<IFileInfo>();
+                    List<IDirectoryInfo> dd = new List<IDirectoryInfo>();
+                    for (int i = 0; i < listView1.SelectedItems.Count; i++)
+                    {
+                        var tag0 = listView1.SelectedItems[i].Tag;
+                        if (tag0 is IFileInfo)
+                        {
+                            ff.Add(tag0 as IFileInfo);
+                        }
+                        if (tag0 is IDirectoryInfo)
+                        {
+                            dd.Add(tag0 as IDirectoryInfo);
+                        }
+                    }
+                    DedupContext ctx = new DedupContext(dd.ToArray(), ff.ToArray());
+                    var groups = RepeatsWindow.FindRepeats(ctx);
+                    if (groups.Count() == 0)
+                    {
+                        Stuff.Info("No repeates found.");
+                    }
+                    else
+                    {
+                        RepeatsWindow rp = new RepeatsWindow();
+                        rp.MdiParent = mdi.MainForm;
+                        rp.SetRepeats(ctx, groups.ToArray());
                         rp.Show();
                     }
                 }
@@ -1338,9 +1373,9 @@ namespace commander
         {
             if (listView1.SelectedItems.Count > 0)
             {
-                if (listView1.SelectedItems[0].Tag is FileInfo)
+                if (listView1.SelectedItems[0].Tag is IFileInfo)
                 {
-                    var f = listView1.SelectedItems[0].Tag as FileInfo;
+                    var f = listView1.SelectedItems[0].Tag as IFileInfo;
                     var md5 = Stuff.CalcMD5(f.FullName);
                     MessageBox.Show("MD5: " + md5, "Commander", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
@@ -1455,9 +1490,21 @@ namespace commander
         }
 
         public Action<IFileInfo> SelectedFileChanged;
+        int itemsCount;
+
+        public void UpdateStatus()
+        {
+            toolStripStatusLabel1.Text = "Files: " + itemsCount;
+            if (listView1.SelectedItems.Count > 1)
+            {
+                toolStripStatusLabel1.Text += " selected: " + listView1.SelectedItems.Count;
+            }
+        }
+
         private void ListView1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (SelectedFile == null) return;
+            UpdateStatus();
             if (SelectedFileChanged != null)
             {
                 SelectedFileChanged(SelectedFile);
@@ -1715,6 +1762,31 @@ namespace commander
                 Stuff.MountInfos.Remove(fr);
                 UpdateList(CurrentDirectory.FullName);
             }
+        }
+
+        private void PropertiesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SelectedFile == null && SelectedDirectory == null) { return; }
+            if (SelectedFile != null)
+            {
+                Stuff.ShowFileProperties(SelectedFile.FullName);
+            }
+            else
+            {
+                Stuff.ShowFileProperties(SelectedDirectory.FullName);
+            }
+        }
+
+        private void addSiteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SelectedFile == null) return;
+            Stuff.OfflineSites.Add(new commander.OfflineSiteInfo() { Path = SelectedFile.FullName });
+            Stuff.IsDirty = true;
+        }
+
+        private void autotegToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("feature is not implemented yet");
         }
     }
 

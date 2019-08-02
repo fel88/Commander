@@ -42,11 +42,12 @@
             this.executeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyPathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.folowInExplorerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.button1 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.folowInExplorerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -144,25 +145,33 @@
             // 
             this.executeToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.executeToolStripMenuItem.Name = "executeToolStripMenuItem";
-            this.executeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.executeToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.executeToolStripMenuItem.Text = "execute";
             this.executeToolStripMenuItem.Click += new System.EventHandler(this.ExecuteToolStripMenuItem_Click);
             // 
             // copyPathToolStripMenuItem
             // 
             this.copyPathToolStripMenuItem.Name = "copyPathToolStripMenuItem";
-            this.copyPathToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.copyPathToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.copyPathToolStripMenuItem.Text = "copy path";
             this.copyPathToolStripMenuItem.Click += new System.EventHandler(this.CopyPathToolStripMenuItem_Click);
             // 
             // deleteFileToolStripMenuItem
             // 
             this.deleteFileToolStripMenuItem.Name = "deleteFileToolStripMenuItem";
-            this.deleteFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.deleteFileToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.deleteFileToolStripMenuItem.Text = "delete file";
+            // 
+            // folowInExplorerToolStripMenuItem
+            // 
+            this.folowInExplorerToolStripMenuItem.Name = "folowInExplorerToolStripMenuItem";
+            this.folowInExplorerToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.folowInExplorerToolStripMenuItem.Text = "folow in explorer";
+            this.folowInExplorerToolStripMenuItem.Click += new System.EventHandler(this.FolowInExplorerToolStripMenuItem_Click);
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.button2);
             this.panel1.Controls.Add(this.button1);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.label2);
@@ -171,31 +180,6 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(702, 44);
             this.panel1.TabIndex = 2;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(69, 8);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(35, 13);
-            this.label1.TabIndex = 3;
-            this.label1.Text = "label1";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(69, 21);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(35, 13);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "label2";
-            // 
-            // folowInExplorerToolStripMenuItem
-            // 
-            this.folowInExplorerToolStripMenuItem.Name = "folowInExplorerToolStripMenuItem";
-            this.folowInExplorerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.folowInExplorerToolStripMenuItem.Text = "folow in explorer";
-            this.folowInExplorerToolStripMenuItem.Click += new System.EventHandler(this.FolowInExplorerToolStripMenuItem_Click);
             // 
             // button1
             // 
@@ -206,6 +190,34 @@
             this.button1.Text = "Refresh";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.Button1_Click);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(168, 8);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(35, 13);
+            this.label1.TabIndex = 3;
+            this.label1.Text = "label1";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(168, 21);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(35, 13);
+            this.label2.TabIndex = 3;
+            this.label2.Text = "label2";
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(69, 3);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(93, 38);
+            this.button2.TabIndex = 5;
+            this.button2.Text = "Remove all duplicates";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // RepeatsWindow
             // 
@@ -243,5 +255,6 @@
         private System.Windows.Forms.ToolStripMenuItem executeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem folowInExplorerToolStripMenuItem;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button2;
     }
 }

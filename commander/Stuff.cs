@@ -61,18 +61,24 @@ namespace commander
             return null;
         }
 
-        public static List<FileInfo> GetAllFiles(DirectoryInfo dir, List<FileInfo> files = null)
+        public static List<IFileInfo> GetAllFiles(IDirectoryInfo dir, List<IFileInfo> files = null, int? level = null, int? maxlevel = null)
         {
+
             if (files == null)
             {
-                files = new List<FileInfo>();
+                files = new List<IFileInfo>();
             }
-
+            if (level != null && maxlevel != null)
+            {
+                if (level.Value > maxlevel.Value) return files;
+            }
             try
             {
+                if (level != null) { level++; }
                 foreach (var d in dir.GetDirectories())
                 {
-                    GetAllFiles(d, files);
+                    
+                    GetAllFiles(d, files, level, maxlevel);
                 }
             }
             catch (UnauthorizedAccessException ex)
@@ -96,6 +102,33 @@ namespace commander
 
             }
             return files;
+        }
+        public static List<IDirectoryInfo> GetAllDirs(IDirectoryInfo dir, List<IDirectoryInfo> dirs = null)
+        {
+            if (dirs == null)
+            {
+                dirs = new List<IDirectoryInfo>();
+            }
+
+            try
+            {
+                dirs.Add(dir);
+                foreach (var d in dir.GetDirectories())
+                {
+                    GetAllDirs(d, dirs);
+                }
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+
+            }
+            catch (Exception ex)
+            {
+                //generate error
+            }
+
+
+            return dirs;
         }
         public static string CalcMD5(string filename)
         {
@@ -135,7 +168,50 @@ namespace commander
 
         }
 
-        public static void ExecuteFile(FileInfo f)
+
+        [DllImport("shell32.dll", CharSet = CharSet.Auto)]
+        static extern bool ShellExecuteEx(ref SHELLEXECUTEINFO lpExecInfo);
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        public struct SHELLEXECUTEINFO
+        {
+            public int cbSize;
+            public uint fMask;
+            public IntPtr hwnd;
+            [MarshalAs(UnmanagedType.LPTStr)]
+            public string lpVerb;
+            [MarshalAs(UnmanagedType.LPTStr)]
+            public string lpFile;
+            [MarshalAs(UnmanagedType.LPTStr)]
+            public string lpParameters;
+            [MarshalAs(UnmanagedType.LPTStr)]
+            public string lpDirectory;
+            public int nShow;
+            public IntPtr hInstApp;
+            public IntPtr lpIDList;
+            [MarshalAs(UnmanagedType.LPTStr)]
+            public string lpClass;
+            public IntPtr hkeyClass;
+            public uint dwHotKey;
+            public IntPtr hIcon;
+            public IntPtr hProcess;
+        }
+
+        private const int SW_SHOW = 5;
+        private const uint SEE_MASK_INVOKEIDLIST = 12;
+        public static bool ShowFileProperties(string Filename)
+        {
+            SHELLEXECUTEINFO info = new SHELLEXECUTEINFO();
+            info.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(info);
+            info.lpVerb = "properties";
+            info.lpFile = Filename;
+            info.nShow = SW_SHOW;
+            info.fMask = SEE_MASK_INVOKEIDLIST;
+            return ShellExecuteEx(ref info);
+        }
+
+
+        public static void ExecuteFile(IFileInfo f)
         {
             ProcessStartInfo psi = new ProcessStartInfo();
             psi.WorkingDirectory = f.DirectoryName;
@@ -268,6 +344,12 @@ namespace commander
                 var f = new FileContextMenuItem() { Title = title, AppName = appName, Arguments = args };
                 Stuff.FileContextMenuItems.Add(f);
             }
+            foreach (var descendant in s.Descendants("site"))
+            {
+                var path = descendant.Value;
+                var f = new OfflineSiteInfo() { Path = path };
+                Stuff.OfflineSites.Add(f);
+            }
         }
 
         public static void SaveSettings()
@@ -340,6 +422,17 @@ namespace commander
                 }
             }
             sb.AppendLine("</fileContextMenuItems>");
+            sb.AppendLine("<offlineSites>");
+
+            foreach (var item in Stuff.OfflineSites)
+            {
+                sb.AppendLine($"<site>");
+                sb.Append("<![CDATA[" + item.Path);
+                sb.Append("]]>");
+                sb.AppendLine("</site>");
+
+            }
+            sb.AppendLine("</offlineSites>");
             sb.AppendLine("</settings>");
             File.WriteAllText("settings.xml", sb.ToString());
         }
@@ -388,7 +481,14 @@ namespace commander
         }
         public static string PasswordHash { get; internal set; }
         public static List<FileContextMenuItem> FileContextMenuItems { get; internal set; } = new List<FileContextMenuItem>();
+        public static List<OfflineSiteInfo> OfflineSites { get; } = new List<OfflineSiteInfo>();
 
         public static List<ShortcutInfo> Shortcuts = new List<ShortcutInfo>();
+    }
+
+    public class OfflineSiteInfo
+    {
+        public string Path;
+        public string Uri;
     }
 }

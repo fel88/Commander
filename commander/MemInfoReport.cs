@@ -48,10 +48,10 @@ namespace commander
         Bitmap bmp;
         Graphics gr;
 
-        public DirectoryInfo CurrentDirectory;
-        public DirectoryInfo StartDirectory = null;
+        public IDirectoryInfo CurrentDirectory;
+        public IDirectoryInfo StartDirectory = null;
         public long TotalLen;
-        public void Init(DirectoryInfo d)
+        public void Init(IDirectoryInfo d)
         {
             if (StartDirectory == null)
             {
@@ -296,7 +296,7 @@ namespace commander
         {
             if (hovered == null) return;
             if (hovered.Tag == null) return;
-            var d = hovered.Tag as DirectoryInfo;
+            var d = hovered.Tag as IDirectoryInfo;
             Init(d);
         }
     }

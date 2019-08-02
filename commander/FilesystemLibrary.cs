@@ -17,7 +17,7 @@ namespace commander
 
         public string[] EnumerateFiles()
         {
-            var dir = new DirectoryInfo(BaseDirectory);
+            var dir = new DirectoryInfoWrapper(BaseDirectory);
             return Stuff.GetAllFiles(dir).Select(z => z.FullName).ToArray();
         }
 

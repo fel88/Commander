@@ -267,6 +267,38 @@ namespace commander
                             to.UpdateList(to.CurrentDirectory.FullName);
                         }
                     }
+                    if (from.SelectedDirectory != null)
+                    {
+                        //copy recursively all files and dirs
+                        var list = Stuff.GetAllFiles(from.SelectedDirectory);
+                        var dirs = Stuff.GetAllDirs(from.SelectedDirectory);
+                        foreach (var item in dirs)
+                        {
+                            var relPath = item.FullName.Replace(from.SelectedDirectory.FullName, "");
+                            var target = Path.Combine(to.CurrentDirectory.FullName, relPath);
+                            if (!Directory.Exists(target))
+                            {
+                                Directory.CreateDirectory(target);
+                            }
+                        }
+                        foreach (var item in list)
+                        {
+                            var relPath = item.FullName.Replace(from.SelectedDirectory.FullName, "").Trim(new char[] { '\\' });
+                            var target = Path.Combine(to.CurrentDirectory.FullName, relPath);
+                            if (File.Exists(target))
+                            {
+                                if (Stuff.Question("File " + target + " already exist. Overwrite?") == DialogResult.Yes)
+                                {
+                                    File.Copy(item.FullName, target, true);
+                                }
+                            }
+                            else
+                            {
+                                File.Copy(item.FullName, target, true);
+                            }
+                        }
+
+                    }
                 }
 
                 if ((fileListControl1.Mode == ViewModeEnum.Filesystem || fileListControl1.Mode == ViewModeEnum.Libraries)
@@ -399,7 +431,35 @@ namespace commander
                 {
                     MessageBox.Show(hash1 + " != " + hash2);
                 }
-
+            }
+            if (fileListControl1.SelectedDirectory != null && fileListControl2.SelectedDirectory != null)
+            {
+                //compare per file
+                var fls = fileListControl1.SelectedDirectory.GetFiles();
+                var fls2 = fileListControl2.SelectedDirectory.GetFiles();
+                var nms1 = fls.Select(z => z.Name).ToArray();
+                var nms2 = fls2.Select(z => z.Name).ToArray();
+                HashSet<string> ss = new HashSet<string>();
+                foreach (var item in nms1)
+                {
+                    ss.Add(item);
+                }
+                List<string> diff = new List<string>();
+                foreach (var item in nms2)
+                {
+                    if (ss.Add(item))
+                    {
+                        diff.Add(item);
+                    }
+                }
+                if (diff.Any())
+                {
+                    Stuff.Warning("There are " + diff.Count + " diff file names.");
+                }
+                else
+                {
+                    Stuff.Info("All names are equal");
+                }
             }
         }
 
@@ -439,7 +499,7 @@ namespace commander
             p.ShowDialog();
         }
 
-        
+
 
         private void ToolStripButton1_Click_1(object sender, EventArgs e)
         {

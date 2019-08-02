@@ -18,13 +18,18 @@ namespace commander
             Stuff.SetDoubleBuffered(listView1);
         }
 
-        public static FileInfo[][] FindRepeats(DirectoryInfo d)
+        public static IFileInfo[][] FindRepeats(DedupContext dup)
         {
-            List<FileInfo> files = new List<FileInfo>();
-            Stuff.GetAllFiles(d, files);
+            List<IFileInfo> files = new List<IFileInfo>();
+            foreach (var d in dup.Dirs)
+            {
+                Stuff.GetAllFiles(d, files);
+            }
+            files.AddRange(dup.Files);
+            
 
             var grp1 = files.GroupBy(z => z.Length).Where(z => z.Count() > 1).ToArray();
-            List<FileInfo[]> groups = new List<FileInfo[]>();
+            List<IFileInfo[]> groups = new List<IFileInfo[]>();
             foreach (var item in grp1)
             {
                 var arr0 = item.GroupBy(z => Stuff.CalcPartMD5(z.FullName, 1024 * 1024)).ToArray();
@@ -35,10 +40,11 @@ namespace commander
 
             return groups.ToArray();
         }
-        public DirectoryInfo Directory;
-        public void SetRepeats(DirectoryInfo dir, FileInfo[][] repeats)
+
+        public DedupContext Context;
+        public void SetRepeats(DedupContext ctx , IFileInfo[][] repeats)
         {
-            Directory = dir;
+            Context = ctx;
             listView1.Items.Clear();
             foreach (var fileInfo in repeats.OrderByDescending(z => z.First().Length * z.Length))
             {
@@ -61,7 +67,7 @@ namespace commander
         {
             if (listView1.SelectedItems.Count > 0)
             {
-                var ff = listView1.SelectedItems[0].Tag as FileInfo[];
+                var ff = listView1.SelectedItems[0].Tag as IFileInfo[];
                 listView2.Items.Clear();
                 foreach (var l in ff)
                 {
@@ -76,7 +82,7 @@ namespace commander
         {
             if (listView2.SelectedItems.Count > 0)
             {
-                var fi = listView2.SelectedItems[0].Tag as FileInfo;
+                var fi = listView2.SelectedItems[0].Tag as IFileInfo;
                 Clipboard.SetText(fi.FullName);
             }
         }
@@ -90,9 +96,9 @@ namespace commander
         {
             if (listView2.SelectedItems.Count > 0)
             {
-                if (listView2.SelectedItems[0].Tag is FileInfo)
+                if (listView2.SelectedItems[0].Tag is IFileInfo)
                 {
-                    var f = listView2.SelectedItems[0].Tag as FileInfo;
+                    var f = listView2.SelectedItems[0].Tag as IFileInfo;
                     Stuff.ExecuteFile(f);
                 }
             }
@@ -105,9 +111,9 @@ namespace commander
         private void FolowInExplorerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (listView2.SelectedItems.Count == 0) return;
-            if (!(listView2.SelectedItems[0].Tag is FileInfo)) return;
+            if (!(listView2.SelectedItems[0].Tag is IFileInfo)) return;
 
-            var finfo = listView2.SelectedItems[0].Tag as FileInfo;
+            var finfo = listView2.SelectedItems[0].Tag as IFileInfo;
 
             var arr = mdi.MainForm.MdiChildren.OfType<Explorer>().ToArray();
             if (arr.Count() == 0)
@@ -125,12 +131,19 @@ namespace commander
         private void Button1_Click(object sender, EventArgs e)
         {
             listView1.Items.Clear();
-            var grps = FindRepeats(Directory);
+            var grps = FindRepeats(Context);
             if (grps.Count() == 0)
             {
                 Stuff.Info("No repeats found.");
             }
-            SetRepeats(Directory, grps);
+            SetRepeats(Context, grps);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+
         }
     }
+
+  
 }
