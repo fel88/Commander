@@ -74,7 +74,7 @@ namespace commander
                 {
                     if (!Stuff.ShowHidden && item.IsHidden) continue;
                     if (!IsFilterPass(item.Name, fltrs)) continue;
-                    listView1.Items.Add(new ListViewItem(new string[] { item.Name }) { Tag = item });
+                    listView1.Items.Add(new ListViewItem(new string[] { item.Name,item.Files.Count+"" }) { Tag = item });
                 }
             }
             else
@@ -106,7 +106,7 @@ namespace commander
                         var f = new FileInfoWrapper(finfo);
                         var tp = FileListControl.GetBitmapOfFile(f.FullName);
                         //bmp.MakeTransparent();
-                       // list.Images.Add(bmp);
+                        // list.Images.Add(bmp);
                         if (!IsFilterPass(f.Name, fltrs)) continue;
                         int iindex = -1;
                         if (tp != null)
@@ -134,7 +134,7 @@ namespace commander
                             })
                             {
                                 BackColor = Color.LightPink,
-                                Tag = new Tuple<FileInfo, Exception>(new FileInfo(finfo), ex),
+                                Tag = new Tuple<IFileInfo, Exception>(new FileInfoWrapper(finfo), ex),
 
                             });
                     }
@@ -258,18 +258,18 @@ namespace commander
                         UpdateList(null);
                     }
                 }
-                else if (tag is FileInfo)
+                else if (tag is IFileInfo)
                 {
-                    var f = tag as FileInfo;
+                    var f = tag as IFileInfo;
                     if (Stuff.Question("Are you sure to delete tag " + CurrentTag.Name + " from " + f.Name + " file?") == DialogResult.Yes)
                     {
                         CurrentTag.DeleteFile(f.FullName);
                         UpdateList(CurrentTag);
                     }
                 }
-                else if (tag is Tuple<FileInfo, Exception>)
+                else if (tag is Tuple<IFileInfo, Exception>)
                 {
-                    var fl = tag as Tuple<FileInfo, Exception>;
+                    var fl = tag as Tuple<IFileInfo, Exception>;
                     var f = fl.Item1;
                     CurrentTag.DeleteFile(f.FullName);
                     UpdateList(CurrentTag);
@@ -284,6 +284,19 @@ namespace commander
         private void ToIsoToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void copyPathToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+                var tag = listView1.SelectedItems[0].Tag;
+                if (tag is IFileInfo)
+                {
+                    var f = tag as IFileInfo;
+                    Clipboard.SetText(f.FullName);                    
+                }
+            }
         }
     }
 }

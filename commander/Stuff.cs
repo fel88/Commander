@@ -77,7 +77,7 @@ namespace commander
                 if (level != null) { level++; }
                 foreach (var d in dir.GetDirectories())
                 {
-                    
+
                     GetAllFiles(d, files, level, maxlevel);
                 }
             }
@@ -139,6 +139,15 @@ namespace commander
                     var hash = md5.ComputeHash(stream);
                     return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
                 }
+            }
+
+        }
+        public static string CalcMD5(MemoryStream ms)
+        {
+            using (var md5 = MD5.Create())
+            {
+                var hash = md5.ComputeHash(ms);
+                return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
             }
 
         }

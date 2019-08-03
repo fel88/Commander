@@ -134,7 +134,7 @@ namespace commander
             var grps = FindRepeats(Context);
             if (grps.Count() == 0)
             {
-                Stuff.Info("No repeats found.");
+                Stuff.Info("No duplicates found.");
             }
             SetRepeats(Context, grps);
         }
@@ -143,7 +143,10 @@ namespace commander
         {
 
         }
-    }
 
-  
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+    }
 }

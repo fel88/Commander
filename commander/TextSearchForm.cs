@@ -179,6 +179,7 @@ namespace commander
                         {
                             fileProcessed();
                             if (!IsExtFilterPass(textBox3.Text, item.Extension)) continue;
+                            if (!IsMd5FilterPass(textBox6.Text, item)) continue;
                             //if (!item.Extension.Contains(textBox3.Text)) continue;
                             if (!item.Name.ToLower().Contains(textBox4.Text.ToLower())) continue;
                             bool add = false;
@@ -218,6 +219,15 @@ namespace commander
 
                 }
             }
+        }
+
+        private bool IsMd5FilterPass(string text, IFileInfo item)
+        {
+            if (string.IsNullOrEmpty(text)) return true;
+            if (!(item is FileInfoWrapper)) return true;
+            var md5 = Stuff.CalcMD5((item as FileInfoWrapper).FullName);
+            return (md5 == text);          
+
         }
 
         public void rec1(DirectoryInfo d, Action fileProcessed)
@@ -426,7 +436,7 @@ namespace commander
             }*/
             if (listView2.SelectedItems.Count > 0)
             {
-                var f = listView2.SelectedItems[0].Tag as FileInfo;
+                var f = listView2.SelectedItems[0].Tag as IFileInfo;
                 var exps = mdi.MainForm.MdiChildren.OfType<Explorer>().ToArray();
                 if (exps.Any())
                 {

@@ -4,6 +4,8 @@
     {
         public IDirectoryInfo[] Dirs;
         public IFileInfo[] Files;
+        public bool EnablePartCheck;
+        public int SizeCheckPart;
 
 
         public DedupContext(IDirectoryInfo[] directoryInfo, IFileInfo[] fileInfo)

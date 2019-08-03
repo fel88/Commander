@@ -947,10 +947,7 @@ namespace commander
 
             toolStrip1.Items.Add(b);
         }
-        private void button1_Click(object sender, EventArgs e)
-        {
-
-        }
+      
 
         public string TabOwnerString;
         private Control todel;
@@ -988,60 +985,7 @@ namespace commander
             }
         }
 
-        private void openInHexToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (listView1.SelectedItems.Count > 0)
-            {
-
-                if (listView1.SelectedItems[0].Tag is FileInfo)
-                {
-                    var d = listView1.SelectedItems[0].Tag as FileInfo;
-                    HexEditor hex = new HexEditor();
-                    hex.OpenFile(d.FullName);
-                    hex.Show();
-
-                }
-
-            }
-        }
-
-        private void searcToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (listView1.SelectedItems.Count > 0)
-            {
-                if (listView1.SelectedItems[0].Tag is IDirectoryInfo)
-                {
-                    var d = listView1.SelectedItems[0].Tag as IDirectoryInfo;
-                    TextSearchForm tsf = new TextSearchForm();
-                    tsf.SetPath(d.FullName);
-                    tsf.Show();
-
-                }
-                else
-                if (listView1.SelectedItems[0].Tag is IFileInfo)
-                {
-                    var d = listView1.SelectedItems[0].Tag as IFileInfo;
-                    TextSearchForm tsf = new TextSearchForm();
-                    tsf.SetPath(d.DirectoryName);
-                    tsf.Show();
-                }
-            }
-        }
-
-        private void openInImageViewerToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (listView1.SelectedItems.Count > 0)
-            {
-
-                if (listView1.SelectedItems[0].Tag is FileInfo)
-                {
-                    var d = listView1.SelectedItems[0].Tag as FileInfo;
-                    ImageViewer tsf = new ImageViewer();
-                    tsf.SetBitmap(Bitmap.FromFile(d.FullName) as Bitmap);
-                    tsf.Show();
-                }
-            }
-        }
+    
 
         void RunCmd(string path)
         {
@@ -1081,129 +1025,7 @@ namespace commander
             UpdateList(CurrentDirectory.FullName, textBox2.Text);
         }
 
-        private void calcMemToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (listView1.SelectedItems.Count > 0)
-            {
-                var tag = listView1.SelectedItems[0].Tag;
-                if (listView1.SelectedItems.Count == 1 && (tag is DirectoryInfoWrapper || tag is FilesystemLibrary))
-                {
-                    IDirectoryInfo d = null;
-                    if (tag is FilesystemLibrary)
-                    {
-                        var l = tag as FilesystemLibrary;
-                        d = new DirectoryInfoWrapper(l.BaseDirectory);
-                    }
-                    else
-                    {
-                        d = (listView1.SelectedItems[0].Tag as DirectoryInfoWrapper);
-                    }
-                    List<IFileInfo> files = new List<IFileInfo>();
-                    Stuff.GetAllFiles(d, files);
-                    var total = files.Sum(z => z.Length);
-                    if (Stuff.Question("Total size: " + Stuff.GetUserFriendlyFileSize(total) + ", show report?") == DialogResult.Yes)
-                    {
-                        MemInfoReport rep = new MemInfoReport();
-                        rep.MdiParent = mdi.MainForm;
-                        rep.Init(d);
-                        rep.Show();
-                    }
-                }
-                else
-                {
-                    //bool allFiles = true;
-                    List<IFileInfo> files = new List<IFileInfo>();
-                    long total = 0;
-                    for (int i = 0; i < listView1.SelectedItems.Count; i++)
-                    {
-                        var tag1 = listView1.SelectedItems[i].Tag;
-                        if (tag1 is IDirectoryInfo)
-                        {
-                            var list = Stuff.GetAllFiles(tag1 as IDirectoryInfo);
-                            total += list.Sum(z => z.Length);
-                        }
-                        if (tag1 is IFileInfo)
-                        {
-                            files.Add(tag1 as IFileInfo);
-                            // allFiles = false;
-                            //break;
-                        }
-
-                    }
-
-                    total += files.Sum(z => z.Length);
-                    //if (allFiles)
-                    {
-                        Stuff.Info("Total size: " + Stuff.GetUserFriendlyFileSize(total));
-                    }
-                }
-            }
-        }
-
-        private void findFileRepeatsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (listView1.SelectedItems.Count > 0)
-            {
-                var tag = listView1.SelectedItems[0].Tag;
-                if (tag is IDirectoryInfo || tag is FilesystemLibrary)
-                {
-
-                    IDirectoryInfo d = null;
-                    if (tag is FilesystemLibrary)
-                    {
-                        var l = tag as FilesystemLibrary;
-                        d = new DirectoryInfoWrapper(l.BaseDirectory);
-                    }
-                    else
-                    {
-                        d = listView1.SelectedItems[0].Tag as IDirectoryInfo;
-                    }
-                    DedupContext ctx = new DedupContext(new[] { d }, new IFileInfo[] { });
-                    var groups = RepeatsWindow.FindRepeats(ctx);
-                    if (groups.Count() == 0)
-                    {
-                        Stuff.Info("No repeates found.");
-                    }
-                    else
-                    {
-                        RepeatsWindow rp = new RepeatsWindow();
-                        rp.MdiParent = mdi.MainForm;
-                        rp.SetRepeats(ctx, groups.ToArray());
-                        rp.Show();
-                    }
-                }
-                else
-                {
-                    List<IFileInfo> ff = new List<IFileInfo>();
-                    List<IDirectoryInfo> dd = new List<IDirectoryInfo>();
-                    for (int i = 0; i < listView1.SelectedItems.Count; i++)
-                    {
-                        var tag0 = listView1.SelectedItems[i].Tag;
-                        if (tag0 is IFileInfo)
-                        {
-                            ff.Add(tag0 as IFileInfo);
-                        }
-                        if (tag0 is IDirectoryInfo)
-                        {
-                            dd.Add(tag0 as IDirectoryInfo);
-                        }
-                    }
-                    DedupContext ctx = new DedupContext(dd.ToArray(), ff.ToArray());
-                    var groups = RepeatsWindow.FindRepeats(ctx);
-                    if (groups.Count() == 0)
-                    {
-                        Stuff.Info("No repeates found.");
-                    }
-                    else
-                    {
-                        RepeatsWindow rp = new RepeatsWindow();
-                        rp.MdiParent = mdi.MainForm;
-                        rp.SetRepeats(ctx, groups.ToArray());
-                        rp.Show();
-                    }
-                }
-            }
-        }
+   
 
 
         void ExecuteSelected()
@@ -1369,24 +1191,7 @@ namespace commander
 
         }
 
-        private void CalcMd5ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (listView1.SelectedItems.Count > 0)
-            {
-                if (listView1.SelectedItems[0].Tag is IFileInfo)
-                {
-                    var f = listView1.SelectedItems[0].Tag as IFileInfo;
-                    var md5 = Stuff.CalcMD5(f.FullName);
-                    MessageBox.Show("MD5: " + md5, "Commander", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            }
-        }
-
-        private void NewTextFileToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-
-        }
+        
 
         private void TxtFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -1465,8 +1270,8 @@ namespace commander
                                     item.DeleteFile(f.FullName);
                                 }
                             }
-                            File.Delete(f.FullName);
-                            UpdateList(CurrentDirectory.FullName);
+                            File.Delete(f.FullName);                            
+                            UpdateList(CurrentDirectory.FullName);                            
                         }
                     }
 
@@ -1787,6 +1592,212 @@ namespace commander
         private void autotegToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MessageBox.Show("feature is not implemented yet");
+        }
+
+        private void copyPathToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SelectedFile == null && SelectedDirectory == null) { return; }
+            if (SelectedFile != null)
+            {
+                Clipboard.SetText(SelectedFile.FullName);
+            }
+            else
+            {
+                Clipboard.SetText(SelectedDirectory.FullName);
+            }
+        }
+
+        private void calcMemToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+                var tag = listView1.SelectedItems[0].Tag;
+                if (listView1.SelectedItems.Count == 1 && (tag is DirectoryInfoWrapper || tag is FilesystemLibrary))
+                {
+                    IDirectoryInfo d = null;
+                    if (tag is FilesystemLibrary)
+                    {
+                        var l = tag as FilesystemLibrary;
+                        d = new DirectoryInfoWrapper(l.BaseDirectory);
+                    }
+                    else
+                    {
+                        d = (listView1.SelectedItems[0].Tag as DirectoryInfoWrapper);
+                    }
+                    List<IFileInfo> files = new List<IFileInfo>();
+                    Stuff.GetAllFiles(d, files);
+                    var total = files.Sum(z => z.Length);
+                    if (Stuff.Question("Total size: " + Stuff.GetUserFriendlyFileSize(total) + ", show report?") == DialogResult.Yes)
+                    {
+                        MemInfoReport rep = new MemInfoReport();
+                        rep.MdiParent = mdi.MainForm;
+                        rep.Init(d);
+                        rep.Show();
+                    }
+                }
+                else
+                {
+                    //bool allFiles = true;
+                    List<IFileInfo> files = new List<IFileInfo>();
+                    long total = 0;
+                    for (int i = 0; i < listView1.SelectedItems.Count; i++)
+                    {
+                        var tag1 = listView1.SelectedItems[i].Tag;
+                        if (tag1 is IDirectoryInfo)
+                        {
+                            var list = Stuff.GetAllFiles(tag1 as IDirectoryInfo);
+                            total += list.Sum(z => z.Length);
+                        }
+                        if (tag1 is IFileInfo)
+                        {
+                            files.Add(tag1 as IFileInfo);
+                            // allFiles = false;
+                            //break;
+                        }
+
+                    }
+
+                    total += files.Sum(z => z.Length);
+                    //if (allFiles)
+                    {
+                        Stuff.Info("Total size: " + Stuff.GetUserFriendlyFileSize(total));
+                    }
+                }
+            }
+        }
+
+        private void deduplicationsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+                var tag = listView1.SelectedItems[0].Tag;
+                if (tag is IDirectoryInfo || tag is FilesystemLibrary)
+                {
+
+                    IDirectoryInfo d = null;
+                    if (tag is FilesystemLibrary)
+                    {
+                        var l = tag as FilesystemLibrary;
+                        d = new DirectoryInfoWrapper(l.BaseDirectory);
+                    }
+                    else
+                    {
+                        d = listView1.SelectedItems[0].Tag as IDirectoryInfo;
+                    }
+                    DedupContext ctx = new DedupContext(new[] { d }, new IFileInfo[] { });
+                    var groups = RepeatsWindow.FindRepeats(ctx);
+                    if (groups.Count() == 0)
+                    {
+                        Stuff.Info("No repeates found.");
+                    }
+                    else
+                    {
+                        RepeatsWindow rp = new RepeatsWindow();
+                        rp.MdiParent = mdi.MainForm;
+                        rp.SetRepeats(ctx, groups.ToArray());
+                        rp.Show();
+                    }
+                }
+                else
+                {
+                    List<IFileInfo> ff = new List<IFileInfo>();
+                    List<IDirectoryInfo> dd = new List<IDirectoryInfo>();
+                    for (int i = 0; i < listView1.SelectedItems.Count; i++)
+                    {
+                        var tag0 = listView1.SelectedItems[i].Tag;
+                        if (tag0 is IFileInfo)
+                        {
+                            ff.Add(tag0 as IFileInfo);
+                        }
+                        if (tag0 is IDirectoryInfo)
+                        {
+                            dd.Add(tag0 as IDirectoryInfo);
+                        }
+                    }
+                    DedupContext ctx = new DedupContext(dd.ToArray(), ff.ToArray());
+                    var groups = RepeatsWindow.FindRepeats(ctx);
+                    if (groups.Count() == 0)
+                    {
+                        Stuff.Info("No repeates found.");
+                    }
+                    else
+                    {
+                        RepeatsWindow rp = new RepeatsWindow();
+                        rp.MdiParent = mdi.MainForm;
+                        rp.SetRepeats(ctx, groups.ToArray());
+                        rp.Show();
+                    }
+                }
+            }
+        }
+
+        private void calcMd5ToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+                if (listView1.SelectedItems[0].Tag is IFileInfo)
+                {
+                    var f = listView1.SelectedItems[0].Tag as IFileInfo;
+                    var md5 = Stuff.CalcMD5(f.FullName);
+                    Clipboard.SetText(md5);
+                    MessageBox.Show("MD5: " + md5, "Commander", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+        }
+
+        private void searchToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+                if (listView1.SelectedItems[0].Tag is IDirectoryInfo)
+                {
+                    var d = listView1.SelectedItems[0].Tag as IDirectoryInfo;
+                    TextSearchForm tsf = new TextSearchForm();
+                    tsf.SetPath(d.FullName);
+                    tsf.Show();
+
+                }
+                else
+                if (listView1.SelectedItems[0].Tag is IFileInfo)
+                {
+                    var d = listView1.SelectedItems[0].Tag as IFileInfo;
+                    TextSearchForm tsf = new TextSearchForm();
+                    tsf.SetPath(d.DirectoryName);
+                    tsf.Show();
+                }
+            }
+        }
+
+        private void opeInHexToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+
+                if (listView1.SelectedItems[0].Tag is FileInfo)
+                {
+                    var d = listView1.SelectedItems[0].Tag as FileInfo;
+                    HexEditor hex = new HexEditor();
+                    hex.OpenFile(d.FullName);
+                    hex.Show();
+
+                }
+
+            }
+        }
+
+        private void openInImageViewerToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+
+                if (listView1.SelectedItems[0].Tag is FileInfo)
+                {
+                    var d = listView1.SelectedItems[0].Tag as FileInfo;
+                    ImageViewer tsf = new ImageViewer();
+                    tsf.SetBitmap(Bitmap.FromFile(d.FullName) as Bitmap);
+                    tsf.Show();
+                }
+            }
         }
     }
 
