@@ -18,7 +18,17 @@ namespace commander
             InitializeComponent();
             EnableDoubleBuffer(listView2);
 
+            textBox8.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            textBox8.AutoCompleteSource = AutoCompleteSource.CustomSource;
+            var acsc = new AutoCompleteStringCollection();
+            acsc.AddRange(Stuff.Tags.Where(z => !z.IsHidden || (z.IsHidden && Stuff.ShowHidden)).Select(z => z.Name).ToArray());
+            textBox8.AutoCompleteCustomSource = acsc;
+            previewPbox.SizeMode = PictureBoxSizeMode.Zoom;
+            previewPbox.Dock = DockStyle.Fill;            
         }
+
+        PictureBox previewPbox = new PictureBox();
+
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern int SendMessage(IntPtr handle, int messg, int wparam, int lparam);
 
@@ -153,6 +163,7 @@ namespace commander
             public int Level;
             public IDirectoryInfo Info;
         }
+        public HashSet<string> searchHash = new HashSet<string>();
         public void loop(IDirectoryInfo _d, Action fileProcessed, int? maxLevel)
         {
 
@@ -180,8 +191,22 @@ namespace commander
                             fileProcessed();
                             if (!IsExtFilterPass(textBox3.Text, item.Extension)) continue;
                             if (!IsMd5FilterPass(textBox6.Text, item)) continue;
+                            if (tagStorageSearchMode)
+                            {
+
+                                if (!tagFilters.All(z => z.Files.Contains(item.FullName)))
+                                {
+                                    continue;
+
+                                }
+                                if (!searchHash.Add(item.FullName))
+                                {
+                                    continue;
+                                }
+                            }
                             //if (!item.Extension.Contains(textBox3.Text)) continue;
                             if (!item.Name.ToLower().Contains(textBox4.Text.ToLower())) continue;
+
                             bool add = false;
                             if (!string.IsNullOrEmpty(textBox2.Text))
                             {
@@ -226,7 +251,7 @@ namespace commander
             if (string.IsNullOrEmpty(text)) return true;
             if (!(item is FileInfoWrapper)) return true;
             var md5 = Stuff.CalcMD5((item as FileInfoWrapper).FullName);
-            return (md5 == text);          
+            return (md5 == text);
 
         }
 
@@ -284,44 +309,59 @@ namespace commander
             button1.Text = "Stop";
 
             var spl = textBox1.Text.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
-            var dd = (spl.Select(z => new DirectoryInfoWrapper(z)));
-
+            var dd = (spl.Select(z => new DirectoryInfoWrapper(z))).OfType<IDirectoryInfo>().ToList();
+            if (tagStorageSearchMode)
+            {
+                dd = Stuff.Tags.Select(z => new VirtualDirectoryInfo() { ChildsFiles = z.Files.Select(u => new FileInfoWrapper(u)).OfType<IFileInfo>().ToList() }).OfType<IDirectoryInfo>().ToList();
+            }
 
             searchThread = new Thread(() =>
+         {
+             List<IFileInfo> files = new List<IFileInfo>();
+
+             if (tagStorageSearchMode)
              {
-                 List<IFileInfo> files = new List<IFileInfo>();
+                 foreach (var item in Stuff.Tags)
+                 {
+                     files.AddRange(item.Files.Select(z => new FileInfoWrapper(z)));
+                 }
+             }
+             else
+             {
                  foreach (var item in dd)
                  {
                      files.AddRange(Stuff.GetAllFiles(item, level: 0, maxlevel: (int)numericUpDown1.Value));
                  }
+             }
 
-                 progressBar1.Invoke((Action)(() =>
+             progressBar1.Invoke((Action)(() =>
+             {
+                 progressBar1.Value = 0;
+                 progressBar1.Maximum = files.Count;
+             }));
+
+
+             listView2.Items.Clear();
+             searchHash.Clear();
+             foreach (var d in dd)
+             {
+                 loop(d, () =>
                  {
-                     progressBar1.Value = 0;
-                     progressBar1.Maximum = files.Count;
-                 }));
-
-
-                 listView2.Items.Clear();
-                 foreach (var d in dd)
-                 {
-                     loop(d, () =>
+                     progressBar1.Invoke((Action)(() =>
                      {
-                         progressBar1.Invoke((Action)(() =>
-                         {
-                             progressBar1.Value++;
-                         }));
-                     }, (int)numericUpDown1.Value);
-                 }
+                         progressBar1.Value++;
+                     }));
+                 }, (int)numericUpDown1.Value);
+             }
 
-                 //rec1(d, () => { progressBar1.Value++; });
-                 progressBar1.Invoke((Action)(() =>
-                 {
-                     toolStripStatusLabel1.Text = "Files found: " + listView2.Items.Count;
-                     button1.Text = "Start";
-                 }));
-                 searchThread = null;
-             });
+             //rec1(d, () => { progressBar1.Value++; });
+             progressBar1.Invoke((Action)(() =>
+         {
+             toolStripStatusLabel1.Text = "Files found: " + listView2.Items.Count;
+             button1.Text = "Start";
+         }));
+             searchThread = null;
+         });
             searchThread.IsBackground = true;
             searchThread.Start();
 
@@ -339,6 +379,16 @@ namespace commander
                 richTextBox1.Clear();
                 richTextBox1.BackColor = Color.Gray;
                 richTextBox1.Enabled = false;
+                panel2.Controls.Clear();
+                if (f.Extension.EndsWith("png") || f.Extension.EndsWith("jpg"))
+                {
+                    previewPbox.Image = Bitmap.FromFile(f.FullName);
+                    panel2.Controls.Add(previewPbox);
+                }
+                else
+                {
+                    panel2.Controls.Add(richTextBox1);
+                }
                 if (f.Length < maxShowableFileSize * 1024)
                 {
                     richTextBox1.BackColor = Color.White;
@@ -461,6 +511,39 @@ namespace commander
             {
 
             }
+        }
+        List<TagInfo> tagFilters = new List<TagInfo>();
+
+        public bool tagStorageSearchMode = false;
+        private void Button2_Click(object sender, EventArgs e)
+        {
+            var fr = Stuff.Tags.FirstOrDefault(z => z.Name == textBox8.Text);
+            if (fr == null) return;
+            if (tagFilters.Contains(fr)) return;
+            tagFilters.Add(fr);
+            UpdateTagFiltersText();
+        }
+
+        void UpdateTagFiltersText()
+        {
+            textBox7.Text = tagFilters.Aggregate("", (x, y) => x + y.Name + "; ");
+        }
+
+        private void Button3_Click(object sender, EventArgs e)
+        {
+            tagFilters.Clear();
+            UpdateTagFiltersText();
+        }
+
+        private void TextBox8_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void CheckBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            textBox1.Enabled = !checkBox1.Checked;
+            tagStorageSearchMode = checkBox1.Checked;
         }
     }
 }

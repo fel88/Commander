@@ -41,6 +41,7 @@
             this.packToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toIsoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyPathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.memToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -53,6 +54,7 @@
             this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listView1.FullRowSelect = true;
             this.listView1.GridLines = true;
+            this.listView1.HideSelection = false;
             this.listView1.Location = new System.Drawing.Point(0, 0);
             this.listView1.Name = "listView1";
             this.listView1.Size = new System.Drawing.Size(447, 286);
@@ -79,14 +81,15 @@
             this.setHiddenToolStripMenuItem,
             this.deleteToolStripMenuItem,
             this.packToolStripMenuItem,
-            this.copyPathToolStripMenuItem});
+            this.copyPathToolStripMenuItem,
+            this.memToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(153, 136);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(128, 136);
             // 
             // addTagToolStripMenuItem
             // 
             this.addTagToolStripMenuItem.Name = "addTagToolStripMenuItem";
-            this.addTagToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.addTagToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
             this.addTagToolStripMenuItem.Text = "add tag";
             this.addTagToolStripMenuItem.Click += new System.EventHandler(this.AddTagToolStripMenuItem_Click);
             // 
@@ -96,7 +99,7 @@
             this.trueToolStripMenuItem,
             this.falseToolStripMenuItem});
             this.setHiddenToolStripMenuItem.Name = "setHiddenToolStripMenuItem";
-            this.setHiddenToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.setHiddenToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
             this.setHiddenToolStripMenuItem.Text = "set hide";
             // 
             // trueToolStripMenuItem
@@ -116,7 +119,7 @@
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
             this.deleteToolStripMenuItem.Text = "delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.DeleteToolStripMenuItem_Click);
             // 
@@ -125,7 +128,7 @@
             this.packToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toIsoToolStripMenuItem});
             this.packToolStripMenuItem.Name = "packToolStripMenuItem";
-            this.packToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.packToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
             this.packToolStripMenuItem.Text = "pack";
             // 
             // toIsoToolStripMenuItem
@@ -138,9 +141,16 @@
             // copyPathToolStripMenuItem
             // 
             this.copyPathToolStripMenuItem.Name = "copyPathToolStripMenuItem";
-            this.copyPathToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.copyPathToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
             this.copyPathToolStripMenuItem.Text = "copy path";
             this.copyPathToolStripMenuItem.Click += new System.EventHandler(this.copyPathToolStripMenuItem_Click);
+            // 
+            // memToolStripMenuItem
+            // 
+            this.memToolStripMenuItem.Name = "memToolStripMenuItem";
+            this.memToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
+            this.memToolStripMenuItem.Text = "mem";
+            this.memToolStripMenuItem.Click += new System.EventHandler(this.MemToolStripMenuItem_Click);
             // 
             // TagListViewControl
             // 
@@ -168,5 +178,6 @@
         private System.Windows.Forms.ToolStripMenuItem packToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toIsoToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyPathToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem memToolStripMenuItem;
     }
 }

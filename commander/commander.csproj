@@ -105,6 +105,13 @@
       <DependentUpon>Explorer.cs</DependentUpon>
     </Compile>
     <Compile Include="FilesystemLibrary.cs" />
+    <Compile Include="QuickTagsWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="QuickTagsWindow.Designer.cs">
+      <DependentUpon>QuickTagsWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VirtualDirectoryInfo.cs" />
     <Compile Include="VkExtractorForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -267,6 +274,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Explorer.resx">
       <DependentUpon>Explorer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="QuickTagsWindow.resx">
+      <DependentUpon>QuickTagsWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="VkExtractorForm.resx">
       <DependentUpon>VkExtractorForm.cs</DependentUpon>

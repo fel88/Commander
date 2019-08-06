@@ -14,6 +14,7 @@ using System.Threading;
 using System.Drawing.Imaging;
 using commander.Properties;
 using isoViewer;
+using System.Xml.Linq;
 
 namespace commander
 {
@@ -23,6 +24,7 @@ namespace commander
         {
             InitializeComponent();
             listView1.ColumnClick += ListView1_ColumnClick;
+            listView1.HideSelection = false;
             watcher.Changed += Watcher_Changed;
             Stuff.SetDoubleBuffered(listView1);
             tagControl.Init(this);
@@ -55,6 +57,13 @@ namespace commander
             }
             RunPreview();
         }
+
+        internal void AddSelectedFileChangedAction(Action<IFileInfo> p)
+        {
+            SelectedFileChangedDelegates.Add(p);
+        }
+
+        public event Action<IFileInfo> SelectedFileChanged;
 
         private void ListView1_MouseUp(object sender, MouseEventArgs e)
         {
@@ -416,6 +425,15 @@ namespace commander
         {
             if (!forceCloseMenu)
             {
+                foreach (var item in setTagsToolStripMenuItem.DropDownItems)
+                {
+                    if (!(item is ToolStripMenuItem)) continue;
+                    var mi = (item as ToolStripMenuItem);
+                    if (mi != sender && !mi.Pressed)
+                    {
+                        return;
+                    }
+                }
                 if (setTagsToolStripMenuItem.Pressed) e.Cancel = true;
             }
         }
@@ -612,7 +630,7 @@ namespace commander
             {
                 UpdateList(new DirectoryInfoWrapper(path), filter);
             }
-            UpdateStatus();            
+            UpdateStatus();
         }
         public void UpdateList(IDirectoryInfo path, string filter)
         {
@@ -681,7 +699,7 @@ namespace commander
                 AppendFilesToList(path.GetFiles().ToArray(), fltrs);
                 listView1.EndUpdate();
                 UpdateStatus();
-                
+
             }
             catch (Exception ex)
             {
@@ -947,7 +965,7 @@ namespace commander
 
             toolStrip1.Items.Add(b);
         }
-      
+
 
         public string TabOwnerString;
         private Control todel;
@@ -985,7 +1003,7 @@ namespace commander
             }
         }
 
-    
+
 
         void RunCmd(string path)
         {
@@ -1025,7 +1043,7 @@ namespace commander
             UpdateList(CurrentDirectory.FullName, textBox2.Text);
         }
 
-   
+
 
 
         void ExecuteSelected()
@@ -1191,7 +1209,7 @@ namespace commander
 
         }
 
-        
+
 
         private void TxtFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -1270,8 +1288,8 @@ namespace commander
                                     item.DeleteFile(f.FullName);
                                 }
                             }
-                            File.Delete(f.FullName);                            
-                            UpdateList(CurrentDirectory.FullName);                            
+                            File.Delete(f.FullName);
+                            UpdateList(CurrentDirectory.FullName);
                         }
                     }
 
@@ -1294,7 +1312,7 @@ namespace commander
             DeleteSelected();
         }
 
-        public Action<IFileInfo> SelectedFileChanged;
+        public List<Action<IFileInfo>> SelectedFileChangedDelegates = new List<Action<IFileInfo>>();
         int itemsCount;
 
         public void UpdateStatus()
@@ -1310,9 +1328,17 @@ namespace commander
         {
             if (SelectedFile == null) return;
             UpdateStatus();
-            if (SelectedFileChanged != null)
+            if (SelectedFileChangedDelegates.Any())
             {
-                SelectedFileChanged(SelectedFile);
+                if (SelectedFileChanged != null)
+                {
+                    SelectedFileChanged(SelectedFile);
+                }
+                foreach (var item in SelectedFileChangedDelegates)
+                {
+                    item(SelectedFile);
+                }
+
             }
         }
 
@@ -1358,18 +1384,7 @@ namespace commander
 
         private void MakeLibraryToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (listView1.SelectedItems.Count > 0)
-            {
-                if (listView1.SelectedItems[0].Tag is DirectoryInfo)
-                {
-                    var f = listView1.SelectedItems[0].Tag as DirectoryInfo;
-                    if (MessageBox.Show("Make " + f.Name + " library?", "Commander", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                    {
-                        Stuff.Libraries.Add(new FilesystemLibrary() { BaseDirectory = f.FullName, Name = f.Name });
-                        Stuff.IsDirty = true;
-                    }
-                }
-            }
+
         }
 
         private void ExecuteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1390,14 +1405,44 @@ namespace commander
                 if (!(tag is IFileInfo)) return;
                 var fi = tag as IFileInfo;
 
-                foreach (var item in Stuff.Tags)
+                List<TagInfo> cands = new List<TagInfo>();
+                foreach (var item in Stuff.Tags.OrderBy(z => z.Name))
                 {
                     if (item.IsHidden && !Stuff.ShowHidden) continue;
+                    cands.Add(item);
+                }
 
-                    var ss = new ToolStripMenuItem(item.Name) { CheckOnClick = true, CheckState = item.Files.Contains(fi.FullName) ? CheckState.Checked : CheckState.Unchecked };
-                    ss.Tag = new Tuple<TagInfo, IFileInfo>(item, fi);
-                    ss.CheckedChanged += Ss_CheckedChanged;
-                    setTagsToolStripMenuItem.DropDownItems.Add(ss);
+                if (cands.Count > 20)
+                {
+                    int grps = cands.Count / 20;
+                    int index = 0;
+                    List<ToolStripMenuItem> ii = new List<ToolStripMenuItem>();
+                    for (int i = 0; i < grps; i++)
+                    {
+                        ToolStripMenuItem grp1 = new ToolStripMenuItem("Group #" + i);
+                        setTagsToolStripMenuItem.DropDownItems.Add(grp1);
+                        grp1.DropDown.Closing += DropDown_Closing;
+                        for (int j = 0; j < 20; j++)
+                        {
+                            var item = cands[index++];
+                            var ss = new ToolStripMenuItem(item.Name) { CheckOnClick = true, CheckState = item.Files.Contains(fi.FullName) ? CheckState.Checked : CheckState.Unchecked };
+                            ss.Tag = new Tuple<TagInfo, IFileInfo>(item, fi);
+                            ss.CheckedChanged += Ss_CheckedChanged;
+                            grp1.DropDownItems.Add(ss);
+                        }
+                    }
+
+
+                }
+                else
+                {
+                    foreach (var item in cands)
+                    {
+                        var ss = new ToolStripMenuItem(item.Name) { CheckOnClick = true, CheckState = item.Files.Contains(fi.FullName) ? CheckState.Checked : CheckState.Unchecked };
+                        ss.Tag = new Tuple<TagInfo, IFileInfo>(item, fi);
+                        ss.CheckedChanged += Ss_CheckedChanged;
+                        setTagsToolStripMenuItem.DropDownItems.Add(ss);
+                    }
                 }
             }
             if (listView1.SelectedItems.Count > 1)
@@ -1585,8 +1630,15 @@ namespace commander
         private void addSiteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (SelectedFile == null) return;
-            Stuff.OfflineSites.Add(new commander.OfflineSiteInfo() { Path = SelectedFile.FullName });
-            Stuff.IsDirty = true;
+            if (Stuff.OfflineSites.Any(z => z.Path == SelectedFile.FullName))
+            {
+                Stuff.Warning("Already exist"); ;
+            }
+            else
+            {
+                Stuff.OfflineSites.Add(new commander.OfflineSiteInfo() { Path = SelectedFile.FullName });
+                Stuff.IsDirty = true;
+            }
         }
 
         private void autotegToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1799,6 +1851,137 @@ namespace commander
                 }
             }
         }
+
+        private void MakeLibraryToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+                if (listView1.SelectedItems[0].Tag is DirectoryInfo)
+                {
+                    var f = listView1.SelectedItems[0].Tag as DirectoryInfo;
+                    if (MessageBox.Show("Make " + f.Name + " library?", "Commander", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    {
+                        Stuff.Libraries.Add(new FilesystemLibrary() { BaseDirectory = f.FullName, Name = f.Name });
+                        Stuff.IsDirty = true;
+                    }
+                }
+            }
+        }
+
+        private void IsoMergeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SelectedFile == null) return;
+            if (!SelectedFile.Extension.EndsWith("iso")) { Stuff.Warning("Choose iso image library file."); return; }
+            //merge tags, files exract (or not extract use as mount drive)
+            //read .indx dir and get meta.xml file. get tags and files. then extract all files some where,or not extract.
+
+            isoViewer.IsoReader reader = new IsoReader();
+            reader.Parse(SelectedFile.FullName);
+            var recs = DirectoryRecord.GetAllRecords(reader.WorkPvd.RootDir);
+            var meta = recs.FirstOrDefault(z => z.IsFile && z.Name == "meta.xml");
+            //extract first iso totaly, then merge tags info
+            using (FileStream fs = new FileStream(SelectedFile.FullName, FileMode.Open, FileAccess.Read))
+            {
+                var data = meta.GetFileData(fs, reader.WorkPvd);
+                var xml = Encoding.UTF8.GetString(data);
+                var doc = XDocument.Parse(xml);
+                foreach (var item in doc.Descendants("tag"))
+                {
+                    var n = item.Attribute("name").Value;
+                    var tag = Stuff.AddTag(new TagInfo() { Name = n });
+                    foreach (var fitem in item.Elements("file"))
+                    {
+                        var path = fitem.Value;
+                        if (!tag.Files.Contains(path))
+                        {
+                            tag.AddFile(path);
+                        }
+                    }
+                }
+            }
+        }
+
+        void AppendFileToIso(FileStream fs, string path, byte[] bb)
+        {
+            var rep = path.Trim(new char[] { '\\' });
+            var nm = Encoding.BigEndianUnicode.GetBytes(rep);
+            fs.WriteByte((byte)rep.Length);
+            fs.Write(nm, 0, nm.Length);
+            var nn = BitConverter.GetBytes(bb.Length);
+            fs.Write(nn, 0, nn.Length);
+            fs.Write(bb, 0, bb.Length);
+        }
+        private void PackAsLibraryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SelectedDirectory == null) return;
+            var dir = SelectedDirectory;
+            var fls = Stuff.GetAllFiles(dir);
+            var drs = Stuff.GetAllDirs(dir);
+            //pack with .indx directory (+tags,+meta infos,etc.)
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.DefaultExt = "iso";
+            sfd.Filter = "iso images|*.iso";
+            //save all as one big file info.
+            //generate meta.xml
+            var mm = GenerateMetaXml(dir);
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                using (FileStream fs = new FileStream(sfd.FileName, FileMode.Create))
+                {
+                    AppendFileToIso(fs, ".indx\\meta.xml", Encoding.UTF8.GetBytes(mm));
+                    foreach (var item in fls)
+                    {
+                        if (item.Length > 1024 * 1024 * 10) continue;//10 Mb
+
+                        var bb = File.ReadAllBytes(item.FullName);
+                        var rep = item.FullName.Replace(dir.FullName, "").Trim(new char[] { '\\' });
+                        AppendFileToIso(fs, rep, bb);
+                    }
+                }
+            }
+        }
+
+        private string GenerateMetaXml(IDirectoryInfo dir)
+        {
+            var fls = Stuff.GetAllFiles(dir);
+            List<TagInfo> tags = new List<TagInfo>();
+            foreach (var item in fls)
+            {
+                var ww = Stuff.Tags.Where(z => z.Files.Contains(item.FullName));
+                tags.AddRange(ww);
+            }
+            tags = tags.Distinct().ToList();
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("<?xml version=\"1.0\"/>");
+            sb.AppendLine("<root>");
+            sb.AppendLine("<tags>");
+            foreach (var item in tags)
+            {
+                sb.AppendLine($"<tag name=\"{item.Name}\">");
+                var aa = fls.Where(z => item.Files.Contains(z.FullName)).ToArray();
+                foreach (var aitem in aa)
+                {
+                    sb.AppendLine($"<file><![CDATA[{aitem.FullName.Replace(dir.FullName, "").Trim(new char[] { '\\' })}]]></file>");
+                }
+                sb.AppendLine($"</tag>");
+            }
+            sb.AppendLine("</tags>");
+            sb.AppendLine("</root>");
+
+            return sb.ToString();
+
+        }
+
+        private void TaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SelectedFile == null) return;
+            QuickTagsWindow q = new QuickTagsWindow();
+
+            q.Init(this, SelectedFile);
+            q.MdiParent = mdi.MainForm;
+            q.TopLevel = false;
+            q.Show();
+        }
     }
 
     public class TabInfo
@@ -1830,3 +2013,4 @@ namespace commander
         public string Arguments;
     }
 }
+

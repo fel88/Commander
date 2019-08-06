@@ -70,11 +70,11 @@ namespace commander
                 var filter = parent.Filter;
                 var fltrs = filter.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(z => z.ToLower()).ToArray();
 
-                foreach (var item in Stuff.Tags)
+                foreach (var item in Stuff.Tags.OrderBy(z=>z.Name))
                 {
                     if (!Stuff.ShowHidden && item.IsHidden) continue;
                     if (!IsFilterPass(item.Name, fltrs)) continue;
-                    listView1.Items.Add(new ListViewItem(new string[] { item.Name,item.Files.Count+"" }) { Tag = item });
+                    listView1.Items.Add(new ListViewItem(new string[] { item.Name, item.Files.Count + "" }) { Tag = item });
                 }
             }
             else
@@ -166,9 +166,12 @@ namespace commander
         private void ListView1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (SelectedFile == null) return;
-            if (parent.SelectedFileChanged != null)
+            if (parent.SelectedFileChangedDelegates.Any())
             {
-                parent.SelectedFileChanged(SelectedFile);
+                foreach (var item in parent.SelectedFileChangedDelegates)
+                {
+                    item(SelectedFile);
+                }                
             }
         }
 
@@ -294,9 +297,33 @@ namespace commander
                 if (tag is IFileInfo)
                 {
                     var f = tag as IFileInfo;
-                    Clipboard.SetText(f.FullName);                    
+                    Clipboard.SetText(f.FullName);
                 }
             }
+        }
+
+        private void MemToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+            List<IFileInfo> files = new List<IFileInfo>();
+            long total = 0;
+            for (int i = 0; i < listView1.SelectedItems.Count; i++)
+            {
+                var tag1 = listView1.SelectedItems[i].Tag;
+                if (tag1 is TagInfo)
+                {
+                    var list = (tag1 as TagInfo).Files.Select(z => new FileInfoWrapper(z));
+                    files.AddRange(list);
+                }
+                if (tag1 is IFileInfo)
+                {
+                    files.Add(tag1 as IFileInfo);
+                }
+            }
+            
+            var ff = files.GroupBy(z=>z.FullName).ToArray();
+            total += ff.Select(z=>z.First()).Sum(z => z.Length);
+            Stuff.Info("Total size: " + Stuff.GetUserFriendlyFileSize(total));
         }
     }
 }

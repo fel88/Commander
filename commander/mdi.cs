@@ -23,7 +23,7 @@ namespace commander
             MainForm = this;
             LoadPlugins();
 
-
+            MdiChildActivate += Mdi_MdiChildActivate;
             Stuff.LoadSettings();
             Stuff.IsDirty = false;
 
@@ -39,7 +39,13 @@ namespace commander
             }
         }
 
+        private void Mdi_MdiChildActivate(object sender, EventArgs e)
+        {
+            var fr = MdiChildren.FirstOrDefault(z => z is QuickTagsWindow);
+            if (fr == null) return;
+            fr.BringToFront();
 
+        }
 
         public void AppendShortCutPanelButton(ShortcutInfo item)
         {

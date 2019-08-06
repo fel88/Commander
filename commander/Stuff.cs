@@ -446,10 +446,15 @@ namespace commander
             File.WriteAllText("settings.xml", sb.ToString());
         }
 
-        internal static void AddTag(TagInfo tagInfo)
+        internal static TagInfo AddTag(TagInfo tagInfo)
         {
+            if (Tags.Any(z => z.Name == tagInfo.Name))
+            {
+                return Tags.First(z => z.Name == tagInfo.Name);                
+            }
             Tags.Add(tagInfo);
             IsDirty = true;
+            return tagInfo;
         }
 
         public static List<ILibrary> Libraries = new List<ILibrary>();

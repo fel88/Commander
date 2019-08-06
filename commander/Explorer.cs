@@ -31,7 +31,7 @@ namespace commander
             vpreviewer = new VideoPlayer() { Dock = DockStyle.Fill };
             textPreviewer = new TextPreviewer() { Dock = DockStyle.Fill };
 
-            fileListControl1.SelectedFileChanged = (x) =>
+            fileListControl1.AddSelectedFileChangedAction( (x) =>
             {
                 if (!IsPreviewMode) return;
 
@@ -69,7 +69,7 @@ namespace commander
                     vpreviewer.RunVideo(x.FullName);
                 }
 
-            };
+            });
         }
 
         private void isoExtractAction(FileListControl arg1, IFileInfo arg2)
