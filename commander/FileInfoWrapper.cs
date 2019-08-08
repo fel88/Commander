@@ -37,5 +37,9 @@ namespace commander
         public IDirectoryInfo Directory => dwrapper;
 
         public FileAttributes Attributes => File.GetAttributes(FullName);
+
+        public bool Exist => FileInfo.Exists;
+
+        public IFilesystem Filesystem => Directory.Filesystem;
     }
 }

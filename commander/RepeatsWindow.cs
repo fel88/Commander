@@ -26,6 +26,7 @@ namespace commander
                 Stuff.GetAllFiles(d, files);
             }
             files.AddRange(dup.Files);
+            files = files.Where(z => z.Exist).ToList();
             
 
             var grp1 = files.GroupBy(z => z.Length).Where(z => z.Count() > 1).ToArray();
@@ -145,6 +146,11 @@ namespace commander
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void DeleteFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
         }

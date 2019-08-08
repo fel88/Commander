@@ -55,5 +55,9 @@ namespace commander
         public IDirectoryInfo Directory => new IsoDirectoryInfoWrapper(MountInfo, record.Parent);
 
         public FileAttributes Attributes => FileAttributes.ReadOnly;
+
+        public bool Exist => true;
+
+        public IFilesystem Filesystem => Directory.Filesystem;
     }
 }

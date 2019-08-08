@@ -5,6 +5,10 @@ namespace commander
 {
     public class VirtualDirectoryInfo : IDirectoryInfo
     {
+        public VirtualDirectoryInfo(IFilesystem fs)
+        {
+            Filesystem = fs;
+        }
         public string FullName { get; set; }
 
         public string Name {get;set;}
@@ -16,6 +20,8 @@ namespace commander
         public DateTime LastWriteTime { get; set; }
 
         public bool Exists { get; set; } = true;
+
+        public IFilesystem Filesystem { get; set; }
 
         public List<IDirectoryInfo> ChildsDirs = new List<IDirectoryInfo>();
         public List<IFileInfo> ChildsFiles = new List<IFileInfo>();

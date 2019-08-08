@@ -44,11 +44,11 @@
             this.deleteFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.folowInExplorerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.tableLayoutPanel1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -140,33 +140,34 @@
             this.deleteFileToolStripMenuItem,
             this.folowInExplorerToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(163, 92);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 114);
             // 
             // executeToolStripMenuItem
             // 
             this.executeToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.executeToolStripMenuItem.Name = "executeToolStripMenuItem";
-            this.executeToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.executeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.executeToolStripMenuItem.Text = "execute";
             this.executeToolStripMenuItem.Click += new System.EventHandler(this.ExecuteToolStripMenuItem_Click);
             // 
             // copyPathToolStripMenuItem
             // 
             this.copyPathToolStripMenuItem.Name = "copyPathToolStripMenuItem";
-            this.copyPathToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.copyPathToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.copyPathToolStripMenuItem.Text = "copy path";
             this.copyPathToolStripMenuItem.Click += new System.EventHandler(this.CopyPathToolStripMenuItem_Click);
             // 
             // deleteFileToolStripMenuItem
             // 
             this.deleteFileToolStripMenuItem.Name = "deleteFileToolStripMenuItem";
-            this.deleteFileToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.deleteFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.deleteFileToolStripMenuItem.Text = "delete file";
+            this.deleteFileToolStripMenuItem.Click += new System.EventHandler(this.DeleteFileToolStripMenuItem_Click);
             // 
             // folowInExplorerToolStripMenuItem
             // 
             this.folowInExplorerToolStripMenuItem.Name = "folowInExplorerToolStripMenuItem";
-            this.folowInExplorerToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.folowInExplorerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.folowInExplorerToolStripMenuItem.Text = "folow in explorer";
             this.folowInExplorerToolStripMenuItem.Click += new System.EventHandler(this.FolowInExplorerToolStripMenuItem_Click);
             // 
@@ -182,6 +183,17 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(702, 44);
             this.panel1.TabIndex = 2;
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(177, 15);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(78, 17);
+            this.checkBox1.TabIndex = 6;
+            this.checkBox1.Text = "Part check";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
             // button2
             // 
@@ -220,17 +232,6 @@
             this.label2.Size = new System.Drawing.Size(35, 13);
             this.label2.TabIndex = 3;
             this.label2.Text = "label2";
-            // 
-            // checkBox1
-            // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(177, 15);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(78, 17);
-            this.checkBox1.TabIndex = 6;
-            this.checkBox1.Text = "Part check";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
             // RepeatsWindow
             // 

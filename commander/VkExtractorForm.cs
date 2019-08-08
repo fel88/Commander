@@ -151,7 +151,10 @@ namespace commander
                     }
                     catch (Exception ex)
                     {
-
+                        listView3.Invoke((Action)(() =>
+                        {
+                            listView3.Items.Add(new ListViewItem(new string[] { ex.Message }) { Tag = ex });
+                        }));
                     }
                 }
 
@@ -191,31 +194,31 @@ namespace commander
             saved = 0;
             WebClient wc = new WebClient();
             wc.Headers.Add("User-Agent: Mozilla/5.0");
-             th = new Thread(() =>
-            {
+            th = new Thread(() =>
+           {
 
 
-                for (int i = 0; i < cnt; i++)
-                {
-                    //while (!iscomplete) { Thread.Sleep(10); }
-                    listView1.Invoke((Action)(() =>
-                    {
-                        var item = listView1.Items[i];
-                        //  iscomplete = false;
-                        var str = wc.DownloadString((string)(item as ListViewItem).Tag);
-                        if (savePic)
-                        {
-                            savePicFunc(str);
-                        }
+               for (int i = 0; i < cnt; i++)
+               {
+                   //while (!iscomplete) { Thread.Sleep(10); }
+                   listView1.Invoke((Action)(() =>
+                  {
+                      var item = listView1.Items[i];
+                       //  iscomplete = false;
+                       var str = wc.DownloadString((string)(item as ListViewItem).Tag);
+                      if (savePic)
+                      {
+                          savePicFunc(str);
+                      }
 
-                        //webBrowser1.Navigate((string)(item as ListViewItem).Tag, null, null, "User-Agent: Mozilla/5.0");
-                        toolStripStatusLabel1.Text = "skipped: " + skipped + "  saved: " + saved;
-                    }));
-                }
+                       //webBrowser1.Navigate((string)(item as ListViewItem).Tag, null, null, "User-Agent: Mozilla/5.0");
+                       toolStripStatusLabel1.Text = "skipped: " + skipped + "  saved: " + saved;
+                  }));
+               }
 
 
 
-            });
+           });
             th.IsBackground = true;
             th.Start();
 

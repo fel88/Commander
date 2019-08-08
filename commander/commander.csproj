@@ -91,6 +91,7 @@
       <DependentUpon>Desktop.cs</DependentUpon>
     </Compile>
     <Compile Include="DirectoryInfoWrapper.cs" />
+    <Compile Include="DiskFilesystem.cs" />
     <Compile Include="FileInfoWrapper.cs" />
     <Compile Include="FileListControl.cs">
       <SubType>UserControl</SubType>
@@ -105,13 +106,17 @@
       <DependentUpon>Explorer.cs</DependentUpon>
     </Compile>
     <Compile Include="FilesystemLibrary.cs" />
+    <Compile Include="IFilesystem.cs" />
     <Compile Include="QuickTagsWindow.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="QuickTagsWindow.Designer.cs">
       <DependentUpon>QuickTagsWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="ShellContextMenu.cs" />
     <Compile Include="VirtualDirectoryInfo.cs" />
+    <Compile Include="VirtualFileInfo.cs" />
+    <Compile Include="VirtualFilesystem.cs" />
     <Compile Include="VkExtractorForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -369,9 +374,17 @@
     <Content Include="todo.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\CommonLibs\DjvuNet\DjvuNet.csproj">
+      <Project>{E681B178-E5F8-4782-89C8-F32720B1464A}</Project>
+      <Name>DjvuNet</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\CommonLibs\GifLib\GifLib.csproj">
       <Project>{034228f5-7bcd-4137-adff-2a6cb530453a}</Project>
       <Name>GifLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\CommonLibs\YoutubeExtractor\YoutubeExtractor.csproj">
+      <Project>{ecdc127f-8def-4f99-8300-72c13597339d}</Project>
+      <Name>YoutubeExtractor</Name>
     </ProjectReference>
     <ProjectReference Include="..\Libs\IsoLib\IsoLib.csproj">
       <Project>{A97FDEF8-C93B-46DF-BBED-8EE4BB6C9323}</Project>
@@ -380,10 +393,6 @@
     <ProjectReference Include="..\PluginLib\PluginLib.csproj">
       <Project>{90e6e142-c201-4918-9d48-6e0e041ea40d}</Project>
       <Name>PluginLib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\YoutubeExtractor\YoutubeExtractor.csproj">
-      <Project>{ecdc127f-8def-4f99-8300-72c13597339d}</Project>
-      <Name>YoutubeExtractor</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

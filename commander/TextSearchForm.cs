@@ -24,7 +24,7 @@ namespace commander
             acsc.AddRange(Stuff.Tags.Where(z => !z.IsHidden || (z.IsHidden && Stuff.ShowHidden)).Select(z => z.Name).ToArray());
             textBox8.AutoCompleteCustomSource = acsc;
             previewPbox.SizeMode = PictureBoxSizeMode.Zoom;
-            previewPbox.Dock = DockStyle.Fill;            
+            previewPbox.Dock = DockStyle.Fill;
         }
 
         PictureBox previewPbox = new PictureBox();
@@ -163,7 +163,9 @@ namespace commander
             public int Level;
             public IDirectoryInfo Info;
         }
+
         public HashSet<string> searchHash = new HashSet<string>();
+
         public void loop(IDirectoryInfo _d, Action fileProcessed, int? maxLevel)
         {
 
@@ -211,7 +213,7 @@ namespace commander
                             if (!string.IsNullOrEmpty(textBox2.Text))
                             {
 
-                                var t = File.ReadAllLines(item.FullName);
+                                var t = d.Filesystem.ReadAllLines(item.FullName);
                                 if (t.Any(z => z.ToUpper().Contains(textBox2.Text.ToUpper())))
                                 {
                                     add = true;
@@ -312,7 +314,26 @@ namespace commander
             var dd = (spl.Select(z => new DirectoryInfoWrapper(z))).OfType<IDirectoryInfo>().ToList();
             if (tagStorageSearchMode)
             {
-                dd = Stuff.Tags.Select(z => new VirtualDirectoryInfo() { ChildsFiles = z.Files.Select(u => new FileInfoWrapper(u)).OfType<IFileInfo>().ToList() }).OfType<IDirectoryInfo>().ToList();
+                dd = Stuff.Tags.Select(z => new VirtualDirectoryInfo(null) { ChildsFiles = z.Files.Select(u => new FileInfoWrapper(u)).OfType<IFileInfo>().ToList() }).OfType<IDirectoryInfo>().ToList();
+            }
+
+            if (checkBox2.Checked)
+            {
+                dd.Clear();
+                var vfs = new VirtualFilesystem() { UseIndexes=true};
+                
+                var vdir = new VirtualDirectoryInfo(vfs);
+                vdir.Name = "indexes";
+                vdir.FullName = "indexes";
+                
+                
+                foreach (var item in Stuff.Indexes)
+                {
+                    vdir.ChildsFiles.Add(new VirtualFileInfo(new FileInfo(item.Path) , vdir));
+                    
+                }
+                vfs.Files.AddRange(vdir.ChildsFiles.OfType<VirtualFileInfo>());
+                dd.Add(vdir);
             }
 
             searchThread = new Thread(() =>
@@ -343,15 +364,16 @@ namespace commander
 
              listView2.Items.Clear();
              searchHash.Clear();
+             
              foreach (var d in dd)
              {
                  loop(d, () =>
-                 {
-                     progressBar1.Invoke((Action)(() =>
-                     {
-                         progressBar1.Value++;
-                     }));
-                 }, (int)numericUpDown1.Value);
+                  {
+                      progressBar1.Invoke((Action)(() =>
+                      {
+                          progressBar1.Value++;
+                      }));
+                  }, (int)numericUpDown1.Value);
              }
 
              //rec1(d, () => { progressBar1.Value++; });
@@ -393,7 +415,7 @@ namespace commander
                 {
                     richTextBox1.BackColor = Color.White;
                     richTextBox1.Enabled = true;
-                    var lns = File.ReadAllLines(f.FullName);
+                    var lns = f.Filesystem.ReadAllLines(f.FullName);                    
                     richTextBox1.Lines = lns;
 
                     int cnt = 0;

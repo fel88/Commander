@@ -40,6 +40,8 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.listView3 = new System.Windows.Forms.ListView();
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -109,7 +111,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(61, 295);
+            this.button3.Location = new System.Drawing.Point(327, 269);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(75, 23);
             this.button3.TabIndex = 8;
@@ -119,9 +121,9 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(142, 295);
+            this.textBox1.Location = new System.Drawing.Point(327, 298);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(208, 20);
+            this.textBox1.Size = new System.Drawing.Size(263, 20);
             this.textBox1.TabIndex = 10;
             this.textBox1.Text = "pics\\";
             // 
@@ -129,9 +131,9 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 325);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 354);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(644, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(609, 22);
             this.statusStrip1.TabIndex = 12;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -151,11 +153,30 @@
             this.checkBox1.UseVisualStyleBackColor = true;
             this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
+            // listView3
+            // 
+            this.listView3.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader3});
+            this.listView3.FullRowSelect = true;
+            this.listView3.GridLines = true;
+            this.listView3.Location = new System.Drawing.Point(12, 269);
+            this.listView3.Name = "listView3";
+            this.listView3.Size = new System.Drawing.Size(314, 69);
+            this.listView3.TabIndex = 14;
+            this.listView3.UseCompatibleStateImageBehavior = false;
+            this.listView3.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "Exception";
+            this.columnHeader3.Width = 200;
+            // 
             // VkExtractorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(644, 347);
+            this.ClientSize = new System.Drawing.Size(609, 376);
+            this.Controls.Add(this.listView3);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.textBox1);
@@ -190,5 +211,7 @@
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.ListView listView3;
+        private System.Windows.Forms.ColumnHeader columnHeader3;
     }
 }

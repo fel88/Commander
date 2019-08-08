@@ -71,12 +71,15 @@
             this.offlineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addSiteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.autotegToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.taToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.windowsMenuToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.label2 = new System.Windows.Forms.Label();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
@@ -87,8 +90,8 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.removeTabToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.taToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.openInTextEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.indexToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -168,9 +171,10 @@
             this.copyPathToolStripMenuItem,
             this.offlineToolStripMenuItem,
             this.autotegToolStripMenuItem,
-            this.taToolStripMenuItem});
+            this.taToolStripMenuItem,
+            this.windowsMenuToolStripMenuItem});
             this.contextMenuStrip2.Name = "contextMenuStrip2";
-            this.contextMenuStrip2.Size = new System.Drawing.Size(181, 378);
+            this.contextMenuStrip2.Size = new System.Drawing.Size(181, 400);
             this.contextMenuStrip2.Closing += new System.Windows.Forms.ToolStripDropDownClosingEventHandler(this.ContextMenuStrip2_Closing);
             this.contextMenuStrip2.Opening += new System.ComponentModel.CancelEventHandler(this.ContextMenuStrip2_Opening);
             // 
@@ -204,7 +208,9 @@
             this.calcMd5ToolStripMenuItem1,
             this.searchToolStripMenuItem,
             this.opeInHexToolStripMenuItem,
-            this.openInImageViewerToolStripMenuItem1});
+            this.openInImageViewerToolStripMenuItem1,
+            this.openInTextEditorToolStripMenuItem,
+            this.indexToolStripMenuItem});
             this.operationsToolStripMenuItem.Name = "operationsToolStripMenuItem";
             this.operationsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.operationsToolStripMenuItem.Text = "operations";
@@ -419,8 +425,23 @@
             // 
             this.autotegToolStripMenuItem.Name = "autotegToolStripMenuItem";
             this.autotegToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.autotegToolStripMenuItem.Text = "autoteg";
+            this.autotegToolStripMenuItem.Text = "autotag";
             this.autotegToolStripMenuItem.Click += new System.EventHandler(this.autotegToolStripMenuItem_Click);
+            // 
+            // taToolStripMenuItem
+            // 
+            this.taToolStripMenuItem.Name = "taToolStripMenuItem";
+            this.taToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.taToolStripMenuItem.Text = "tag panel";
+            this.taToolStripMenuItem.Click += new System.EventHandler(this.TaToolStripMenuItem_Click);
+            // 
+            // windowsMenuToolStripMenuItem
+            // 
+            this.windowsMenuToolStripMenuItem.Name = "windowsMenuToolStripMenuItem";
+            this.windowsMenuToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.windowsMenuToolStripMenuItem.Text = "windows menu";
+            this.windowsMenuToolStripMenuItem.Click += new System.EventHandler(this.WindowsMenuToolStripMenuItem_Click);
+            this.windowsMenuToolStripMenuItem.MouseHover += new System.EventHandler(this.WindowsMenuToolStripMenuItem_MouseHover);
             // 
             // tableLayoutPanel1
             // 
@@ -496,6 +517,16 @@
             this.toolStrip1.Size = new System.Drawing.Size(521, 25);
             this.toolStrip1.TabIndex = 11;
             this.toolStrip1.Text = "toolStrip1";
+            // 
+            // toolStripButton1
+            // 
+            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(36, 22);
+            this.toolStripButton1.Text = "+tab";
+            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
             // label2
             // 
@@ -602,22 +633,19 @@
             this.removeTabToolStripMenuItem.Text = "Remove tab";
             this.removeTabToolStripMenuItem.Click += new System.EventHandler(this.removeTabToolStripMenuItem_Click);
             // 
-            // taToolStripMenuItem
+            // openInTextEditorToolStripMenuItem
             // 
-            this.taToolStripMenuItem.Name = "taToolStripMenuItem";
-            this.taToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.taToolStripMenuItem.Text = "tag panel";
-            this.taToolStripMenuItem.Click += new System.EventHandler(this.TaToolStripMenuItem_Click);
+            this.openInTextEditorToolStripMenuItem.Name = "openInTextEditorToolStripMenuItem";
+            this.openInTextEditorToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.openInTextEditorToolStripMenuItem.Text = "open in text editor";
+            this.openInTextEditorToolStripMenuItem.Click += new System.EventHandler(this.OpenInTextEditorToolStripMenuItem_Click);
             // 
-            // toolStripButton1
+            // indexToolStripMenuItem
             // 
-            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
-            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(36, 22);
-            this.toolStripButton1.Text = "+tab";
-            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
+            this.indexToolStripMenuItem.Name = "indexToolStripMenuItem";
+            this.indexToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.indexToolStripMenuItem.Text = "index";
+            this.indexToolStripMenuItem.Click += new System.EventHandler(this.IndexToolStripMenuItem_Click);
             // 
             // FileListControl
             // 
@@ -702,5 +730,8 @@
         private System.Windows.Forms.ToolStripMenuItem makeLibraryToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem packAsLibraryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem taToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem windowsMenuToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openInTextEditorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem indexToolStripMenuItem;
     }
 }

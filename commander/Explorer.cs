@@ -24,6 +24,9 @@ namespace commander
             fileListControl2.TabOwnerString = "right";
             fileListControl1.MountIsoAction = mouseIsoAction;
             fileListControl1.IsoExtractAction = isoExtractAction;
+
+            fileListControl1.FollowAction += followAction;
+            fileListControl2.FollowAction += followAction;
             UpdateTabs();
 
             previewer = new ImgViewerPanel() { Dock = DockStyle.Fill };
@@ -31,47 +34,58 @@ namespace commander
             vpreviewer = new VideoPlayer() { Dock = DockStyle.Fill };
             textPreviewer = new TextPreviewer() { Dock = DockStyle.Fill };
 
-            fileListControl1.AddSelectedFileChangedAction( (x) =>
-            {
-                if (!IsPreviewMode) return;
+            fileListControl1.AddSelectedFileChangedAction((x) =>
+           {
+               if (!IsPreviewMode) return;
 
-                string[] exts = new string[] { ".txt", ".cs", ".js", ".xml", ".htm", ".bat", ".html", ".log", ".csproj", ".config", ".resx", ".sln", ".settings", ".md", ".cpp", ".h", ".asm" };
-                splitContainer1.Panel2.Controls.Remove(gpreviewer);
-                splitContainer1.Panel2.Controls.Remove(previewer);
-                splitContainer1.Panel2.Controls.Remove(vpreviewer);
-                splitContainer1.Panel2.Controls.Remove(textPreviewer);
-                if (exts.Contains(x.Extension))
-                {
-                    splitContainer1.Panel2.Controls.Add(textPreviewer);
-                    textPreviewer.LoadFile(x);
-                }
-                else
-                {
-                    textPreviewer.Disable();
-                }
+               string[] exts = new string[] { ".txt", ".cs", ".js", ".xml", ".htm", ".bat", ".html", ".log", ".csproj", ".config", ".resx", ".sln", ".settings", ".md", ".cpp", ".h", ".asm" };
+               splitContainer1.Panel2.Controls.Remove(gpreviewer);
+               splitContainer1.Panel2.Controls.Remove(previewer);
+               splitContainer1.Panel2.Controls.Remove(vpreviewer);
+               splitContainer1.Panel2.Controls.Remove(textPreviewer);
+               if (exts.Contains(x.Extension))
+               {
+                   splitContainer1.Panel2.Controls.Add(textPreviewer);
+                   textPreviewer.LoadFile(x);
+               }
+               else
+               {
+                   textPreviewer.Disable();
+               }
 
 
-                string[] gexts = new string[] { ".jpg", ".png", ".bmp" };
+               string[] gexts = new string[] { ".jpg", ".png", ".bmp" };
 
-                if (gexts.Contains(x.Extension.ToLower()))
-                {
-                    splitContainer1.Panel2.Controls.Add(previewer);
-                    previewer.SetImage(Bitmap.FromFile(x.FullName));
-                }
-                if (new string[] { ".gif" }.Contains(x.Extension.ToLower()))
-                {
-                    splitContainer1.Panel2.Controls.Add(gpreviewer);
-                    gpreviewer.SetImage(x.FullName);
-                }
-                if (new string[] { ".wmv", ".mp4", ".avi", ".mkv" }.Contains(x.Extension.ToLower()))
-                {
-                    splitContainer1.Panel2.Controls.Add(vpreviewer);
-                    vpreviewer.RunVideo(x.FullName);
-                }
+               if (gexts.Contains(x.Extension.ToLower()))
+               {
+                   splitContainer1.Panel2.Controls.Add(previewer);
+                   previewer.SetImage(Bitmap.FromFile(x.FullName));
+               }
+               if (new string[] { ".gif" }.Contains(x.Extension.ToLower()))
+               {
+                   splitContainer1.Panel2.Controls.Add(gpreviewer);
+                   gpreviewer.SetImage(x.FullName);
+               }
+               if (new string[] { ".wmv", ".mp4", ".avi", ".mkv" }.Contains(x.Extension.ToLower()))
+               {
+                   splitContainer1.Panel2.Controls.Add(vpreviewer);
+                   vpreviewer.RunVideo(x.FullName);
+               }
 
-            });
+           });
         }
+        private void followAction(FileListControl fc,IFileInfo f)
+        {
+            if (fc == fileListControl1)
+            {
+                fileListControl2.FollowToFile(f);
+            }
+            else
+            {
+                fileListControl1.FollowToFile(f);
+            }
 
+        }
         private void isoExtractAction(FileListControl arg1, IFileInfo arg2)
         {
             var target = arg1;
@@ -511,4 +525,5 @@ namespace commander
         }
     }
 }
+
 

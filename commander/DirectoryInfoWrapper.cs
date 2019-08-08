@@ -32,6 +32,8 @@ namespace commander
 
         public IDirectoryInfo Root => new DirectoryInfoWrapper( DirectoryInfo.Root);
 
+        public IFilesystem Filesystem => Stuff.DefaultFileSystem;
+
         public IEnumerable<IDirectoryInfo> GetDirectories()
         {
             return DirectoryInfo.GetDirectories().Select(z => new DirectoryInfoWrapper(z));

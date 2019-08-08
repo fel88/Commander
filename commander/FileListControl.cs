@@ -15,6 +15,7 @@ using System.Drawing.Imaging;
 using commander.Properties;
 using isoViewer;
 using System.Xml.Linq;
+using DjvuNet;
 
 namespace commander
 {
@@ -28,6 +29,13 @@ namespace commander
             watcher.Changed += Watcher_Changed;
             Stuff.SetDoubleBuffered(listView1);
             tagControl.Init(this);
+            tagControl.FollowAction = (x) =>
+            {
+                if (FollowAction != null)
+                {
+                    FollowAction(this, x);
+                }
+            };
 
             listView1.MouseUp += ListView1_MouseUp;
             listView1.MouseLeave += ListView1_MouseLeave;
@@ -64,7 +72,7 @@ namespace commander
         }
 
         public event Action<IFileInfo> SelectedFileChanged;
-
+        public event Action<FileListControl, IFileInfo> FollowAction;
         private void ListView1_MouseUp(object sender, MouseEventArgs e)
         {
             pressed = false;
@@ -105,6 +113,13 @@ namespace commander
                 Stuff.Error("Error: " + ex.Message);
             }
 
+        }
+
+        public void FollowToFile(IFileInfo f)
+        {
+            SetPath(f.DirectoryName);
+            SetFilter(f.Name, true);
+            UpdateList(f.DirectoryName);
         }
 
         void RunPreview()
@@ -1740,7 +1755,7 @@ namespace commander
                     var groups = RepeatsWindow.FindRepeats(ctx);
                     if (groups.Count() == 0)
                     {
-                        Stuff.Info("No repeates found.");
+                        Stuff.Info("No duplicates found.");
                     }
                     else
                     {
@@ -1770,7 +1785,7 @@ namespace commander
                     var groups = RepeatsWindow.FindRepeats(ctx);
                     if (groups.Count() == 0)
                     {
-                        Stuff.Info("No repeates found.");
+                        Stuff.Info("No duplicates found.");
                     }
                     else
                     {
@@ -1901,75 +1916,22 @@ namespace commander
             }
         }
 
-        void AppendFileToIso(FileStream fs, string path, byte[] bb)
-        {
-            var rep = path.Trim(new char[] { '\\' });
-            var nm = Encoding.BigEndianUnicode.GetBytes(rep);
-            fs.WriteByte((byte)rep.Length);
-            fs.Write(nm, 0, nm.Length);
-            var nn = BitConverter.GetBytes(bb.Length);
-            fs.Write(nn, 0, nn.Length);
-            fs.Write(bb, 0, bb.Length);
-        }
+
         private void PackAsLibraryToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (SelectedDirectory == null) return;
-            var dir = SelectedDirectory;
-            var fls = Stuff.GetAllFiles(dir);
-            var drs = Stuff.GetAllDirs(dir);
+
+
             //pack with .indx directory (+tags,+meta infos,etc.)
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.DefaultExt = "iso";
             sfd.Filter = "iso images|*.iso";
-            //save all as one big file info.
-            //generate meta.xml
-            var mm = GenerateMetaXml(dir);
+            //save all as one big file info.          
+
             if (sfd.ShowDialog() == DialogResult.OK)
             {
-                using (FileStream fs = new FileStream(sfd.FileName, FileMode.Create))
-                {
-                    AppendFileToIso(fs, ".indx\\meta.xml", Encoding.UTF8.GetBytes(mm));
-                    foreach (var item in fls)
-                    {
-                        if (item.Length > 1024 * 1024 * 10) continue;//10 Mb
-
-                        var bb = File.ReadAllBytes(item.FullName);
-                        var rep = item.FullName.Replace(dir.FullName, "").Trim(new char[] { '\\' });
-                        AppendFileToIso(fs, rep, bb);
-                    }
-                }
+                Stuff.PackToIso(SelectedDirectory, sfd.FileName);
             }
-        }
-
-        private string GenerateMetaXml(IDirectoryInfo dir)
-        {
-            var fls = Stuff.GetAllFiles(dir);
-            List<TagInfo> tags = new List<TagInfo>();
-            foreach (var item in fls)
-            {
-                var ww = Stuff.Tags.Where(z => z.Files.Contains(item.FullName));
-                tags.AddRange(ww);
-            }
-            tags = tags.Distinct().ToList();
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("<?xml version=\"1.0\"/>");
-            sb.AppendLine("<root>");
-            sb.AppendLine("<tags>");
-            foreach (var item in tags)
-            {
-                sb.AppendLine($"<tag name=\"{item.Name}\">");
-                var aa = fls.Where(z => item.Files.Contains(z.FullName)).ToArray();
-                foreach (var aitem in aa)
-                {
-                    sb.AppendLine($"<file><![CDATA[{aitem.FullName.Replace(dir.FullName, "").Trim(new char[] { '\\' })}]]></file>");
-                }
-                sb.AppendLine($"</tag>");
-            }
-            sb.AppendLine("</tags>");
-            sb.AppendLine("</root>");
-
-            return sb.ToString();
-
         }
 
         private void TaToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1981,6 +1943,84 @@ namespace commander
             q.MdiParent = mdi.MainForm;
             q.TopLevel = false;
             q.Show();
+        }
+
+        private void WindowsMenuToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void WindowsMenuToolStripMenuItem_MouseHover(object sender, EventArgs e)
+        {
+            if (SelectedFile != null)
+            {
+                ShellContextMenu ctxMnu = new ShellContextMenu();
+                FileInfo[] arrFI = new FileInfo[1];
+                arrFI[0] = new FileInfo(SelectedFile.FullName);
+                var ee = Cursor.Position;
+                //ee = listView1.SelectedItems[0].Position;
+                ctxMnu.ShowContextMenu(arrFI, (new Point(ee.X, ee.Y)));
+            }
+            else
+            if (SelectedDirectory != null)
+            {
+                ShellContextMenu ctxMnu = new ShellContextMenu();
+                DirectoryInfo[] arrFI = new DirectoryInfo[1];
+                arrFI[0] = new DirectoryInfo(SelectedDirectory.FullName);
+                var ee = Cursor.Position;
+                //ee = listView1.SelectedItems[0].Position;
+
+                ctxMnu.ShowContextMenu(arrFI, new Point(ee.X, ee.Y));
+            }
+            else if (CurrentDirectory != null && CurrentDirectory.Parent != null)
+            {
+                if (CurrentDirectory.Parent is DirectoryInfoWrapper)
+                {
+                    if ((CurrentDirectory.Parent as DirectoryInfoWrapper).DirectoryInfo == null)
+                    {
+                        return;
+                    }
+                }
+                ShellContextMenu ctxMnu = new ShellContextMenu();
+                DirectoryInfo[] arrFI = new DirectoryInfo[1];
+                arrFI[0] = new DirectoryInfo(CurrentDirectory.FullName);
+                var ee = Cursor.Position;
+
+                ctxMnu.ShowContextMenu(arrFI, new Point(ee.X, ee.Y));
+            }
+        }
+
+        private void OpenInTextEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void IndexToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //get all info
+            if (SelectedFile == null) return;
+            if (!SelectedFile.Extension.ToLower().EndsWith("djvu")) return;
+            
+            DjvuDocument doc = new DjvuDocument(SelectedFile.FullName);
+            var cnt = doc.Pages.Count();
+            StringBuilder sbb = new StringBuilder();
+            for (int i = 0; i < cnt; i++)
+            {                
+                var txt = doc.Pages[i].GetTextForLocation(new System.Drawing.Rectangle(0, 0, doc.Pages[i].Width, doc.Pages[i].Height));
+                sbb.AppendLine(txt.Replace("\r","").Replace("\t",""));
+                
+            }
+            Stuff.Indexes.Add(new IndexInfo() { Path = SelectedFile.FullName, Text = sbb.ToString() });
+            Stuff.Info("Indexing compete: " + sbb.ToString().Length + " symbols.");
+            /*page
+                .BuildPageImage()
+                .Save("TestImage1.png", ImageFormat.Png);
+
+            page.IsInverted = true;
+
+            page
+                .BuildPageImage()
+                .Save("TestImage2.png", ImageFormat.Png);*/
         }
     }
 

@@ -16,8 +16,11 @@ namespace commander
 {
     public class Stuff
     {
+
+        public static IFilesystem DefaultFileSystem = new DiskFilesystem();
         public static List<MountInfo> MountInfos = new List<MountInfo>();
         public static ImageList list = null;
+        public static List<IndexInfo> Indexes = new List<IndexInfo>();
         public static Icon ExtractAssociatedIcon(String filePath)
         {
             int index = 0;
@@ -222,10 +225,21 @@ namespace commander
 
         public static void ExecuteFile(IFileInfo f)
         {
-            ProcessStartInfo psi = new ProcessStartInfo();
-            psi.WorkingDirectory = f.DirectoryName;
-            psi.FileName = f.FullName;
-            Process.Start(psi);
+            if (f is VirtualFileInfo)
+            {
+                var vf = f as VirtualFileInfo;
+                ProcessStartInfo psi = new ProcessStartInfo();
+                psi.WorkingDirectory = f.Directory.FullName;
+                psi.FileName = vf.FileInfo.FullName; ;
+                Process.Start(psi);
+            }
+            else
+            {
+                ProcessStartInfo psi = new ProcessStartInfo();
+                psi.WorkingDirectory = f.DirectoryName;
+                psi.FileName = f.FullName;
+                Process.Start(psi);
+            }
         }
 
         public static string GetUserFriendlyFileSize(long _v)
@@ -450,7 +464,7 @@ namespace commander
         {
             if (Tags.Any(z => z.Name == tagInfo.Name))
             {
-                return Tags.First(z => z.Name == tagInfo.Name);                
+                return Tags.First(z => z.Name == tagInfo.Name);
             }
             Tags.Add(tagInfo);
             IsDirty = true;
@@ -498,6 +512,67 @@ namespace commander
         public static List<OfflineSiteInfo> OfflineSites { get; } = new List<OfflineSiteInfo>();
 
         public static List<ShortcutInfo> Shortcuts = new List<ShortcutInfo>();
+
+        public static void AppendFileToIso(FileStream fs, string path, byte[] bb)
+        {
+            var rep = path.Trim(new char[] { '\\' });
+            var nm = Encoding.BigEndianUnicode.GetBytes(rep);
+            fs.WriteByte((byte)rep.Length);
+            fs.Write(nm, 0, nm.Length);
+            var nn = BitConverter.GetBytes(bb.Length);
+            fs.Write(nn, 0, nn.Length);
+            fs.Write(bb, 0, bb.Length);
+        }
+        private static string GenerateMetaXml(IDirectoryInfo dir)
+        {
+            var fls = Stuff.GetAllFiles(dir);
+            List<TagInfo> tags = new List<TagInfo>();
+            foreach (var item in fls)
+            {
+                var ww = Stuff.Tags.Where(z => z.Files.Contains(item.FullName));
+                tags.AddRange(ww);
+            }
+            tags = tags.Distinct().ToList();
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("<?xml version=\"1.0\"/>");
+            sb.AppendLine("<root>");
+            sb.AppendLine("<tags>");
+            foreach (var item in tags)
+            {
+                sb.AppendLine($"<tag name=\"{item.Name}\">");
+                var aa = fls.Where(z => item.Files.Contains(z.FullName)).ToArray();
+                foreach (var aitem in aa)
+                {
+                    sb.AppendLine($"<file><![CDATA[{aitem.FullName.Replace(dir.FullName, "").Trim(new char[] { '\\' })}]]></file>");
+                }
+                sb.AppendLine($"</tag>");
+            }
+            sb.AppendLine("</tags>");
+            sb.AppendLine("</root>");
+
+            return sb.ToString();
+
+        }
+
+        internal static void PackToIso(IDirectoryInfo dir, string path)
+        {            
+            var fls = Stuff.GetAllFiles(dir);
+            var drs = Stuff.GetAllDirs(dir);
+            //generate meta.xml
+            var mm = GenerateMetaXml(dir);
+            using (FileStream fs = new FileStream(path, FileMode.Create))
+            {
+                AppendFileToIso(fs, ".indx\\meta.xml", Encoding.UTF8.GetBytes(mm));
+                foreach (var item in fls)
+                {
+                    if (item.Length > 1024 * 1024 * 10) continue;//10 Mb
+
+                    var bb = dir.Filesystem.ReadAllBytes(item.FullName);
+                    var rep = item.FullName.Replace(dir.FullName, "").Trim(new char[] { '\\' });
+                    AppendFileToIso(fs, rep, bb);
+                }
+            }
+        }
     }
 
     public class OfflineSiteInfo
@@ -505,4 +580,12 @@ namespace commander
         public string Path;
         public string Uri;
     }
+
+
+    public class IndexInfo
+    {
+        public string Path;
+        public string Text;
+    }
+
 }

@@ -9,8 +9,7 @@ namespace commander
         string Name { get; }
 
         IDirectoryInfo Root { get; }
-
-        
+        IFilesystem Filesystem { get;  }
         IDirectoryInfo Parent { get; }
 
         IEnumerable<IDirectoryInfo> GetDirectories();

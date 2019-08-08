@@ -13,6 +13,9 @@ namespace commander
         long Length { get; }
         IDirectoryInfo Directory { get; }
         FileAttributes Attributes { get; }
+        bool Exist { get; }
+
+        IFilesystem Filesystem { get; }
     }
 
 }

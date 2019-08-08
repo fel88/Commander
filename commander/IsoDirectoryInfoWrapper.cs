@@ -50,7 +50,8 @@ namespace commander
         public bool Exists => true;
 
         public IDirectoryInfo Root => new DirectoryInfoWrapper(MountInfo.Path);
-                
+
+        public IFilesystem Filesystem => Stuff.DefaultFileSystem;
 
         public IEnumerable<IDirectoryInfo> GetDirectories()
         {

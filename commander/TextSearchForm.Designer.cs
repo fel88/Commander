@@ -41,6 +41,11 @@
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.button3 = new System.Windows.Forms.Button();
+            this.textBox8 = new System.Windows.Forms.TextBox();
+            this.textBox7 = new System.Windows.Forms.TextBox();
+            this.button2 = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -61,12 +66,8 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.button2 = new System.Windows.Forms.Button();
-            this.textBox7 = new System.Windows.Forms.TextBox();
-            this.textBox8 = new System.Windows.Forms.TextBox();
-            this.button3 = new System.Windows.Forms.Button();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.contextMenuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -191,6 +192,7 @@
             // panel1
             // 
             this.tableLayoutPanel1.SetColumnSpan(this.panel1, 3);
+            this.panel1.Controls.Add(this.checkBox2);
             this.panel1.Controls.Add(this.checkBox1);
             this.panel1.Controls.Add(this.button3);
             this.panel1.Controls.Add(this.textBox8);
@@ -212,6 +214,53 @@
             this.panel1.Size = new System.Drawing.Size(923, 126);
             this.panel1.TabIndex = 0;
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(419, 59);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(124, 17);
+            this.checkBox1.TabIndex = 28;
+            this.checkBox1.Text = "search in tags space";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.CheckBox1_CheckedChanged);
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(480, 3);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(44, 23);
+            this.button3.TabIndex = 27;
+            this.button3.Text = "clear";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.Button3_Click);
+            // 
+            // textBox8
+            // 
+            this.textBox8.Location = new System.Drawing.Point(293, 3);
+            this.textBox8.Name = "textBox8";
+            this.textBox8.Size = new System.Drawing.Size(100, 20);
+            this.textBox8.TabIndex = 26;
+            this.textBox8.TextChanged += new System.EventHandler(this.TextBox8_TextChanged);
+            // 
+            // textBox7
+            // 
+            this.textBox7.Location = new System.Drawing.Point(530, 3);
+            this.textBox7.Name = "textBox7";
+            this.textBox7.ReadOnly = true;
+            this.textBox7.Size = new System.Drawing.Size(259, 20);
+            this.textBox7.TabIndex = 25;
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(399, 3);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.TabIndex = 24;
+            this.button2.Text = "+tag filter";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.Button2_Click);
             // 
             // label6
             // 
@@ -411,53 +460,6 @@
             this.tableLayoutPanel2.Size = new System.Drawing.Size(921, 183);
             this.tableLayoutPanel2.TabIndex = 8;
             // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(399, 3);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 24;
-            this.button2.Text = "+tag filter";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.Button2_Click);
-            // 
-            // textBox7
-            // 
-            this.textBox7.Location = new System.Drawing.Point(530, 3);
-            this.textBox7.Name = "textBox7";
-            this.textBox7.ReadOnly = true;
-            this.textBox7.Size = new System.Drawing.Size(259, 20);
-            this.textBox7.TabIndex = 25;
-            // 
-            // textBox8
-            // 
-            this.textBox8.Location = new System.Drawing.Point(293, 3);
-            this.textBox8.Name = "textBox8";
-            this.textBox8.Size = new System.Drawing.Size(100, 20);
-            this.textBox8.TabIndex = 26;
-            this.textBox8.TextChanged += new System.EventHandler(this.TextBox8_TextChanged);
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(480, 3);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(44, 23);
-            this.button3.TabIndex = 27;
-            this.button3.Text = "clear";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.Button3_Click);
-            // 
-            // checkBox1
-            // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(419, 59);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(154, 17);
-            this.checkBox1.TabIndex = 28;
-            this.checkBox1.Text = "search inside in tags space";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.CheckBox1_CheckedChanged);
-            // 
             // panel2
             // 
             this.panel2.Controls.Add(this.richTextBox1);
@@ -466,6 +468,16 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(570, 177);
             this.panel2.TabIndex = 5;
+            // 
+            // checkBox2
+            // 
+            this.checkBox2.AutoSize = true;
+            this.checkBox2.Location = new System.Drawing.Point(549, 59);
+            this.checkBox2.Name = "checkBox2";
+            this.checkBox2.Size = new System.Drawing.Size(99, 17);
+            this.checkBox2.TabIndex = 29;
+            this.checkBox2.Text = "include indexes";
+            this.checkBox2.UseVisualStyleBackColor = true;
             // 
             // TextSearchForm
             // 
@@ -533,6 +545,7 @@
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.CheckBox checkBox2;
     }
 }
 

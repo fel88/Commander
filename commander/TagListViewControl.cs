@@ -70,7 +70,7 @@ namespace commander
                 var filter = parent.Filter;
                 var fltrs = filter.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(z => z.ToLower()).ToArray();
 
-                foreach (var item in Stuff.Tags.OrderBy(z=>z.Name))
+                foreach (var item in Stuff.Tags.OrderBy(z => z.Name))
                 {
                     if (!Stuff.ShowHidden && item.IsHidden) continue;
                     if (!IsFilterPass(item.Name, fltrs)) continue;
@@ -171,7 +171,7 @@ namespace commander
                 foreach (var item in parent.SelectedFileChangedDelegates)
                 {
                     item(SelectedFile);
-                }                
+                }
             }
         }
 
@@ -286,8 +286,24 @@ namespace commander
 
         private void ToIsoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            if (listView1.SelectedItems.Count == 0) return;
+            if (!(listView1.SelectedItems[0].Tag is TagInfo)) return;
+            var tag = listView1.SelectedItems[0].Tag as TagInfo;
+            var vfs = new VirtualFilesystem();
+            var vdir = new VirtualDirectoryInfo(vfs);
+            vdir.FullName = "z:\\" + tag.Name;
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.DefaultExt = "iso";
+            sfd.Filter = "iso images|*.iso";
+            vdir.ChildsFiles.AddRange(tag.Files.Select(z => new VirtualFileInfo(new FileInfo(z), vdir) { Directory = vdir }));
+            vfs. Files = vdir.ChildsFiles.OfType<VirtualFileInfo>().ToList() ;
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                Stuff.PackToIso(vdir, sfd.FileName);
+            }
         }
+
+       
 
         private void copyPathToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -320,10 +336,75 @@ namespace commander
                     files.Add(tag1 as IFileInfo);
                 }
             }
-            
-            var ff = files.GroupBy(z=>z.FullName).ToArray();
-            total += ff.Select(z=>z.First()).Sum(z => z.Length);
+
+            var ff = files.GroupBy(z => z.FullName).ToArray();
+            total += ff.Select(z => z.First()).Sum(z => z.Length);
             Stuff.Info("Total size: " + Stuff.GetUserFriendlyFileSize(total));
+        }
+
+        private void DeduplicationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+                var tag = listView1.SelectedItems[0].Tag;
+                if (tag is TagInfo)
+                {
+                    var dd = listView1.SelectedItems[0].Tag as TagInfo;
+                    var files = dd.Files.Select(z => new FileInfoWrapper(z));
+
+                    DedupContext ctx = new DedupContext(new IDirectoryInfo[] { }, files.OfType<IFileInfo>().ToArray());
+                    var groups = RepeatsWindow.FindRepeats(ctx);
+                    if (groups.Count() == 0)
+                    {
+                        Stuff.Info("No duplicates found.");
+                    }
+                    else
+                    {
+                        RepeatsWindow rp = new RepeatsWindow();
+                        rp.MdiParent = mdi.MainForm;
+                        rp.SetRepeats(ctx, groups.ToArray());
+                        rp.Show();
+                    }
+                }
+                else
+                {
+                    List<IFileInfo> ff = new List<IFileInfo>();
+                    List<IDirectoryInfo> dd = new List<IDirectoryInfo>();
+                    for (int i = 0; i < listView1.SelectedItems.Count; i++)
+                    {
+                        var tag0 = listView1.SelectedItems[i].Tag;
+                        if (tag0 is IFileInfo)
+                        {
+                            ff.Add(tag0 as IFileInfo);
+                        }
+                        if (tag0 is IDirectoryInfo)
+                        {
+                            dd.Add(tag0 as IDirectoryInfo);
+                        }
+                    }
+                    DedupContext ctx = new DedupContext(dd.ToArray(), ff.ToArray());
+                    var groups = RepeatsWindow.FindRepeats(ctx);
+                    if (groups.Count() == 0)
+                    {
+                        Stuff.Info("No duplicates found.");
+                    }
+                    else
+                    {
+                        RepeatsWindow rp = new RepeatsWindow();
+                        rp.MdiParent = mdi.MainForm;
+                        rp.SetRepeats(ctx, groups.ToArray());
+                        rp.Show();
+                    }
+                }
+            }
+        }
+
+        public Action<IFileInfo> FollowAction;
+        private void FollowToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (FollowAction == null) return;
+            if (SelectedFile == null) return;
+            FollowAction(SelectedFile);
         }
     }
 }

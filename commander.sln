@@ -21,7 +21,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GifLib", "..\CommonLibs\Gif
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IsoLib", "Libs\IsoLib\IsoLib.csproj", "{A97FDEF8-C93B-46DF-BBED-8EE4BB6C9323}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YoutubeExtractor", "YoutubeExtractor\YoutubeExtractor.csproj", "{ECDC127F-8DEF-4F99-8300-72C13597339D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YoutubeExtractor", "..\CommonLibs\YoutubeExtractor\YoutubeExtractor.csproj", "{ECDC127F-8DEF-4F99-8300-72C13597339D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DjvuNet", "..\CommonLibs\DjvuNet\DjvuNet.csproj", "{E681B178-E5F8-4782-89C8-F32720B1464A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +59,10 @@ Global
 		{ECDC127F-8DEF-4F99-8300-72C13597339D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ECDC127F-8DEF-4F99-8300-72C13597339D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ECDC127F-8DEF-4F99-8300-72C13597339D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E681B178-E5F8-4782-89C8-F32720B1464A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E681B178-E5F8-4782-89C8-F32720B1464A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E681B178-E5F8-4782-89C8-F32720B1464A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E681B178-E5F8-4782-89C8-F32720B1464A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,6 +72,8 @@ Global
 		{DD4EB311-46BE-472B-8D2A-98A5F2539869} = {0B87CCE9-121E-45DC-A31B-905B7EFE383D}
 		{82FF6303-5953-4712-99A0-B25B0C940516} = {0B87CCE9-121E-45DC-A31B-905B7EFE383D}
 		{034228F5-7BCD-4137-ADFF-2A6CB530453A} = {7AC29A97-4DFA-40C4-9859-E2470E6639C0}
+		{ECDC127F-8DEF-4F99-8300-72C13597339D} = {7AC29A97-4DFA-40C4-9859-E2470E6639C0}
+		{E681B178-E5F8-4782-89C8-F32720B1464A} = {7AC29A97-4DFA-40C4-9859-E2470E6639C0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7A94723F-DEEC-4DA6-925D-410A8973C90F}
