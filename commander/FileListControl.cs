@@ -19,7 +19,7 @@ using DjvuNet;
 
 namespace commander
 {
-    public partial class FileListControl : UserControl
+    public partial class FileListControl :  UserControl, IFileListControl
     {
         public FileListControl()
         {
@@ -29,6 +29,8 @@ namespace commander
             watcher.Changed += Watcher_Changed;
             Stuff.SetDoubleBuffered(listView1);
             tagControl.Init(this);
+            listView1.MouseMove += ListView1_MouseMove1;
+
             tagControl.FollowAction = (x) =>
             {
                 if (FollowAction != null)
@@ -43,7 +45,10 @@ namespace commander
             watcher.Created += Watcher_Changed;
             watcher.Deleted += Watcher_Changed;
             watcher.Renamed += Watcher_Changed;
-            watcher.NotifyFilter = NotifyFilters.CreationTime | NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.LastAccess;
+            watcher.Changed += Watcher_Changed;
+            watcher.NotifyFilter = NotifyFilters.CreationTime |
+                NotifyFilters.FileName | NotifyFilters.LastWrite |
+                NotifyFilters.LastAccess | NotifyFilters.DirectoryName | NotifyFilters.Size;
             filesControl = listView1;
             setTagsToolStripMenuItem.DropDown.Closing += DropDown_Closing;
             if (Stuff.list == null)
@@ -66,6 +71,40 @@ namespace commander
             RunPreview();
         }
 
+        private void ListView1_MouseMove1(object sender, MouseEventArgs e)
+        {
+            UpdateIcons();
+        }
+
+        void UpdateIcons()
+        {
+            if (listView1.TopItem == null) return;
+            for (int i = listView1.TopItem.Index; i < listView1.Items.Count; i++)
+            {
+                if (!listView1.IsItemVisible(listView1.Items[i]))
+                {
+                    break;
+                }
+                if (listView1.Items[i].ImageIndex != -1) continue;
+
+                Tuple<Bitmap, int> tp = null;
+                var fileInfo = listView1.Items[i].Tag as IFileInfo;
+                if (fileInfo == null) continue;
+
+                if (File.Exists(fileInfo.FullName))
+                {
+                    tp = Stuff.GetBitmapOfFile(fileInfo.FullName);
+                }
+
+                int iindex = -1;
+                if (tp != null)
+                {
+                    iindex = tp.Item2;
+                }
+                listView1.Items[i].ImageIndex = iindex;
+
+            }
+        }
         internal void AddSelectedFileChangedAction(Action<IFileInfo> p)
         {
             SelectedFileChangedDelegates.Add(p);
@@ -500,7 +539,11 @@ namespace commander
 
         private void Watcher_Changed(object sender, FileSystemEventArgs e)
         {
-            UpdateList(new DirectoryInfoWrapper(CurrentDirectory.FullName), textBox2.Text);
+            listView1.Invoke((Action)(() =>
+            {
+                UpdateList(new DirectoryInfoWrapper(CurrentDirectory.FullName), textBox2.Text);
+            }));
+
         }
 
         public void SetPath(string path)
@@ -605,32 +648,7 @@ namespace commander
             UpdateList(new DirectoryInfoWrapper(path), textBox2.Text);
         }
 
-        public static Dictionary<string, Tuple<Bitmap, int>> Icons = new Dictionary<string, Tuple<Bitmap, int>>();
-        public static Dictionary<string, Tuple<Bitmap, int>> ExeIcons = new Dictionary<string, Tuple<Bitmap, int>>();
-        public static Tuple<Bitmap, int> GetBitmapOfFile(string fn)
-        {
-            var d = Path.GetExtension(fn).ToLower();
-            if (d == ".exe" || d == ".ico")
-            {
-                if (!ExeIcons.ContainsKey(fn))
-                {
-                    var bb = Bitmap.FromHicon(Stuff.ExtractAssociatedIcon(fn).Handle);
-                    bb.MakeTransparent();
-                    Stuff.list.Images.Add(bb);
-                    ExeIcons.Add(fn, new Tuple<Bitmap, int>(bb, Stuff.list.Images.Count - 1));
-                }
-                return ExeIcons[fn];
-            }
-            if (!Icons.ContainsKey(d))
-            {
-                var bb = Bitmap.FromHicon(Stuff.ExtractAssociatedIcon(fn).Handle);
-                bb.MakeTransparent();
-                Stuff.list.Images.Add(bb);
-                Icons.Add(d, new Tuple<Bitmap, int>(bb, Stuff.list.Images.Count - 1));
-            }
-
-            return Icons[d];
-        }
+      
 
 
         public bool SaveSorting = false;
@@ -712,6 +730,7 @@ namespace commander
 
                 AppendDirsToList(dd.ToArray(), fltrs);
                 AppendFilesToList(path.GetFiles().ToArray(), fltrs);
+                UpdateIcons();
                 listView1.EndUpdate();
                 UpdateStatus();
 
@@ -725,6 +744,7 @@ namespace commander
                 listView1.EndUpdate();
             }
         }
+
 
         public void AppendDirsToList(IDirectoryInfo[] dirs, string[] fltrs)
         {
@@ -757,13 +777,16 @@ namespace commander
                     Tuple<Bitmap, int> tp = null;
                     if (File.Exists(fileInfo.FullName))
                     {
-                        tp = GetBitmapOfFile(fileInfo.FullName);
+                        //tp = GetBitmapOfFile(fileInfo.FullName);                        
                     }
 
                     var ext = Path.GetExtension(fileInfo.FullName);
 
                     if (!IsFilterPass(fileInfo.Name, fltrs)) continue;
                     var astr = (fileInfo.Attributes).ToString();
+
+
+
 
                     int iindex = -1;
                     if (tp != null)
@@ -1342,13 +1365,15 @@ namespace commander
         private void ListView1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (SelectedFile == null) return;
+            UpdateIcons();
             UpdateStatus();
+            if (SelectedFileChanged != null)
+            {
+                SelectedFileChanged(SelectedFile);
+            }
             if (SelectedFileChangedDelegates.Any())
             {
-                if (SelectedFileChanged != null)
-                {
-                    SelectedFileChanged(SelectedFile);
-                }
+
                 foreach (var item in SelectedFileChangedDelegates)
                 {
                     item(SelectedFile);
@@ -1731,6 +1756,24 @@ namespace commander
                     }
                 }
             }
+            else if (CurrentDirectory != null && CurrentDirectory is DirectoryInfoWrapper)
+            {
+                var d = CurrentDirectory;
+
+
+
+
+                List<IFileInfo> files = new List<IFileInfo>();
+                Stuff.GetAllFiles(d, files);
+                var total = files.Sum(z => z.Length);
+                if (Stuff.Question("Total size: " + Stuff.GetUserFriendlyFileSize(total) + ", show report?") == DialogResult.Yes)
+                {
+                    MemInfoReport rep = new MemInfoReport();
+                    rep.MdiParent = mdi.MainForm;
+                    rep.Init(d);
+                    rep.Show();
+                }
+            }
         }
 
         private void deduplicationsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2000,15 +2043,15 @@ namespace commander
             //get all info
             if (SelectedFile == null) return;
             if (!SelectedFile.Extension.ToLower().EndsWith("djvu")) return;
-            
+
             DjvuDocument doc = new DjvuDocument(SelectedFile.FullName);
             var cnt = doc.Pages.Count();
             StringBuilder sbb = new StringBuilder();
             for (int i = 0; i < cnt; i++)
-            {                
+            {
                 var txt = doc.Pages[i].GetTextForLocation(new System.Drawing.Rectangle(0, 0, doc.Pages[i].Width, doc.Pages[i].Height));
-                sbb.AppendLine(txt.Replace("\r","").Replace("\t",""));
-                
+                sbb.AppendLine(txt.Replace("\r", "").Replace("\t", ""));
+
             }
             Stuff.Indexes.Add(new IndexInfo() { Path = SelectedFile.FullName, Text = sbb.ToString() });
             Stuff.Info("Indexing compete: " + sbb.ToString().Length + " symbols.");
@@ -2051,6 +2094,14 @@ namespace commander
         public string Title;
         public string AppName;
         public string Arguments;
+    }
+
+    public static class Extensions
+    {
+        public static bool IsItemVisible(this ListView lv, ListViewItem item)
+        {
+            return item.Bounds.IntersectsWith(lv.ClientRectangle);
+        }
     }
 }
 

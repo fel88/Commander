@@ -6,6 +6,8 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Net;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Windows.Forms;
 
@@ -51,10 +53,15 @@ namespace commander
 
         private void D_Click(object sender, EventArgs e)
         {
+            var temp1 = ServicePointManager.Expect100Continue;
+            var temp2 = ServicePointManager.SecurityProtocol;
+
+            ServicePointManager.Expect100Continue = true;
+            ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072;
             var url = webBrowser1.Url.ToString();
             if (string.IsNullOrEmpty(url)) { MessageBox.Show("url is empty"); return; }
             using (WebClient wec = new WebClient())
-            {
+            {               
                 var data = wec.DownloadData(url);
                 //get current library and add file                
                 var lib = (sender as ToolStripMenuItem).Tag as ILibrary;
@@ -62,7 +69,11 @@ namespace commander
                 lib.AppendFile(l, data);
                 MessageBox.Show("File was added.");
             }
+            ServicePointManager.Expect100Continue = temp1;
+            ServicePointManager.SecurityProtocol = temp2;
         }
+        
+     
 
         private void ToolStripButton1_Click(object sender, EventArgs e)
         {
@@ -82,6 +93,11 @@ namespace commander
         }
 
         private void Button1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ToolStripDropDownButton1_Click(object sender, EventArgs e)
         {
 
         }

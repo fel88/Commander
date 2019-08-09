@@ -11,15 +11,49 @@ using System.Diagnostics;
 
 namespace commander
 {
-    public partial class TagListViewControl : UserControl
+    public partial class TagListViewControl : UserControl, IFileListControl
     {
         public TagListViewControl()
         {
             InitializeComponent();
             Stuff.SetDoubleBuffered(listView1);
+            listView1.MouseMove += ListView1_MouseMove;
         }
 
+        private void ListView1_MouseMove(object sender, MouseEventArgs e)
+        {
+            UpdateIcons();
+        }
 
+        void UpdateIcons()
+        {
+            if (listView1.TopItem == null) return;
+            for (int i = listView1.TopItem.Index; i < listView1.Items.Count; i++)
+            {
+                if (!listView1.IsItemVisible(listView1.Items[i]))
+                {
+                    break;
+                }
+                if (listView1.Items[i].ImageIndex != -1) continue;
+
+                Tuple<Bitmap, int> tp = null;
+                var fileInfo = listView1.Items[i].Tag as IFileInfo;
+                if (fileInfo == null) continue;
+
+                if (File.Exists(fileInfo.FullName))
+                {
+                    tp = Stuff.GetBitmapOfFile(fileInfo.FullName);
+                }
+
+                int iindex = -1;
+                if (tp != null)
+                {
+                    iindex = tp.Item2;
+                }
+                listView1.Items[i].ImageIndex = iindex;
+
+            }
+        }
         public void Init(FileListControl fc)
         {
             parent = fc;
@@ -91,12 +125,12 @@ namespace commander
 
                 // var p = new DirectoryInfo(path);
                 //   fc.CurrentDirectory = p;
-                ImageList list = new ImageList();
-                list.TransparentColor = Color.Black;
+                
+                
                 var fltrs = filter.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(z => z.ToLower()).ToArray();
 
-                listView1.SmallImageList = list;
-                listView1.LargeImageList = list;
+                listView1.SmallImageList = Stuff.list;
+                listView1.LargeImageList = Stuff.list;
 
                 listView1.Items.Add(new ListViewItem(new string[] { "..", "", "" }) { Tag = tagRootObject });
                 foreach (var finfo in tag.Files)
@@ -104,15 +138,15 @@ namespace commander
                     try
                     {
                         var f = new FileInfoWrapper(finfo);
-                        var tp = FileListControl.GetBitmapOfFile(f.FullName);
+                        //var tp = FileListControl.GetBitmapOfFile(f.FullName);
                         //bmp.MakeTransparent();
                         // list.Images.Add(bmp);
                         if (!IsFilterPass(f.Name, fltrs)) continue;
-                        int iindex = -1;
-                        if (tp != null)
+                      //  int iindex = -1;
+                       /* if (tp != null)
                         {
                             iindex = tp.Item2;
-                        }
+                        }*/
                         listView1.Items.Add(
                             new ListViewItem(new string[]
                             {
@@ -120,7 +154,7 @@ namespace commander
                             })
                             {
                                 Tag = f,
-                                ImageIndex = iindex
+                             //   ImageIndex = iindex
 
                             });
                     }
@@ -166,6 +200,10 @@ namespace commander
         private void ListView1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (SelectedFile == null) return;
+            if (SelectedFileChanged != null)
+            {
+                SelectedFileChanged(SelectedFile);
+            }
             if (parent.SelectedFileChangedDelegates.Any())
             {
                 foreach (var item in parent.SelectedFileChangedDelegates)
@@ -400,11 +438,25 @@ namespace commander
         }
 
         public Action<IFileInfo> FollowAction;
+
+        public event Action<IFileInfo> SelectedFileChanged;
+
         private void FollowToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (FollowAction == null) return;
             if (SelectedFile == null) return;
             FollowAction(SelectedFile);
+        }
+
+        private void TagPanelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SelectedFile == null) return;
+            QuickTagsWindow q = new QuickTagsWindow();
+
+            q.Init(this, SelectedFile);
+            q.MdiParent = mdi.MainForm;
+            q.TopLevel = false;
+            q.Show();
         }
     }
 }

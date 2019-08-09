@@ -44,6 +44,7 @@
             this.memToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deduplicationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.followToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tagPanelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -86,9 +87,10 @@
             this.copyPathToolStripMenuItem,
             this.memToolStripMenuItem,
             this.deduplicationToolStripMenuItem,
-            this.followToolStripMenuItem});
+            this.followToolStripMenuItem,
+            this.tagPanelToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 202);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 224);
             // 
             // addTagToolStripMenuItem
             // 
@@ -170,6 +172,13 @@
             this.followToolStripMenuItem.Text = "follow";
             this.followToolStripMenuItem.Click += new System.EventHandler(this.FollowToolStripMenuItem_Click);
             // 
+            // tagPanelToolStripMenuItem
+            // 
+            this.tagPanelToolStripMenuItem.Name = "tagPanelToolStripMenuItem";
+            this.tagPanelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.tagPanelToolStripMenuItem.Text = "tag panel";
+            this.tagPanelToolStripMenuItem.Click += new System.EventHandler(this.TagPanelToolStripMenuItem_Click);
+            // 
             // TagListViewControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -199,5 +208,6 @@
         private System.Windows.Forms.ToolStripMenuItem memToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deduplicationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem followToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem tagPanelToolStripMenuItem;
     }
 }

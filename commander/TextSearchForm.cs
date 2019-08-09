@@ -201,6 +201,11 @@ namespace commander
                                     continue;
 
                                 }
+                                if (!exceptTagFilters.All(z => !z.Files.Contains(item.FullName)))
+                                {
+                                    continue;
+
+                                }
                                 if (!searchHash.Add(item.FullName))
                                 {
                                     continue;
@@ -535,6 +540,7 @@ namespace commander
             }
         }
         List<TagInfo> tagFilters = new List<TagInfo>();
+        List<TagInfo> exceptTagFilters = new List<TagInfo>();
 
         public bool tagStorageSearchMode = false;
         private void Button2_Click(object sender, EventArgs e)
@@ -548,7 +554,8 @@ namespace commander
 
         void UpdateTagFiltersText()
         {
-            textBox7.Text = tagFilters.Aggregate("", (x, y) => x + y.Name + "; ");
+            textBox7.Text = tagFilters.Aggregate("", (x, y) => x + "[+"+y.Name + "] ");
+            textBox7.Text += exceptTagFilters.Aggregate("", (x, y) => x + "[-" + y.Name + "] ");
         }
 
         private void Button3_Click(object sender, EventArgs e)
@@ -566,6 +573,15 @@ namespace commander
         {
             textBox1.Enabled = !checkBox1.Checked;
             tagStorageSearchMode = checkBox1.Checked;
+        }
+
+        private void Button4_Click(object sender, EventArgs e)
+        {
+            var fr = Stuff.Tags.FirstOrDefault(z => z.Name == textBox8.Text);
+            if (fr == null) return;
+            if (tagFilters.Contains(fr)) return;
+            exceptTagFilters.Add(fr);
+            UpdateTagFiltersText();
         }
     }
 }

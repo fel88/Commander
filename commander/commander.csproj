@@ -106,6 +106,7 @@
       <DependentUpon>Explorer.cs</DependentUpon>
     </Compile>
     <Compile Include="FilesystemLibrary.cs" />
+    <Compile Include="IFileListControl.cs" />
     <Compile Include="IFilesystem.cs" />
     <Compile Include="QuickTagsWindow.cs">
       <SubType>Form</SubType>

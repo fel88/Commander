@@ -280,10 +280,16 @@ namespace commander
         /// <returns>The unsigned integer for the High Word</returns>
         public static uint HiWord(IntPtr ptr)
         {
-            if (((uint)ptr & 0x80000000) == 0x80000000)
-                return ((uint)ptr >> 16);
-            else
-                return ((uint)ptr >> 16) & 0xffff;
+            try
+            {
+                if (((uint)ptr & 0x80000000) == 0x80000000)
+                    return ((uint)ptr >> 16);
+                else
+                    return ((uint)ptr >> 16) & 0xffff;
+            }catch(Exception ex)
+            {
+                return 0;
+            }
         }
 
         /// <summary>
@@ -293,7 +299,13 @@ namespace commander
         /// <returns>The unsigned integer for the Low Word</returns>
         public static uint LoWord(IntPtr ptr)
         {
-            return (uint)ptr & 0xffff;
+            try
+            {
+                return (uint)ptr & 0xffff;
+            }catch(Exception ex)
+            {
+                return 0;
+            }
         }
 
         #endregion

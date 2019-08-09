@@ -38,12 +38,12 @@ namespace commander
             {
                 tagg.DeleteFile(currentFile.FullName);
             }
-
+            UpdateTagsInfo(currentFile);
         }
 
         IFileInfo currentFile;
 
-        public void Init(FileListControl flc, IFileInfo file)
+        public void Init(IFileListControl flc, IFileInfo file)
         {
             FileControl = flc;
             currentFile = file;
@@ -53,11 +53,23 @@ namespace commander
             flc.SelectedFileChanged += Flc_SelectedFileChanged;
         }
 
+        void UpdateTagsInfo(IFileInfo f)
+        {
+            listView1.Items.Clear();
+            var tt = Stuff.Tags.Where(z => z.Files.Contains(f.FullName));
+            foreach (var item in tt)
+            {
+                listView1.Items.Add(item.Name);
+            }
+        }
         void UpdateTags(IFileInfo f)
         {
+
+            UpdateTagsInfo(f);
             allow = false;
             Text = "Tags of: " + f.Name;
             var tt = Stuff.Tags.Where(z => z.Files.Contains(f.FullName));
+            
             for (int i = 0; i < checkedListBox1.Items.Count; i++)
             {
                 var item = checkedListBox1.Items[i] as ComboBoxItem;
@@ -82,7 +94,7 @@ namespace commander
           
         }
 
-        public FileListControl FileControl;
+        public IFileListControl FileControl;
 
         private void CheckedListBox1_SelectedIndexChanged(object sender, EventArgs e)
         {

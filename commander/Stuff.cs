@@ -16,50 +16,88 @@ namespace commander
 {
     public class Stuff
     {
+        public static Dictionary<string, Tuple<Bitmap, int>> Icons = new Dictionary<string, Tuple<Bitmap, int>>();
+        public static Dictionary<string, Tuple<Bitmap, int>> ExeIcons = new Dictionary<string, Tuple<Bitmap, int>>();
+        public static Tuple<Bitmap, int> GetBitmapOfFile(string fn)
+        {
+            var d = Path.GetExtension(fn).ToLower();
+            if (d == ".exe" || d == ".ico")
+            {
+                if (!ExeIcons.ContainsKey(fn))
+                {
+                    var bb = Bitmap.FromHicon(Stuff.ExtractAssociatedIcon(fn).Handle);
+                    if (bb != null)
+                    {
+                        bb.MakeTransparent();
+                        Stuff.list.Images.Add(bb);
+                        ExeIcons.Add(fn, new Tuple<Bitmap, int>(bb, Stuff.list.Images.Count - 1));
+                    }
+                }
+                return ExeIcons[fn];
+            }
+            if (!Icons.ContainsKey(d))
+            {
+                var bb = Bitmap.FromHicon(Stuff.ExtractAssociatedIcon(fn).Handle);
+                if (bb != null)
+                {
+                    bb.MakeTransparent();
+                    Stuff.list.Images.Add(bb);
+                    Icons.Add(d, new Tuple<Bitmap, int>(bb, Stuff.list.Images.Count - 1));
+                }
+            }
 
+            return Icons[d];
+        }
         public static IFilesystem DefaultFileSystem = new DiskFilesystem();
         public static List<MountInfo> MountInfos = new List<MountInfo>();
         public static ImageList list = null;
         public static List<IndexInfo> Indexes = new List<IndexInfo>();
         public static Icon ExtractAssociatedIcon(String filePath)
         {
-            int index = 0;
-
-            Uri uri;
-            if (filePath == null)
-            {
-                throw new ArgumentException(String.Format("'{0}' is not valid for '{1}'", "null", "filePath"), "filePath");
-            }
             try
             {
-                uri = new Uri(filePath);
-            }
-            catch (UriFormatException)
-            {
-                filePath = Path.GetFullPath(filePath);
-                uri = new Uri(filePath);
-            }
-            //if (uri.IsUnc)
-            //{
-            //  throw new ArgumentException(String.Format("'{0}' is not valid for '{1}'", filePath, "filePath"), "filePath");
-            //}
-            if (uri.IsFile)
-            {
-                if (!File.Exists(filePath))
-                {
-                    //IntSecurity.DemandReadFileIO(filePath);
-                    throw new FileNotFoundException(filePath);
-                }
+                int index = 0;
 
-                StringBuilder iconPath = new StringBuilder(260);
-                iconPath.Append(filePath);
-
-                IntPtr handle = SafeNativeMethods.ExtractAssociatedIcon(new HandleRef(null, IntPtr.Zero), iconPath, ref index);
-                if (handle != IntPtr.Zero)
+                Uri uri;
+                if (filePath == null)
                 {
-                    //IntSecurity.ObjectFromWin32Handle.Demand();
-                    return Icon.FromHandle(handle);
+                    throw new ArgumentException(String.Format("'{0}' is not valid for '{1}'", "null", "filePath"), "filePath");
                 }
+                try
+                {
+                    uri = new Uri(filePath);
+                }
+                catch (UriFormatException)
+                {
+                    filePath = Path.GetFullPath(filePath);
+                    uri = new Uri(filePath);
+                }
+                //if (uri.IsUnc)
+                //{
+                //  throw new ArgumentException(String.Format("'{0}' is not valid for '{1}'", filePath, "filePath"), "filePath");
+                //}
+                if (uri.IsFile)
+                {
+                    if (!File.Exists(filePath))
+                    {
+                        //IntSecurity.DemandReadFileIO(filePath);
+                        throw new FileNotFoundException(filePath);
+                    }
+
+                    StringBuilder iconPath = new StringBuilder(260);
+                    iconPath.Append(filePath);
+
+                    IntPtr handle = SafeNativeMethods.ExtractAssociatedIcon(new HandleRef(null, IntPtr.Zero), iconPath, ref index);
+                    if (handle != IntPtr.Zero)
+                    {
+                        //IntSecurity.ObjectFromWin32Handle.Demand();
+                        return Icon.FromHandle(handle);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
             }
             return null;
         }
@@ -555,7 +593,7 @@ namespace commander
         }
 
         internal static void PackToIso(IDirectoryInfo dir, string path)
-        {            
+        {
             var fls = Stuff.GetAllFiles(dir);
             var drs = Stuff.GetAllDirs(dir);
             //generate meta.xml
