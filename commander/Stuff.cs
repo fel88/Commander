@@ -25,24 +25,42 @@ namespace commander
             {
                 if (!ExeIcons.ContainsKey(fn))
                 {
-                    var bb = Bitmap.FromHicon(Stuff.ExtractAssociatedIcon(fn).Handle);
-                    if (bb != null)
+                    var ico = Stuff.ExtractAssociatedIcon(fn);
+
+                    if (ico != null)
                     {
-                        bb.MakeTransparent();
-                        Stuff.list.Images.Add(bb);
-                        ExeIcons.Add(fn, new Tuple<Bitmap, int>(bb, Stuff.list.Images.Count - 1));
+                        try
+                        {
+                            var bb = Bitmap.FromHicon(ico.Handle);
+                            bb.MakeTransparent();
+                            Stuff.list.Images.Add(bb);
+                            ExeIcons.Add(fn, new Tuple<Bitmap, int>(bb, Stuff.list.Images.Count - 1));
+                        }
+                        catch (Exception ex)
+                        {
+                            return null;
+                        }
                     }
                 }
                 return ExeIcons[fn];
             }
             if (!Icons.ContainsKey(d))
             {
-                var bb = Bitmap.FromHicon(Stuff.ExtractAssociatedIcon(fn).Handle);
-                if (bb != null)
+                var ico = Stuff.ExtractAssociatedIcon(fn);
+
+                if (ico != null)
                 {
-                    bb.MakeTransparent();
-                    Stuff.list.Images.Add(bb);
-                    Icons.Add(d, new Tuple<Bitmap, int>(bb, Stuff.list.Images.Count - 1));
+                    try
+                    {
+                        var bb = Bitmap.FromHicon(ico.Handle);
+                        bb.MakeTransparent();
+                        Stuff.list.Images.Add(bb);
+                        Icons.Add(d, new Tuple<Bitmap, int>(bb, Stuff.list.Images.Count - 1));
+                    }
+                    catch (Exception ex)
+                    {
+                        return null;
+                    }
                 }
             }
 
@@ -280,6 +298,16 @@ namespace commander
             }
         }
 
+        public static void DeleteTag(TagInfo t)
+        {            
+            Tags.Remove(t);
+            IsDirty = true;
+            if (TagsListChanged != null)
+            {
+                TagsListChanged();
+            }
+        }
+
         public static string GetUserFriendlyFileSize(long _v)
         {
             double v = _v;
@@ -498,14 +526,20 @@ namespace commander
             File.WriteAllText("settings.xml", sb.ToString());
         }
 
+        public static event Action TagsListChanged;
         internal static TagInfo AddTag(TagInfo tagInfo)
         {
             if (Tags.Any(z => z.Name == tagInfo.Name))
             {
                 return Tags.First(z => z.Name == tagInfo.Name);
             }
+            
             Tags.Add(tagInfo);
             IsDirty = true;
+            if (TagsListChanged != null)
+            {
+                TagsListChanged();
+            }
             return tagInfo;
         }
 

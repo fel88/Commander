@@ -294,8 +294,8 @@ namespace commander
                     var t = tag as TagInfo;
                     if (Stuff.Question("Are you sure to delete " + t.Name + " tag and all files?") == DialogResult.Yes)
                     {
-                        Stuff.Tags.Remove(t);
-                        Stuff.IsDirty = true;
+                        Stuff.DeleteTag(t);
+                        
                         UpdateList(null);
                     }
                 }

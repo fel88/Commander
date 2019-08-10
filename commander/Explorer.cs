@@ -25,6 +25,10 @@ namespace commander
             fileListControl1.MountIsoAction = mouseIsoAction;
             fileListControl1.IsoExtractAction = isoExtractAction;
 
+
+            fileListControl1.DeleteFileAction += FileListControl1_DeleteFileAction;
+            fileListControl2.DeleteFileAction += FileListControl1_DeleteFileAction;
+
             fileListControl1.FollowAction += followAction;
             fileListControl2.FollowAction += followAction;
             UpdateTabs();
@@ -59,22 +63,36 @@ namespace commander
                if (gexts.Contains(x.Extension.ToLower()))
                {
                    splitContainer1.Panel2.Controls.Add(previewer);
-                   previewer.SetImage(Bitmap.FromFile(x.FullName));
+                   previewer.SetImage(x);                   
                }
                if (new string[] { ".gif" }.Contains(x.Extension.ToLower()))
                {
                    splitContainer1.Panel2.Controls.Add(gpreviewer);
-                   gpreviewer.SetImage(x.FullName);
+                   gpreviewer.SetImage(x.FullName);                   
                }
-               if (new string[] { ".wmv", ".mp4", ".avi", ".mkv" }.Contains(x.Extension.ToLower()))
+               if (new string[] { ".flv", ".wmv", ".mp4", ".avi", ".mkv" }.Contains(x.Extension.ToLower()))
                {
                    splitContainer1.Panel2.Controls.Add(vpreviewer);
                    vpreviewer.RunVideo(x.FullName);
                }
+               else
+               {
+                   vpreviewer.StopVideo();
+               }
 
            });
         }
-        private void followAction(FileListControl fc,IFileInfo f)
+
+        private void FileListControl1_DeleteFileAction(FileListControl arg1, IFileInfo arg2)
+        {
+            if (previewer.CurrentFile.FullName == arg2.FullName)
+            {
+                previewer.ResetImage();
+
+            }
+        }
+
+        private void followAction(FileListControl fc, IFileInfo f)
         {
             if (fc == fileListControl1)
             {
@@ -522,6 +540,25 @@ namespace commander
             fileListControl1.UpdateList();
             fileListControl2.SetPath(temp);
             fileListControl2.UpdateList();
+        }
+
+        private void InsertClipboardAsFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RenameDialog rdl = new RenameDialog();
+            rdl.StartPosition = FormStartPosition.CenterParent;
+
+            if (rdl.ShowDialog() == DialogResult.OK)
+            {
+                FileListControl flc = fileListControl1;
+                if (fileListControl2.ContainsFocus)
+                {
+                    flc = fileListControl2;
+                }
+
+                var img = Clipboard.GetImage();
+                img.Save(Path.Combine(flc.CurrentDirectory.FullName, rdl.Value));
+
+            }
         }
     }
 }

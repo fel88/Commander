@@ -43,10 +43,11 @@
             this.hideToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.unhideToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changePasswordToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.fileListControl1 = new commander.FileListControl();
             this.fileListControl2 = new commander.FileListControl();
-            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.insertClipboardAsFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -126,7 +127,8 @@
             this.toolStripDropDownButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripDropDownButton2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.compareMD5ToolStripMenuItem,
-            this.compareBinaryToolStripMenuItem});
+            this.compareBinaryToolStripMenuItem,
+            this.insertClipboardAsFileToolStripMenuItem});
             this.toolStripDropDownButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton2.Image")));
             this.toolStripDropDownButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton2.Name = "toolStripDropDownButton2";
@@ -136,14 +138,14 @@
             // compareMD5ToolStripMenuItem
             // 
             this.compareMD5ToolStripMenuItem.Name = "compareMD5ToolStripMenuItem";
-            this.compareMD5ToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.compareMD5ToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
             this.compareMD5ToolStripMenuItem.Text = "Compare MD5";
             this.compareMD5ToolStripMenuItem.Click += new System.EventHandler(this.CompareMD5ToolStripMenuItem_Click);
             // 
             // compareBinaryToolStripMenuItem
             // 
             this.compareBinaryToolStripMenuItem.Name = "compareBinaryToolStripMenuItem";
-            this.compareBinaryToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.compareBinaryToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
             this.compareBinaryToolStripMenuItem.Text = "Compare binary";
             this.compareBinaryToolStripMenuItem.Click += new System.EventHandler(this.CompareBinaryToolStripMenuItem_Click);
             // 
@@ -189,6 +191,16 @@
             this.changePasswordToolStripMenuItem.Text = "Change password";
             this.changePasswordToolStripMenuItem.Click += new System.EventHandler(this.ChangePasswordToolStripMenuItem_Click);
             // 
+            // toolStripButton1
+            // 
+            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(46, 22);
+            this.toolStripButton1.Text = "Switch";
+            this.toolStripButton1.Click += new System.EventHandler(this.ToolStripButton1_Click_1);
+            // 
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -223,15 +235,12 @@
             this.fileListControl2.Size = new System.Drawing.Size(495, 529);
             this.fileListControl2.TabIndex = 1;
             // 
-            // toolStripButton1
+            // insertClipboardAsFileToolStripMenuItem
             // 
-            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
-            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(46, 22);
-            this.toolStripButton1.Text = "Switch";
-            this.toolStripButton1.Click += new System.EventHandler(this.ToolStripButton1_Click_1);
+            this.insertClipboardAsFileToolStripMenuItem.Name = "insertClipboardAsFileToolStripMenuItem";
+            this.insertClipboardAsFileToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+            this.insertClipboardAsFileToolStripMenuItem.Text = "Insert clipboard as file";
+            this.insertClipboardAsFileToolStripMenuItem.Click += new System.EventHandler(this.InsertClipboardAsFileToolStripMenuItem_Click);
             // 
             // Explorer
             // 
@@ -275,6 +284,7 @@
         private System.Windows.Forms.ToolStripMenuItem unhideToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem changePasswordToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton toolStripButton1;
+        private System.Windows.Forms.ToolStripMenuItem insertClipboardAsFileToolStripMenuItem;
     }
 }
 

@@ -1,13 +1,16 @@
 ﻿using Microsoft.Win32;
+using ProxyLib;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace commander
@@ -18,8 +21,23 @@ namespace commander
         {
             InitializeComponent();
             UpdateOfflineList();
-        }
+            Stuff.SetDoubleBuffered(listView2);
+            Stuff.SetDoubleBuffered(listView1);
 
+            if (File.Exists("cache.xml"))
+            {
+                cache.Restore("cache.xml");
+            }
+
+            listView3.Items.Clear();
+            foreach (var item in cache.Cache)
+            {
+                listView3.Items.Add(new ListViewItem(new string[] { item.Key}) { Tag = item.Key });
+            }
+            SimpleHttpProxyServer.Cache = cache;
+
+        }
+        SimpleProxyCache cache = new SimpleProxyCache();
         private void UpdateOfflineList()
         {
             listView2.Items.Clear();
@@ -54,10 +72,15 @@ namespace commander
 
         private void Timer1_Tick(object sender, EventArgs e)
         {
+            toolStripLabel2.Text = "cache items: " + cache.Cache.Count;
+            toolStripLabel2.ForeColor = Color.Green;
             foreach (var item in listView1.Items)
             {
+
                 var l = item as ListViewItem;
+                if (!(l.Tag is ConnectionInfo)) continue;
                 var tt = l.Tag as ConnectionInfo;
+
                 if (tt.Log.Any() && string.IsNullOrEmpty(l.SubItems[1].Text))
                 {
                     l.SubItems[1].Text = tt.Log.First();
@@ -112,9 +135,32 @@ namespace commander
 
 
         }
+        public static IPAddress GetDefaultGateway()
+        {
+            return NetworkInterface
+                .GetAllNetworkInterfaces()
+                .Where(n => n.OperationalStatus == OperationalStatus.Up)
+                .Where(n => n.NetworkInterfaceType != NetworkInterfaceType.Loopback)
+                .SelectMany(n => n.GetIPProperties()?.GatewayAddresses)
+                .Select(g => g?.Address)
+                .Where(a => a != null)
+                // .Where(a => a.AddressFamily == AddressFamily.InterNetwork)
+                // .Where(a => Array.FindIndex(a.GetAddressBytes(), b => b != 0) >= 0)
+                .FirstOrDefault();
+        }
+
+
 
         private void ToolStripButton3_Click(object sender, EventArgs e)
         {
+            Thread th = new Thread(SimpleHttpProxyServer.Run);
+            th.IsBackground = true;
+            th.Start();
+
+
+
+            return;
+
             if (server == null)
             {
                 server = new Server();
@@ -132,12 +178,26 @@ namespace commander
         private void Button1_Click_1(object sender, EventArgs e)
         {
             TcpClient cl = new TcpClient();
-            cl.Connect("192.168.1.1", 80);
+            /*WebClient wec = new WebClient();
+            wec.Proxy = null;
+            var dat = wec.DownloadString("http://codeforces.com");
+            richTextBox3.Text = dat;
+            return;*/
+            var gateway = GetDefaultGateway();
+
+            cl.Connect(gateway, 80);
+
 
             var wr = new StreamWriter(cl.GetStream());
             var rdr = new StreamReader(cl.GetStream());
+            foreach (var item in richTextBox2.Lines)
+            {
+                wr.WriteLine(item);
+            }
 
-            wr.WriteLine("");
+
+            richTextBox3.Text = rdr.ReadToEnd();
+
         }
 
         private void RichTextBox2_TextChanged(object sender, EventArgs e)
@@ -151,5 +211,45 @@ namespace commander
             var of = listView2.SelectedItems[0].Tag as OfflineSiteInfo;
             Stuff.ExecuteFile(new FileInfoWrapper(of.Path));
         }
+
+        private void ToolStripLabel1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void RestoreCacheToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (File.Exists("cache.xml"))
+            {
+                cache.Restore("cache.xml");
+            }
+        }
+
+        private void SaveCacheToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            cache.Store("cache.xml");
+        }
+
+        private void EnableToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SimpleHttpProxyServer.UseCache = enableToolStripMenuItem.Checked;
+        }
+
+        private void DisableToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SimpleHttpProxyServer.AllowStoreInCache = disableToolStripMenuItem.Checked;
+        }
+
+        private void ListView3_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (listView3.SelectedItems.Count == 0) return;
+            var str = (string)listView3.SelectedItems[0].Tag;
+            ProcessStartInfo psi = new ProcessStartInfo();
+            psi.FileName = str;
+            Process.Start(psi);
+        }
     }
 }
+
+
+

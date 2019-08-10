@@ -14,9 +14,16 @@ namespace commander
         public QuickTagsWindow()
         {
             InitializeComponent();
+            Stuff.TagsListChanged += Stuff_TagsListChanged;
             Stuff.SetDoubleBuffered(checkedListBox1);
             checkedListBox1.ItemCheck += CheckedListBox1_ItemCheck;
-            foreach (var item in Stuff.Tags.OrderBy(z=>z.Name))
+            UpdateCheckList();
+        }
+
+        void UpdateCheckList()
+        {
+            checkedListBox1.Items.Clear();
+            foreach (var item in Stuff.Tags.OrderBy(z => z.Name))
             {
                 if (item.IsHidden && !Stuff.ShowHidden) continue;
 
@@ -24,6 +31,12 @@ namespace commander
 
             }
         }
+        private void Stuff_TagsListChanged()
+        {
+            UpdateCheckList();
+            UpdateTags();
+        }
+
         bool allow = true;
         private void CheckedListBox1_ItemCheck(object sender, ItemCheckEventArgs e)
         {
@@ -62,7 +75,13 @@ namespace commander
                 listView1.Items.Add(item.Name);
             }
         }
-        void UpdateTags(IFileInfo f)
+
+        public void UpdateTags()
+        {
+            UpdateTags(currentFile);
+        }
+
+        public void UpdateTags(IFileInfo f)
         {
 
             UpdateTagsInfo(f);

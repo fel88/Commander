@@ -32,6 +32,7 @@ namespace commander
 
 
             BinaryWriter cwrt =null;
+            StringWriter scwrt = null;
             BinaryReader crdr=null;
             List<string> lns = new List<string>();
             Thread tt = new Thread(() =>
@@ -49,17 +50,21 @@ namespace commander
                 }
             });
             tt.IsBackground = true;
-           
+
+            bool isBinaryMode = false;
 
             while (true)
             {
                 try
                 {
                     var line = reader.ReadLine();
-                    /*if (cwrt != null)
+                    if (!isBinaryMode)
                     {
-                        cwrt.WriteLine(line);
-                    }*/
+                        if (scwrt != null)
+                        {
+                            scwrt.WriteLine(line);
+                        }
+                    }
                     /*lock (lns)
                     {
                         foreach (var item in lns)
@@ -71,7 +76,27 @@ namespace commander
 
 
                     cinfo.Log.Add(line);
-                    if (line.StartsWith("CONNECT"))
+                    if (line.StartsWith("GET"))
+                    {
+
+                        var arr1 = line.Split(new char[] { ' ', ':' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
+                        var addr = arr1[1];
+                        if (addr.Contains("code"))
+                        {
+                            var port = arr1[2];
+
+                            client.Connect(addr, int.Parse(port));
+
+                            var strm = client.GetStream();
+                            cwrt = new BinaryWriter(strm);
+                            crdr = new BinaryReader(strm);
+                            tt.Start();
+                            swrt2.WriteLine("HTTP/1.1 200 OK");
+                            swrt2.Flush();
+                        }
+                    }
+
+                    if (line.StartsWith("CONNECT") && false)
                     {
                        
                         var arr1 = line.Split(new char[] { ' ', ':' }, StringSplitOptions.RemoveEmptyEntries).ToArray();

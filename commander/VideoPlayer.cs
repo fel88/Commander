@@ -18,8 +18,11 @@ namespace commander
 
         internal void RunVideo(string fullName)
         {
-            axWindowsMediaPlayer1.URL = fullName;
-            
+            axWindowsMediaPlayer1.URL = fullName;            
+        }
+        internal void StopVideo()
+        {
+            axWindowsMediaPlayer1.URL = null;
         }
     }
 }

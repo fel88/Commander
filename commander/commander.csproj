@@ -115,6 +115,7 @@
       <DependentUpon>QuickTagsWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="ShellContextMenu.cs" />
+    <Compile Include="SimpleProxyCache.cs" />
     <Compile Include="VirtualDirectoryInfo.cs" />
     <Compile Include="VirtualFileInfo.cs" />
     <Compile Include="VirtualFilesystem.cs" />
@@ -394,6 +395,10 @@
     <ProjectReference Include="..\PluginLib\PluginLib.csproj">
       <Project>{90e6e142-c201-4918-9d48-6e0e041ea40d}</Project>
       <Name>PluginLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ProxyLib\ProxyLib.csproj">
+      <Project>{737631E0-772B-40C9-9BA0-D7A78D5B2796}</Project>
+      <Name>ProxyLib</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -1291,8 +1291,6 @@ namespace commander
         {
             if (!ListView.Focused) return;
 
-
-
             ////////////
             if (listView1.SelectedItems.Count > 0)
             {
@@ -1303,6 +1301,7 @@ namespace commander
 
                     if (Stuff.Question("Delete file: " + SelectedFile.FullName + "?") == DialogResult.Yes)
                     {
+                        DeleteFileAction(this, f);
                         var attr = File.GetAttributes(SelectedFile.FullName);
                         bool allow = true;
                         if (attr.HasFlag(FileAttributes.ReadOnly))
@@ -1574,6 +1573,7 @@ namespace commander
         }
 
         public Action<FileListControl, IFileInfo> MountIsoAction;
+        public event Action<FileListControl, IFileInfo> DeleteFileAction;
         public Action<FileListControl, IFileInfo> IsoExtractAction;
         private void MountIsoToRightToolStripMenuItem_Click(object sender, EventArgs e)
         {

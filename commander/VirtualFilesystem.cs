@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 
@@ -26,6 +27,12 @@ namespace commander
                 }                
             }
             return File.ReadAllLines(fr.FileInfo.FullName);
+        }
+
+        public Image BitmapFromFile(string fullName)
+        {
+            var fr = Files.First(z => z.FullName == fullName);
+            return Bitmap.FromFile(fr.FileInfo.FullName);
         }
     }
     

@@ -45,25 +45,41 @@
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.richTextBox3 = new System.Windows.Forms.RichTextBox();
             this.richTextBox2 = new System.Windows.Forms.RichTextBox();
             this.button1 = new System.Windows.Forms.Button();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.textBox1 = new System.Windows.Forms.TextBox();
             this.button2 = new System.Windows.Forms.Button();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
+            this.restoreCacheToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveCacheToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.enableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.disableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
+            this.tabPage6 = new System.Windows.Forms.TabPage();
+            this.listView3 = new System.Windows.Forms.ListView();
+            this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
-            this.toolStrip1.SuspendLayout();
             this.tabPage4.SuspendLayout();
+            this.tabPage5.SuspendLayout();
+            this.toolStrip1.SuspendLayout();
+            this.tabPage6.SuspendLayout();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -134,6 +150,8 @@
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Controls.Add(this.tabPage4);
+            this.tabControl1.Controls.Add(this.tabPage5);
+            this.tabControl1.Controls.Add(this.tabPage6);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(3, 43);
             this.tabControl1.Name = "tabControl1";
@@ -185,6 +203,7 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.richTextBox3);
             this.tabPage3.Controls.Add(this.richTextBox2);
             this.tabPage3.Controls.Add(this.button1);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
@@ -192,12 +211,20 @@
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage3.Size = new System.Drawing.Size(786, 378);
             this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "tabPage3";
+            this.tabPage3.Text = "Debug";
             this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // richTextBox3
+            // 
+            this.richTextBox3.Location = new System.Drawing.Point(286, 39);
+            this.richTextBox3.Name = "richTextBox3";
+            this.richTextBox3.Size = new System.Drawing.Size(274, 206);
+            this.richTextBox3.TabIndex = 6;
+            this.richTextBox3.Text = "";
             // 
             // richTextBox2
             // 
-            this.richTextBox2.Location = new System.Drawing.Point(454, 99);
+            this.richTextBox2.Location = new System.Drawing.Point(6, 39);
             this.richTextBox2.Name = "richTextBox2";
             this.richTextBox2.Size = new System.Drawing.Size(274, 206);
             this.richTextBox2.TabIndex = 5;
@@ -206,33 +233,13 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(433, 59);
+            this.button1.Location = new System.Drawing.Point(6, 10);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(142, 23);
             this.button1.TabIndex = 4;
-            this.button1.Text = "send request";
+            this.button1.Text = "send request to gateway";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.Button1_Click_1);
-            // 
-            // toolStrip1
-            // 
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripButton1,
-            this.toolStripButton2,
-            this.toolStripButton3,
-            this.toolStripButton4,
-            this.toolStripLabel1});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(800, 25);
-            this.toolStrip1.TabIndex = 1;
-            this.toolStrip1.Text = "toolStrip1";
-            // 
-            // toolStripLabel1
-            // 
-            this.toolStripLabel1.Name = "toolStripLabel1";
-            this.toolStripLabel1.Size = new System.Drawing.Size(86, 22);
-            this.toolStripLabel1.Text = "toolStripLabel1";
             // 
             // tabPage4
             // 
@@ -246,13 +253,6 @@
             this.tabPage4.Text = "Search Engine";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(58, 6);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 20);
-            this.textBox1.TabIndex = 0;
-            // 
             // button2
             // 
             this.button2.Location = new System.Drawing.Point(164, 4);
@@ -261,6 +261,58 @@
             this.button2.TabIndex = 1;
             this.button2.Text = "Start server";
             this.button2.UseVisualStyleBackColor = true;
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(58, 6);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(100, 20);
+            this.textBox1.TabIndex = 0;
+            // 
+            // tabPage5
+            // 
+            this.tabPage5.Controls.Add(this.textBox2);
+            this.tabPage5.Controls.Add(this.label1);
+            this.tabPage5.Location = new System.Drawing.Point(4, 22);
+            this.tabPage5.Name = "tabPage5";
+            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage5.Size = new System.Drawing.Size(786, 378);
+            this.tabPage5.TabIndex = 4;
+            this.tabPage5.Text = "Settings";
+            this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(69, 10);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(100, 20);
+            this.textBox2.TabIndex = 1;
+            this.textBox2.Text = "8888";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 13);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(57, 13);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Proxy port:";
+            // 
+            // toolStrip1
+            // 
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripButton1,
+            this.toolStripButton2,
+            this.toolStripButton3,
+            this.toolStripButton4,
+            this.toolStripDropDownButton1,
+            this.toolStripLabel1,
+            this.toolStripLabel2});
+            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Size = new System.Drawing.Size(800, 25);
+            this.toolStrip1.TabIndex = 1;
+            this.toolStrip1.Text = "toolStrip1";
             // 
             // toolStripButton1
             // 
@@ -302,6 +354,94 @@
             this.toolStripButton4.Text = "start local offline server";
             this.toolStripButton4.Click += new System.EventHandler(this.ToolStripButton4_Click);
             // 
+            // toolStripLabel1
+            // 
+            this.toolStripLabel1.Name = "toolStripLabel1";
+            this.toolStripLabel1.Size = new System.Drawing.Size(16, 22);
+            this.toolStripLabel1.Text = "...";
+            this.toolStripLabel1.Click += new System.EventHandler(this.ToolStripLabel1_Click);
+            // 
+            // toolStripDropDownButton1
+            // 
+            this.toolStripDropDownButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripDropDownButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.restoreCacheToolStripMenuItem,
+            this.saveCacheToolStripMenuItem,
+            this.enableToolStripMenuItem,
+            this.disableToolStripMenuItem});
+            this.toolStripDropDownButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton1.Image")));
+            this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
+            this.toolStripDropDownButton1.Size = new System.Drawing.Size(51, 22);
+            this.toolStripDropDownButton1.Text = "cache";
+            // 
+            // restoreCacheToolStripMenuItem
+            // 
+            this.restoreCacheToolStripMenuItem.Name = "restoreCacheToolStripMenuItem";
+            this.restoreCacheToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.restoreCacheToolStripMenuItem.Text = "restore cache";
+            this.restoreCacheToolStripMenuItem.Click += new System.EventHandler(this.RestoreCacheToolStripMenuItem_Click);
+            // 
+            // saveCacheToolStripMenuItem
+            // 
+            this.saveCacheToolStripMenuItem.Name = "saveCacheToolStripMenuItem";
+            this.saveCacheToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveCacheToolStripMenuItem.Text = "save cache";
+            this.saveCacheToolStripMenuItem.Click += new System.EventHandler(this.SaveCacheToolStripMenuItem_Click);
+            // 
+            // enableToolStripMenuItem
+            // 
+            this.enableToolStripMenuItem.CheckOnClick = true;
+            this.enableToolStripMenuItem.Name = "enableToolStripMenuItem";
+            this.enableToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.enableToolStripMenuItem.Text = "enable";
+            this.enableToolStripMenuItem.Click += new System.EventHandler(this.EnableToolStripMenuItem_Click);
+            // 
+            // disableToolStripMenuItem
+            // 
+            this.disableToolStripMenuItem.CheckOnClick = true;
+            this.disableToolStripMenuItem.Name = "disableToolStripMenuItem";
+            this.disableToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.disableToolStripMenuItem.Text = "store mode";
+            this.disableToolStripMenuItem.Click += new System.EventHandler(this.DisableToolStripMenuItem_Click);
+            // 
+            // toolStripLabel2
+            // 
+            this.toolStripLabel2.Name = "toolStripLabel2";
+            this.toolStripLabel2.Size = new System.Drawing.Size(13, 22);
+            this.toolStripLabel2.Text = "..";
+            // 
+            // tabPage6
+            // 
+            this.tabPage6.Controls.Add(this.listView3);
+            this.tabPage6.Location = new System.Drawing.Point(4, 22);
+            this.tabPage6.Name = "tabPage6";
+            this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage6.Size = new System.Drawing.Size(786, 378);
+            this.tabPage6.TabIndex = 5;
+            this.tabPage6.Text = "Cache";
+            this.tabPage6.UseVisualStyleBackColor = true;
+            // 
+            // listView3
+            // 
+            this.listView3.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader6,
+            this.columnHeader7});
+            this.listView3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listView3.FullRowSelect = true;
+            this.listView3.GridLines = true;
+            this.listView3.Location = new System.Drawing.Point(3, 3);
+            this.listView3.Name = "listView3";
+            this.listView3.Size = new System.Drawing.Size(780, 372);
+            this.listView3.TabIndex = 1;
+            this.listView3.UseCompatibleStateImageBehavior = false;
+            this.listView3.View = System.Windows.Forms.View.Details;
+            this.listView3.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.ListView3_MouseDoubleClick);
+            // 
+            // columnHeader6
+            // 
+            this.columnHeader6.Width = 250;
+            // 
             // ProxyManagerWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -317,10 +457,13 @@
             this.tabPage1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
-            this.toolStrip1.ResumeLayout(false);
-            this.toolStrip1.PerformLayout();
             this.tabPage4.ResumeLayout(false);
             this.tabPage4.PerformLayout();
+            this.tabPage5.ResumeLayout(false);
+            this.tabPage5.PerformLayout();
+            this.toolStrip1.ResumeLayout(false);
+            this.toolStrip1.PerformLayout();
+            this.tabPage6.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -353,5 +496,19 @@
         private System.Windows.Forms.TabPage tabPage4;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TabPage tabPage5;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.RichTextBox richTextBox3;
+        private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton1;
+        private System.Windows.Forms.ToolStripMenuItem restoreCacheToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveCacheToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem enableToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem disableToolStripMenuItem;
+        private System.Windows.Forms.ToolStripLabel toolStripLabel2;
+        private System.Windows.Forms.TabPage tabPage6;
+        private System.Windows.Forms.ListView listView3;
+        private System.Windows.Forms.ColumnHeader columnHeader6;
+        private System.Windows.Forms.ColumnHeader columnHeader7;
     }
 }
