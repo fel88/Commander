@@ -63,12 +63,12 @@ namespace commander
                if (gexts.Contains(x.Extension.ToLower()))
                {
                    splitContainer1.Panel2.Controls.Add(previewer);
-                   previewer.SetImage(x);                   
+                   previewer.SetImage(x);
                }
                if (new string[] { ".gif" }.Contains(x.Extension.ToLower()))
                {
                    splitContainer1.Panel2.Controls.Add(gpreviewer);
-                   gpreviewer.SetImage(x.FullName);                   
+                   gpreviewer.SetImage(x.FullName);
                }
                if (new string[] { ".flv", ".wmv", ".mp4", ".avi", ".mkv" }.Contains(x.Extension.ToLower()))
                {
@@ -264,6 +264,20 @@ namespace commander
                     fc.Rename();
                 }
             }
+
+            if (Stuff.Hotkeys.Any(z => z.Hotkey == e.KeyCode && z.IsEnabled))
+            {
+                var cc = Stuff.Hotkeys.First(z => z.Hotkey == e.KeyCode);
+
+                IFileListControl fl = fileListControl1;
+                if (fileListControl2.ContainsFocus)
+                {
+                    fl = fileListControl2;
+                }
+                cc.Execute(fl);
+            }
+
+
             if (e.KeyCode == Keys.F5)
             {//copy
 
@@ -504,7 +518,8 @@ namespace commander
 
         private void Explorer_FormClosing(object sender, FormClosingEventArgs e)
         {
-
+            fileListControl1.ParentClosing();
+            fileListControl2.ParentClosing();            
         }
 
         private void HideToolStripMenuItem_Click(object sender, EventArgs e)

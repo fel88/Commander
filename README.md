@@ -15,3 +15,4 @@ Containers, tags, extractors and navigation.
 # Useful references:
 * https://www.codeproject.com/Articles/11505/NGif-Animated-GIF-Encoder-for-NET 
 * http://kbyte.ru/ru/Programming/Articles.aspx?id=66&mode=art
+* https://www.codeproject.com/Articles/93301/Implementing-a-Multithreaded-HTTP-HTTPS-Debugging

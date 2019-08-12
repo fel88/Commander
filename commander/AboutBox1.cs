@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace commander
@@ -100,5 +102,10 @@ namespace commander
             }
         }
         #endregion
+
+        private void Timer1_Tick(object sender, EventArgs e)
+        {
+            textBox1.Text = "threads: " + Process.GetCurrentProcess().Threads.Count + "; RAM: " + Stuff.GetUserFriendlyFileSize(Process.GetCurrentProcess().PrivateMemorySize);
+        }
     }
 }

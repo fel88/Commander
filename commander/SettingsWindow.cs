@@ -14,13 +14,15 @@ namespace commander
         public SettingsWindow()
         {
             InitializeComponent();
-            checkBox1.Checked = FileListControl.AllowHints;
-            switch (FileListControl.HintMode)
+            Stuff.SetDoubleBuffered(listView1);
+            Stuff.SetDoubleBuffered(listView2);
+            checkBox1.Checked = PreviewHelper.AllowHints;
+            switch (PreviewHelper.HintMode)
             {
-                case FileListControl.HintModeEnum.Image:
+                case PreviewHelper.HintModeEnum.Image:
                     comboBox1.SelectedIndex = 0;
                     break;
-                case FileListControl.HintModeEnum.Tags:
+                case PreviewHelper.HintModeEnum.Tags:
                     comboBox1.SelectedIndex = 1;
                     break;
             }
@@ -28,6 +30,17 @@ namespace commander
             foreach (var item in Stuff.FileContextMenuItems)
             {
                 AppendMenuItem(item);
+            }
+
+            UpdateHotkeys();
+        }
+
+        private void UpdateHotkeys()
+        {
+            listView2.Items.Clear();
+            foreach (var item in Stuff.Hotkeys)
+            {
+                listView2.Items.Add(new ListViewItem(new string[] { item.IsEnabled + "", item.Path, item.Hotkey + "" }) { Tag = item, Checked = item.IsEnabled });
             }
         }
 
@@ -41,19 +54,19 @@ namespace commander
 
         private void CheckBox1_CheckedChanged(object sender, EventArgs e)
         {
-            FileListControl.AllowHints = checkBox1.Checked;
+            PreviewHelper.AllowHints = checkBox1.Checked;
         }
 
         private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (comboBox1.SelectedIndex == 0) { FileListControl.HintMode = FileListControl.HintModeEnum.Image; }
-            if (comboBox1.SelectedIndex == 1) { FileListControl.HintMode = FileListControl.HintModeEnum.Tags; }
+            if (comboBox1.SelectedIndex == 0) { PreviewHelper.HintMode = PreviewHelper.HintModeEnum.Image; }
+            if (comboBox1.SelectedIndex == 1) { PreviewHelper.HintMode = PreviewHelper.HintModeEnum.Tags; }
         }
 
         private void AddItemToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
-            var f = new FileContextMenuItem() { Title="new item",AppName="cmd.exe"};            
+            var f = new FileContextMenuItem() { Title = "new item", AppName = "cmd.exe" };
             Stuff.FileContextMenuItems.Add(f);
             AppendMenuItem(f);
             Stuff.IsDirty = true;
@@ -69,6 +82,15 @@ namespace commander
                 Stuff.IsDirty = true;
                 listView1.Items.Remove(listView1.SelectedItems[0]);
             }
+        }
+
+        private void ListView2_ItemChecked(object sender, ItemCheckedEventArgs e)
+        {
+            var h = e.Item.Tag as HotkeyShortcutInfo;
+            if (h.IsEnabled == e.Item.Checked) return;
+            h.IsEnabled = e.Item.Checked;
+            e.Item.SubItems[0].Text = h.IsEnabled + "";
+            Stuff.IsDirty = true;
         }
     }
 }

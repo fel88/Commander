@@ -18,8 +18,15 @@ namespace commander
             InitializeComponent();
             Stuff.SetDoubleBuffered(listView1);
             listView1.MouseMove += ListView1_MouseMove;
+
+            phelper.Append(this, listView1);
         }
 
+        public void ParentClosing()
+        {
+            phelper.Stop();
+        }
+        PreviewHelper phelper = new PreviewHelper();
         private void ListView1_MouseMove(object sender, MouseEventArgs e)
         {
             UpdateIcons();
@@ -125,8 +132,8 @@ namespace commander
 
                 // var p = new DirectoryInfo(path);
                 //   fc.CurrentDirectory = p;
-                
-                
+
+
                 var fltrs = filter.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(z => z.ToLower()).ToArray();
 
                 listView1.SmallImageList = Stuff.list;
@@ -142,11 +149,11 @@ namespace commander
                         //bmp.MakeTransparent();
                         // list.Images.Add(bmp);
                         if (!IsFilterPass(f.Name, fltrs)) continue;
-                      //  int iindex = -1;
-                       /* if (tp != null)
-                        {
-                            iindex = tp.Item2;
-                        }*/
+                        //  int iindex = -1;
+                        /* if (tp != null)
+                         {
+                             iindex = tp.Item2;
+                         }*/
                         listView1.Items.Add(
                             new ListViewItem(new string[]
                             {
@@ -154,7 +161,7 @@ namespace commander
                             })
                             {
                                 Tag = f,
-                             //   ImageIndex = iindex
+                                //   ImageIndex = iindex
 
                             });
                     }
@@ -295,7 +302,7 @@ namespace commander
                     if (Stuff.Question("Are you sure to delete " + t.Name + " tag and all files?") == DialogResult.Yes)
                     {
                         Stuff.DeleteTag(t);
-                        
+
                         UpdateList(null);
                     }
                 }
@@ -334,14 +341,14 @@ namespace commander
             sfd.DefaultExt = "iso";
             sfd.Filter = "iso images|*.iso";
             vdir.ChildsFiles.AddRange(tag.Files.Select(z => new VirtualFileInfo(new FileInfo(z), vdir) { Directory = vdir }));
-            vfs. Files = vdir.ChildsFiles.OfType<VirtualFileInfo>().ToList() ;
+            vfs.Files = vdir.ChildsFiles.OfType<VirtualFileInfo>().ToList();
             if (sfd.ShowDialog() == DialogResult.OK)
             {
                 Stuff.PackToIso(vdir, sfd.FileName);
             }
         }
 
-       
+
 
         private void copyPathToolStripMenuItem_Click(object sender, EventArgs e)
         {

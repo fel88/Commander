@@ -2,8 +2,10 @@
 
 namespace commander
 {
-    public interface IFileListControl
+    public interface IFileListControl 
     {
         event Action<IFileInfo> SelectedFileChanged;
+        IFileInfo SelectedFile { get; }
+        void ParentClosing();
     }
 }

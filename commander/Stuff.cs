@@ -299,7 +299,7 @@ namespace commander
         }
 
         public static void DeleteTag(TagInfo t)
-        {            
+        {
             Tags.Remove(t);
             IsDirty = true;
             if (TagsListChanged != null)
@@ -369,6 +369,15 @@ namespace commander
                 var path = descendant.Attribute("path").Value;
                 Stuff.Libraries.Add(new FilesystemLibrary() { Name = name, BaseDirectory = path });
             }
+
+            foreach (var descendant in s.Descendants("hotkey"))
+            {
+                var path = descendant.Attribute("path").Value;
+                var enabled = bool.Parse(descendant.Attribute("enabled").Value);
+                var key = (Keys)Enum.Parse(typeof(Keys), descendant.Attribute("key").Value);
+                Stuff.Hotkeys.Add(new HotkeyShortcutInfo() { IsEnabled = enabled, Hotkey = key, Path = path });
+            }
+
             foreach (var descendant in s.Descendants("shortcut"))
             {
                 var name = descendant.Attribute("name").Value;
@@ -496,6 +505,15 @@ namespace commander
             }
             sb.AppendLine("</shortcuts>");
 
+            #region hotkeys            
+            sb.AppendLine("<hotkeys>");
+            foreach (var item in Stuff.Hotkeys)
+            {
+                sb.AppendLine($"<hotkey path=\"{item.Path}\" key=\"{item.Hotkey}\" enabled=\"{item.IsEnabled}\"/>");
+            }
+            sb.AppendLine("</hotkeys>");
+            #endregion            
+
             sb.AppendLine("<fileContextMenuItems>");
             foreach (var item in Stuff.FileContextMenuItems)
             {
@@ -533,7 +551,7 @@ namespace commander
             {
                 return Tags.First(z => z.Name == tagInfo.Name);
             }
-            
+
             Tags.Add(tagInfo);
             IsDirty = true;
             if (TagsListChanged != null)
@@ -582,6 +600,7 @@ namespace commander
         public static string PasswordHash { get; internal set; }
         public static List<FileContextMenuItem> FileContextMenuItems { get; internal set; } = new List<FileContextMenuItem>();
         public static List<OfflineSiteInfo> OfflineSites { get; } = new List<OfflineSiteInfo>();
+        public static List<HotkeyShortcutInfo> Hotkeys { get; internal set; } = new List<HotkeyShortcutInfo>();
 
         public static List<ShortcutInfo> Shortcuts = new List<ShortcutInfo>();
 
