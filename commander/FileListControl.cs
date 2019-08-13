@@ -231,6 +231,7 @@ namespace commander
 
         ListView filesControl;
 
+
         private void Watcher_Changed(object sender, FileSystemEventArgs e)
         {
             listView1.Invoke((Action)(() =>
@@ -987,6 +988,10 @@ namespace commander
             UpdateList(CurrentDirectory.FullName);
         }
 
+        void DeleteItemFromListView(ListViewItem lvi)
+        {
+            listView1.Items.Remove(lvi);
+        }
         void DeleteSelected()
         {
             if (!ListView.Focused) return;
@@ -996,8 +1001,8 @@ namespace commander
             {
                 if (listView1.SelectedItems[0].Tag is IFileInfo)
                 {
-
-                    var f = listView1.SelectedItems[0].Tag as IFileInfo;
+                    var lvi = listView1.SelectedItems[0];
+                    var f = lvi.Tag as IFileInfo;
 
                     if (Stuff.Question("Delete file: " + SelectedFile.FullName + "?") == DialogResult.Yes)
                     {
@@ -1025,8 +1030,13 @@ namespace commander
                                     item.DeleteFile(f.FullName);
                                 }
                             }
+
+                            watcher.EnableRaisingEvents = false;
                             File.Delete(f.FullName);
-                            UpdateList(CurrentDirectory.FullName);
+                            watcher.EnableRaisingEvents = true;
+                            DeleteItemFromListView(lvi);
+
+                            //UpdateList(CurrentDirectory.FullName);
                         }
                     }
 
@@ -1138,70 +1148,101 @@ namespace commander
         {
             setTagsToolStripMenuItem.DropDownItems.Clear();
             forceCloseMenu = false;
-            if (listView1.SelectedItems.Count == 1)
+            if (listView1.SelectedItems.Count == 0) return;
+
+
+
+            List<IFileInfo> files = new List<IFileInfo>();
+            foreach (var item in listView1.SelectedItems)
             {
-                var tag = listView1.SelectedItems[0].Tag;
-                if (!(tag is IFileInfo)) return;
-                var fi = tag as IFileInfo;
+                var tag = (item as ListViewItem).Tag;
+                if (!(tag is IFileInfo)) continue;
+                files.Add(tag as IFileInfo);
+            }
 
-                List<TagInfo> cands = new List<TagInfo>();
-                foreach (var item in Stuff.Tags.OrderBy(z => z.Name))
-                {
-                    if (item.IsHidden && !Stuff.ShowHidden) continue;
-                    cands.Add(item);
-                }
+            if (!files.Any()) return;
 
-                if (cands.Count > 20)
+
+            List<TagInfo> cands = new List<TagInfo>();
+            foreach (var item in Stuff.Tags.OrderBy(z => z.Name))
+            {
+                if (item.IsHidden && !Stuff.ShowHidden) continue;
+                cands.Add(item);
+            }
+
+            if (cands.Count > 20)
+            {
+                int grps = cands.Count / 20;
+                int remain = cands.Count;
+                int index = 0;
+                List<ToolStripMenuItem> ii = new List<ToolStripMenuItem>();
+                for (int i = 0; i <= grps; i++)
                 {
-                    int grps = cands.Count / 20;
-                    int index = 0;
-                    List<ToolStripMenuItem> ii = new List<ToolStripMenuItem>();
-                    for (int i = 0; i < grps; i++)
+                    ToolStripMenuItem grp1 = new ToolStripMenuItem("Group #" + i);
+                    setTagsToolStripMenuItem.DropDownItems.Add(grp1);
+                    grp1.DropDown.Closing += DropDown_Closing;
+                    for (int j = 0; j < 20; j++)
                     {
-                        ToolStripMenuItem grp1 = new ToolStripMenuItem("Group #" + i);
-                        setTagsToolStripMenuItem.DropDownItems.Add(grp1);
-                        grp1.DropDown.Closing += DropDown_Closing;
-                        for (int j = 0; j < 20; j++)
+                        if (remain == 0) break;
+                        var item = cands[index++];
+                        var ww = files.Count(z => item.Files.Contains(z.FullName));
+                        var state = CheckState.Indeterminate;
+                        if (ww == 0) { state = CheckState.Unchecked; }
+                        if (ww == files.Count) { state = CheckState.Checked; }
+
+                        var ss = new ToolStripMenuItem(item.Name)
                         {
-                            var item = cands[index++];
-                            var ss = new ToolStripMenuItem(item.Name) { CheckOnClick = true, CheckState = item.Files.Contains(fi.FullName) ? CheckState.Checked : CheckState.Unchecked };
-                            ss.Tag = new Tuple<TagInfo, IFileInfo>(item, fi);
-                            ss.CheckedChanged += Ss_CheckedChanged;
-                            grp1.DropDownItems.Add(ss);
-                        }
-                    }
-
-
-                }
-                else
-                {
-                    foreach (var item in cands)
-                    {
-                        var ss = new ToolStripMenuItem(item.Name) { CheckOnClick = true, CheckState = item.Files.Contains(fi.FullName) ? CheckState.Checked : CheckState.Unchecked };
-                        ss.Tag = new Tuple<TagInfo, IFileInfo>(item, fi);
+                            CheckOnClick = true,
+                            CheckState = state
+                        };
+                        ss.Tag = new Tuple<TagInfo, IFileInfo[]>(item, files.ToArray());
                         ss.CheckedChanged += Ss_CheckedChanged;
-                        setTagsToolStripMenuItem.DropDownItems.Add(ss);
+                        grp1.DropDownItems.Add(ss);
+                        remain--;
                     }
+                    
+                }
+               
+
+
+            }
+            else
+            {
+                foreach (var item in cands)
+                {
+                    var ww = files.Count(z => item.Files.Contains(z.FullName));
+                    var state = CheckState.Indeterminate;
+                    if (ww == 0) { state = CheckState.Unchecked; }
+                    if (ww == files.Count) { state = CheckState.Checked; }
+
+                    var ss = new ToolStripMenuItem(item.Name)
+                    {
+                        CheckOnClick = true,
+                        CheckState = state
+                    };
+                    ss.Tag = new Tuple<TagInfo, IFileInfo[]>(item, files.ToArray());
+                    ss.CheckedChanged += Ss_CheckedChanged;
+                    setTagsToolStripMenuItem.DropDownItems.Add(ss);
                 }
             }
-            if (listView1.SelectedItems.Count > 1)
-            {
-                //todo:set multiple tags assign
-            }
+
+
         }
 
         private void Ss_CheckedChanged(object sender, EventArgs e)
         {
-            var f = (sender as ToolStripMenuItem).Tag as Tuple<TagInfo, IFileInfo>;
-            if (f.Item1.ContainsFile(f.Item2.FullName))
+            var f = (sender as ToolStripMenuItem).Tag as Tuple<TagInfo, IFileInfo[]>;
+            foreach (var item in f.Item2)
             {
-                f.Item1.DeleteFile(f.Item2.FullName);
+                if (f.Item1.ContainsFile(item.FullName))
+                {
+                    f.Item1.DeleteFile(item.FullName);
+                }
+                else
+                {
+                    f.Item1.AddFile(item.FullName);
+                }
             }
-            else
-            {
-                f.Item1.AddFile(f.Item2.FullName);
-            }
-
         }
 
         bool forceCloseMenu = true;
@@ -1742,28 +1783,8 @@ namespace commander
         {
             //get all info
             if (SelectedFile == null) return;
-            if (!SelectedFile.Extension.ToLower().EndsWith("djvu")) return;
+            Stuff.IndexFile(SelectedFile);
 
-            DjvuDocument doc = new DjvuDocument(SelectedFile.FullName);
-            var cnt = doc.Pages.Count();
-            StringBuilder sbb = new StringBuilder();
-            for (int i = 0; i < cnt; i++)
-            {
-                var txt = doc.Pages[i].GetTextForLocation(new System.Drawing.Rectangle(0, 0, doc.Pages[i].Width, doc.Pages[i].Height));
-                sbb.AppendLine(txt.Replace("\r", "").Replace("\t", ""));
-
-            }
-            Stuff.Indexes.Add(new IndexInfo() { Path = SelectedFile.FullName, Text = sbb.ToString() });
-            Stuff.Info("Indexing compete: " + sbb.ToString().Length + " symbols.");
-            /*page
-                .BuildPageImage()
-                .Save("TestImage1.png", ImageFormat.Png);
-
-            page.IsInverted = true;
-
-            page
-                .BuildPageImage()
-                .Save("TestImage2.png", ImageFormat.Png);*/
         }
     }
 

@@ -448,6 +448,18 @@ namespace commander
             f.MdiParent = this;
             f.Show();
         }
+
+        private void IndexesListToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            IndexesManagerWindow mlw = new IndexesManagerWindow();
+            mlw.MdiParent = this;
+            mlw.Show();
+        }
+
+        private void IsoEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 
     public class ConnectionInfo

@@ -325,17 +325,17 @@ namespace commander
             if (checkBox2.Checked)
             {
                 dd.Clear();
-                var vfs = new VirtualFilesystem() { UseIndexes=true};
-                
+                var vfs = new VirtualFilesystem() { UseIndexes = true };
+
                 var vdir = new VirtualDirectoryInfo(vfs);
                 vdir.Name = "indexes";
                 vdir.FullName = "indexes";
-                
-                
+
+
                 foreach (var item in Stuff.Indexes)
                 {
-                    vdir.ChildsFiles.Add(new VirtualFileInfo(new FileInfo(item.Path) , vdir));
-                    
+                    vdir.ChildsFiles.Add(new VirtualFileInfo(new FileInfo(item.Path), vdir));
+
                 }
                 vfs.Files.AddRange(vdir.ChildsFiles.OfType<VirtualFileInfo>());
                 dd.Add(vdir);
@@ -369,7 +369,7 @@ namespace commander
 
              listView2.Items.Clear();
              searchHash.Clear();
-             
+
              foreach (var d in dd)
              {
                  loop(d, () =>
@@ -420,7 +420,7 @@ namespace commander
                 {
                     richTextBox1.BackColor = Color.White;
                     richTextBox1.Enabled = true;
-                    var lns = f.Filesystem.ReadAllLines(f.FullName);                    
+                    var lns = f.Filesystem.ReadAllLines(f.FullName);
                     richTextBox1.Lines = lns;
 
                     int cnt = 0;
@@ -430,7 +430,7 @@ namespace commander
                         {
                             if (ln.ToLower().Contains(textBox2.Text.ToLower()))
                             {
-                                listView3.Items.Add(new ListViewItem(new string[] { ln }) { Tag = cnt });
+                                listView3.Items.Add(new ListViewItem(new string[] { ln }) { Tag = new FlatTextSearchPositionInfo(cnt) });
                             }
 
                             cnt++;
@@ -460,10 +460,15 @@ namespace commander
         {
             if (listView3.SelectedItems.Count > 0)
             {
-                var ln = (int)listView3.SelectedItems[0].Tag;
-                richTextBox1.SelectionStart = richTextBox1.Find(richTextBox1.Lines[ln]);
-                richTextBox1.ScrollToCaret();
-                richTextBox1.ScrollToCaret();
+                var ln = listView3.SelectedItems[0].Tag as ITextSearcPositionInfo;
+                if (ln is FlatTextSearchPositionInfo)
+                {
+                    ln.Navigate(richTextBox1);
+                }
+                if (ln is DjvuTextSearchPositionInfo)
+                {
+
+                }
             }
         }
 
@@ -548,19 +553,21 @@ namespace commander
             var fr = Stuff.Tags.FirstOrDefault(z => z.Name == textBox8.Text);
             if (fr == null) return;
             if (tagFilters.Contains(fr)) return;
+            if (exceptTagFilters.Contains(fr)) return;
             tagFilters.Add(fr);
             UpdateTagFiltersText();
         }
 
         void UpdateTagFiltersText()
         {
-            textBox7.Text = tagFilters.Aggregate("", (x, y) => x + "[+"+y.Name + "] ");
+            textBox7.Text = tagFilters.Aggregate("", (x, y) => x + "[+" + y.Name + "] ");
             textBox7.Text += exceptTagFilters.Aggregate("", (x, y) => x + "[-" + y.Name + "] ");
         }
 
         private void Button3_Click(object sender, EventArgs e)
         {
             tagFilters.Clear();
+            exceptTagFilters.Clear();
             UpdateTagFiltersText();
         }
 
@@ -580,8 +587,42 @@ namespace commander
             var fr = Stuff.Tags.FirstOrDefault(z => z.Name == textBox8.Text);
             if (fr == null) return;
             if (tagFilters.Contains(fr)) return;
+            if (exceptTagFilters.Contains(fr)) return;
             exceptTagFilters.Add(fr);
             UpdateTagFiltersText();
+        }
+    }
+
+    public interface ITextSearcPositionInfo
+    {
+        void Navigate(Control c);
+    }
+    public class FlatTextSearchPositionInfo : ITextSearcPositionInfo
+    {
+        public int Line;
+
+
+        public FlatTextSearchPositionInfo(int cnt)
+        {
+            Line = cnt;
+        }
+
+        public void Navigate(Control c)
+        {
+            var rtb = c as RichTextBox;
+            rtb.SelectionStart = rtb.Find(rtb.Lines[Line]);
+            rtb.ScrollToCaret();
+        }
+    }
+
+    public class DjvuTextSearchPositionInfo : ITextSearcPositionInfo
+    {
+        public int Page;
+        public Rectangle Area;
+
+        public void Navigate(Control c)
+        {
+
         }
     }
 }

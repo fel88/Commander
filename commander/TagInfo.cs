@@ -11,14 +11,14 @@ namespace commander
 
         public bool ContainsFile(string fn)
         {
-            return Files.Contains(fn);
+            return Files.Contains(fn.ToLower());
         }
         public void AddFile(string fn)
         {
             if (!ContainsFile(fn))
             {
                 Stuff.IsDirty = true;
-                Files.Add(fn);
+                Files.Add(fn.ToLower());
             }
         }
 
@@ -27,5 +27,7 @@ namespace commander
             Files.Remove(fullName);
             Stuff.IsDirty = true;
         }
+
+        
     }
 }

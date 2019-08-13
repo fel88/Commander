@@ -50,8 +50,8 @@ namespace commander
 
             //preview.Location = new Point(e.X + 20, e.Y);
             var itemat = listView1.GetItemAt(e.Location.X, e.Location.Y);
-            if (itemat == null) { HideHint(); return; }
-            if (!(itemat.Tag is IFileInfo)) { HideHint(); return; }
+            if (itemat == null) { HideHint(); lastHovered = null; return; }
+            if (!(itemat.Tag is IFileInfo)) { lastHovered = null; HideHint(); return; }
 
             if (itemat == lastHovered)
             {

@@ -465,5 +465,11 @@ namespace commander
             q.TopLevel = false;
             q.Show();
         }
+
+        private void IndexToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SelectedFile == null) return;
+            Stuff.IndexFile(SelectedFile);
+        }
     }
 }

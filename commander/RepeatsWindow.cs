@@ -38,7 +38,8 @@ namespace commander
                 if (cnt0 == 0) continue;
                 groups.AddRange(arr0.Select(z => z.ToArray()).ToArray());
             }
-
+            
+            //todo: binary compare candidates
             return groups.ToArray();
         }
 
@@ -145,10 +146,6 @@ namespace commander
 
         }
 
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
 
         private void DeleteFileToolStripMenuItem_Click(object sender, EventArgs e)
         {

@@ -37,6 +37,7 @@ namespace commander
             gpreviewer = new GifViewerPanel() { Dock = DockStyle.Fill };
             vpreviewer = new VideoPlayer() { Dock = DockStyle.Fill };
             textPreviewer = new TextPreviewer() { Dock = DockStyle.Fill };
+            dpreviewer = new DjvuPreviewer() { Dock = DockStyle.Fill };
 
             fileListControl1.AddSelectedFileChangedAction((x) =>
            {
@@ -59,7 +60,15 @@ namespace commander
 
 
                string[] gexts = new string[] { ".jpg", ".png", ".bmp" };
-
+               if (new string[] { ".djvu" }.Contains(x.Extension.ToLower()))
+               {
+                   splitContainer1.Panel2.Controls.Add(dpreviewer);
+                   dpreviewer.Init(x.FullName);
+               }
+               else
+               {
+                   dpreviewer.UnloadBook();
+               }
                if (gexts.Contains(x.Extension.ToLower()))
                {
                    splitContainer1.Panel2.Controls.Add(previewer);
@@ -70,7 +79,7 @@ namespace commander
                    splitContainer1.Panel2.Controls.Add(gpreviewer);
                    gpreviewer.SetImage(x.FullName);
                }
-               if (new string[] { ".flv", ".wmv", ".mp4", ".avi", ".mkv" }.Contains(x.Extension.ToLower()))
+               if (new string[] { ".mpg", ".flv", ".wmv", ".mp4", ".avi", ".mkv" }.Contains(x.Extension.ToLower()))
                {
                    splitContainer1.Panel2.Controls.Add(vpreviewer);
                    vpreviewer.RunVideo(x.FullName);
@@ -85,6 +94,7 @@ namespace commander
 
         private void FileListControl1_DeleteFileAction(FileListControl arg1, IFileInfo arg2)
         {
+            if (previewer.CurrentFile == null) return;
             if (previewer.CurrentFile.FullName == arg2.FullName)
             {
                 previewer.ResetImage();
@@ -408,6 +418,7 @@ namespace commander
         ImgViewerPanel previewer;
         GifViewerPanel gpreviewer;
         VideoPlayer vpreviewer;
+        DjvuPreviewer dpreviewer;
         TextPreviewer textPreviewer = new TextPreviewer() { Dock = DockStyle.Fill };
         bool IsPreviewMode = false;
         private void TablePreviewerToolStripMenuItem_Click(object sender, EventArgs e)
@@ -519,7 +530,7 @@ namespace commander
         private void Explorer_FormClosing(object sender, FormClosingEventArgs e)
         {
             fileListControl1.ParentClosing();
-            fileListControl2.ParentClosing();            
+            fileListControl2.ParentClosing();
         }
 
         private void HideToolStripMenuItem_Click(object sender, EventArgs e)

@@ -12,6 +12,7 @@ namespace commander
 
         internal void Execute(IFileListControl fl)
         {
+            if (fl.SelectedFile == null) return;
             ProcessStartInfo psi = new ProcessStartInfo();
             string path = Path;
             psi.WorkingDirectory = new FileInfo(path).DirectoryName;

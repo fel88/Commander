@@ -1,4 +1,5 @@
-﻿using PluginLib;
+﻿using DjvuNet;
+using PluginLib;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -70,6 +71,17 @@ namespace commander
         public static List<MountInfo> MountInfos = new List<MountInfo>();
         public static ImageList list = null;
         public static List<IndexInfo> Indexes = new List<IndexInfo>();
+
+        public static event Action<IndexInfo> IndexAdded;
+        public static void AddIndex(IndexInfo ii)
+        {
+            if (Indexes.Any(z => z.Path == ii.Path)) return;
+            Indexes.Add(ii);
+            if (IndexAdded != null)
+            {
+                IndexAdded(ii);
+            }
+        }
         public static Icon ExtractAssociatedIcon(String filePath)
         {
             try
@@ -325,13 +337,17 @@ namespace commander
 
         public static TagInfo[] GetTagsOfFile(string fullName)
         {
-            return Stuff.Tags.Where(z => (!z.IsHidden || Stuff.ShowHidden) && z.Files.Contains(fullName)).ToArray();
+            return Stuff.Tags.Where(z => (!z.IsHidden || Stuff.ShowHidden) && z.ContainsFile(fullName)).ToArray();
         }
 
         public static bool IsDirty = false;
         public static List<string> RecentPathes = new List<string>();
         public static List<TabInfo> Tabs = new List<TabInfo>();
 
+        public static string WrapInCdata(string str)
+        {
+            return $"<![CDATA[{str}]]>";
+        }
         public static void AddTab(TabInfo tab)
         {
             if (Tabs.Contains(tab))
@@ -350,6 +366,25 @@ namespace commander
             {
                 RecentPathes.Add(descendant.Value);
             }
+
+            List<DirectoryEntry> direntries = new List<DirectoryEntry>();
+            List<FileEntry> fileentries = new List<FileEntry>();
+            #region load directory and files entries
+            var entries = s.Descendants("entries").First();
+            foreach (var item in entries.Descendants("directory"))
+            {
+                var id = int.Parse(item.Attribute("id").Value);
+                var path = item.Value;
+                direntries.Add(new DirectoryEntry() { Id = id, Path = path });
+            }
+            foreach (var item in entries.Descendants("file"))
+            {
+                var id = int.Parse(item.Attribute("id").Value);
+                var dirId = int.Parse(item.Attribute("dirId").Value);
+                var name = item.Value;
+                fileentries.Add(new FileEntry() { Id = id, Directory = direntries.First(z => z.Id == dirId), Name = name });
+            }
+            #endregion
 
             foreach (var descendant in s.Descendants("tab"))
             {
@@ -415,6 +450,7 @@ namespace commander
                     Stuff.Shortcuts.Add(new AppShortcutInfo(path, name));
                 }
             }
+
             foreach (var descendant in s.Descendants("tag"))
             {
                 var name = descendant.Attribute("name").Value;
@@ -426,7 +462,12 @@ namespace commander
                 Stuff.Tags.Add(tag);
                 foreach (var item in descendant.Descendants("file"))
                 {
-                    tag.AddFile(item.Value);
+                    var arr1 = item.Attribute("id").Value.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray();
+                    foreach (var aitem in arr1)
+                    {
+                        var ff = fileentries.First(z => z.Id == aitem);
+                        tag.AddFile(ff.FullName);
+                    }
                 }
             }
 
@@ -455,6 +496,54 @@ namespace commander
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("<?xml version=\"1.0\"?>");
             sb.AppendLine($"<settings password=\"{PasswordHash}\">");
+
+            #region directories entries
+            sb.AppendLine("<entries>");
+
+            Dictionary<string, DirectoryEntry> dirdic1 = new Dictionary<string, DirectoryEntry>();
+            List<DirectoryEntry> diren = new List<DirectoryEntry>();
+            int dirind = 0;
+            foreach (var item in Stuff.Tags)
+            {
+                foreach (var fitem in item.Files)
+                {
+                    var fin = new FileInfo(fitem);
+                    if (dirdic1.ContainsKey(fin.DirectoryName)) continue;
+                    var dd = new DirectoryEntry() { Id = dirind++, Path = fin.DirectoryName };
+                    dirdic1.Add(fin.DirectoryName, dd);
+                    diren.Add(dd);
+                    sb.AppendLine($"<directory id=\"{dirdic1[fin.DirectoryName].Id}\">");
+                    sb.AppendLine(WrapInCdata(fin.DirectoryName));
+                    sb.AppendLine("</directory>");
+                }
+            }
+            #endregion
+
+            #region files entries
+            Dictionary<string, FileEntry> fldic1 = new Dictionary<string, FileEntry>();
+            HashSet<string> filesentrs = new HashSet<string>();
+            List<FileEntry> flentrs = new List<FileEntry>();
+            int flind = 0;
+            foreach (var item in Stuff.Tags)
+            {
+                foreach (var fitem in item.Files)
+                {
+                    var fin = new FileInfo(fitem);
+                    if (filesentrs.Add(fin.FullName))
+                    {
+                        var den = dirdic1[fin.DirectoryName];
+                        sb.AppendLine($"<file dirId=\"{den.Id}\" id=\"{flind++}\">");
+                        var fen = new FileEntry() { Id = flind - 1, Name = fin.Name, Directory = den };
+                        flentrs.Add(fen);
+                        fldic1.Add(fin.FullName, fen);
+                        sb.AppendLine(WrapInCdata(fin.Name));
+                        sb.AppendLine("</file>");
+                    }
+                }
+            }
+            sb.AppendLine("</entries>");
+            #endregion
+
             sb.AppendLine("<tabs>");
 
             foreach (var item in Stuff.Tabs)
@@ -473,11 +562,13 @@ namespace commander
             foreach (var item in Stuff.Tags)
             {
                 sb.AppendLine($"<tag name=\"{item.Name}\" flags=\"{(item.IsHidden ? "hidden" : "")}\" >");
+                sb.Append($"<file id=\"");
                 foreach (var fitem in item.Files)
                 {
-
-                    sb.AppendLine($"<file><![CDATA[{fitem}]]></file>");
+                    var fen = fldic1[fitem];
+                    sb.Append($"{fen.Id};");
                 }
+                sb.AppendLine($"\"/>");
                 sb.AppendLine($"</tag>");
             }
             sb.AppendLine("</tags>");
@@ -540,6 +631,7 @@ namespace commander
 
             }
             sb.AppendLine("</offlineSites>");
+
             sb.AppendLine("</settings>");
             File.WriteAllText("settings.xml", sb.ToString());
         }
@@ -664,6 +756,32 @@ namespace commander
                 }
             }
         }
+
+        public static void IndexFile(IFileInfo selectedFile)
+        {
+            if (!selectedFile.Extension.ToLower().EndsWith("djvu")) return;
+
+            DjvuDocument doc = new DjvuDocument(selectedFile.FullName);
+            var cnt = doc.Pages.Count();
+            StringBuilder sbb = new StringBuilder();
+            for (int i = 0; i < cnt; i++)
+            {
+                var txt = doc.Pages[i].GetTextForLocation(new System.Drawing.Rectangle(0, 0, doc.Pages[i].Width, doc.Pages[i].Height));                
+                sbb.AppendLine(txt.Replace("\r", "").Replace("\t", ""));                
+            }
+
+            Stuff.AddIndex(new IndexInfo() { Path = selectedFile.FullName, Text = sbb.ToString() });
+            Stuff.Info("Indexing compete: " + sbb.ToString().Length + " symbols.");
+            /*page
+                .BuildPageImage()
+                .Save("TestImage1.png", ImageFormat.Png);
+
+            page.IsInverted = true;
+
+            page
+                .BuildPageImage()
+                .Save("TestImage2.png", ImageFormat.Png);*/
+        }
     }
 
     public class OfflineSiteInfo
@@ -677,6 +795,20 @@ namespace commander
     {
         public string Path;
         public string Text;
+    }
+
+
+    public class DirectoryEntry
+    {
+        public int Id;
+        public string Path;
+    }
+    public class FileEntry
+    {
+        public int Id;
+        public DirectoryEntry Directory;
+        public string Name;
+        public string FullName => Path.Combine(Directory.Path, Name);
     }
 
 }

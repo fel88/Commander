@@ -37,6 +37,7 @@
             this.webToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extractorsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.youtubeToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.vkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.containersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.isoEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mountListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -49,12 +50,13 @@
             this.horizontalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.verticalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.proxyServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.indexToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.indexesListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.renameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyPathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.vkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -71,7 +73,8 @@
             this.settingsToolStripMenuItem,
             this.pluginsToolStripMenuItem,
             this.windowsToolStripMenuItem,
-            this.proxyServerToolStripMenuItem});
+            this.proxyServerToolStripMenuItem,
+            this.indexToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1071, 24);
@@ -119,9 +122,16 @@
             // youtubeToolStripMenuItem1
             // 
             this.youtubeToolStripMenuItem1.Name = "youtubeToolStripMenuItem1";
-            this.youtubeToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.youtubeToolStripMenuItem1.Size = new System.Drawing.Size(118, 22);
             this.youtubeToolStripMenuItem1.Text = "youtube";
             this.youtubeToolStripMenuItem1.Click += new System.EventHandler(this.YoutubeToolStripMenuItem1_Click);
+            // 
+            // vkToolStripMenuItem
+            // 
+            this.vkToolStripMenuItem.Name = "vkToolStripMenuItem";
+            this.vkToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.vkToolStripMenuItem.Text = "vk";
+            this.vkToolStripMenuItem.Click += new System.EventHandler(this.vkToolStripMenuItem_Click);
             // 
             // containersToolStripMenuItem
             // 
@@ -137,6 +147,7 @@
             this.isoEditorToolStripMenuItem.Name = "isoEditorToolStripMenuItem";
             this.isoEditorToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
             this.isoEditorToolStripMenuItem.Text = "iso editor";
+            this.isoEditorToolStripMenuItem.Click += new System.EventHandler(this.IsoEditorToolStripMenuItem_Click);
             // 
             // mountListToolStripMenuItem
             // 
@@ -218,6 +229,21 @@
             this.proxyServerToolStripMenuItem.Text = "Proxy server";
             this.proxyServerToolStripMenuItem.Click += new System.EventHandler(this.ProxyServerToolStripMenuItem_Click);
             // 
+            // indexToolStripMenuItem
+            // 
+            this.indexToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.indexesListToolStripMenuItem});
+            this.indexToolStripMenuItem.Name = "indexToolStripMenuItem";
+            this.indexToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
+            this.indexToolStripMenuItem.Text = "Index";
+            // 
+            // indexesListToolStripMenuItem
+            // 
+            this.indexesListToolStripMenuItem.Name = "indexesListToolStripMenuItem";
+            this.indexesListToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.indexesListToolStripMenuItem.Text = "manger";
+            this.indexesListToolStripMenuItem.Click += new System.EventHandler(this.IndexesListToolStripMenuItem_Click);
+            // 
             // toolStrip1
             // 
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
@@ -256,13 +282,6 @@
             this.copyPathToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
             this.copyPathToolStripMenuItem.Text = "copy path";
             this.copyPathToolStripMenuItem.Click += new System.EventHandler(this.CopyPathToolStripMenuItem_Click);
-            // 
-            // vkToolStripMenuItem
-            // 
-            this.vkToolStripMenuItem.Name = "vkToolStripMenuItem";
-            this.vkToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.vkToolStripMenuItem.Text = "vk";
-            this.vkToolStripMenuItem.Click += new System.EventHandler(this.vkToolStripMenuItem_Click);
             // 
             // mdi
             // 
@@ -313,5 +332,7 @@
         private System.Windows.Forms.ToolStripMenuItem proxyServerToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem mountListToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem vkToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem indexToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem indexesListToolStripMenuItem;
     }
 }

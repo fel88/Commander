@@ -92,6 +92,12 @@
     </Compile>
     <Compile Include="DirectoryInfoWrapper.cs" />
     <Compile Include="DiskFilesystem.cs" />
+    <Compile Include="DjvuPreviewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DjvuPreviewer.Designer.cs">
+      <DependentUpon>DjvuPreviewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="FileInfoWrapper.cs" />
     <Compile Include="FileListControl.cs">
       <SubType>UserControl</SubType>
@@ -109,6 +115,12 @@
     <Compile Include="HotkeyShortcutInfo.cs" />
     <Compile Include="IFileListControl.cs" />
     <Compile Include="IFilesystem.cs" />
+    <Compile Include="IndexesManagerWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="IndexesManagerWindow.Designer.cs">
+      <DependentUpon>IndexesManagerWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="PreviewHelper.cs" />
     <Compile Include="QuickTagsWindow.cs">
       <SubType>Form</SubType>
@@ -278,11 +290,17 @@
     <EmbeddedResource Include="Desktop.resx">
       <DependentUpon>Desktop.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="DjvuPreviewer.resx">
+      <DependentUpon>DjvuPreviewer.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FileListControl.resx">
       <DependentUpon>FileListControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Explorer.resx">
       <DependentUpon>Explorer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="IndexesManagerWindow.resx">
+      <DependentUpon>IndexesManagerWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="QuickTagsWindow.resx">
       <DependentUpon>QuickTagsWindow.cs</DependentUpon>
