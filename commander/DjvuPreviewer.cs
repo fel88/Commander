@@ -20,7 +20,7 @@ namespace commander
 
         DjvuDocument Document;
         public void Init(string pathdoc)
-        {
+        {            
             Document = new DjvuDocument(pathdoc);
             Init(Document);
         }
@@ -28,6 +28,7 @@ namespace commander
         {
             Document = doc;
             currentPage = 0;
+            label1.Text = " / "+doc.Pages.Length;
             UpdatePage();
         }
 
@@ -42,11 +43,18 @@ namespace commander
         {
             try
             {
+                textBox1.Text = currentPage+"";
                 var page = Document.Pages[currentPage];
-                //var img = page.BuildBitmap(new DjvuNet.Graphics.Rectangle(0, 0, page.Width, page.Height), 1, 0, null).ToImage();
+                //page.IsInverted = false;                
+                //var img = page.Image.Image;//(new DjvuNet.Graphics.Rectangle(0, 0, page.Width, page.Height), 1, 0, null).ToImage();
                 var img = page.BuildImage();
 
+                var temp = pictureBox1.Image;
                 pictureBox1.Image = img;
+                if (temp != null)
+                {
+                    temp.Dispose();
+                }
             }
             catch (Exception ex)
             {
@@ -54,9 +62,19 @@ namespace commander
             }
         }
         private void Button1_Click(object sender, EventArgs e)
-        {
+        {            
             currentPage++;
             UpdatePage();
+        }
+                
+        
+        private void TextBox1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                currentPage = int.Parse(textBox1.Text);
+                UpdatePage();
+            }
         }
     }
 }

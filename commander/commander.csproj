@@ -11,6 +11,7 @@
     <AssemblyName>commander</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -21,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -30,6 +32,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>matr.ico</ApplicationIcon>
@@ -397,7 +400,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\CommonLibs\DjvuNet\DjvuNet.csproj">
-      <Project>{E681B178-E5F8-4782-89C8-F32720B1464A}</Project>
+      <Project>{e681b178-e5f8-4782-89c8-f32720b1464a}</Project>
       <Name>DjvuNet</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\CommonLibs\GifLib\GifLib.csproj">

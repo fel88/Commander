@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mime;
@@ -22,11 +23,7 @@ namespace commander
             webBrowser1.ScriptErrorsSuppressed = true;
         }
 
-        private void TextBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
+        
         private void TextBox1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
@@ -35,12 +32,7 @@ namespace commander
             }
         }
 
-        private void TableLayoutPanel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-
+        
         private void ToolStripDropDownButton1_DropDownOpening(object sender, EventArgs e)
         {
             toolStripDropDownButton1.DropDownItems.Clear();
@@ -60,7 +52,7 @@ namespace commander
 
             ServicePointManager.Expect100Continue = true;
             ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072;
-            var url = webBrowser1.Url.ToString();            
+            var url = webBrowser1.Url.ToString();
             if (string.IsNullOrEmpty(url)) { MessageBox.Show("url is empty"); return; }
             using (WebClient wec = new WebClient())
             {
@@ -70,7 +62,7 @@ namespace commander
 
                 if (!String.IsNullOrEmpty(wec.ResponseHeaders["Content-Disposition"]))
                 {
-                    var arr1 = wec.ResponseHeaders["Content-Disposition"].Split(new string[] { "filename", "*", "=", "\"",";","'" }, StringSplitOptions.RemoveEmptyEntries).ToArray();
+                    var arr1 = wec.ResponseHeaders["Content-Disposition"].Split(new string[] { "filename", "*", "=", "\"", ";", "'" }, StringSplitOptions.RemoveEmptyEntries).ToArray();
                     fileName = arr1.Last();
                 }
 
@@ -108,7 +100,18 @@ namespace commander
 
         private void Button1_Click(object sender, EventArgs e)
         {
+            int index = 0;
+            foreach (var item in listView1.Items)
+            {
+                var str = ((string)(item as ListViewItem).Tag);
 
+                
+                using (WebClient wc = new WebClient())
+                {
+                    wc.DownloadFile(str, Path.Combine(textBox3.Text, index + ".png"));
+                    index++;
+                }
+            }
         }
 
         private void ToolStripDropDownButton1_Click(object sender, EventArgs e)

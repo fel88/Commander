@@ -23,6 +23,9 @@ namespace commander
             UpdateOfflineList();
             Stuff.SetDoubleBuffered(listView2);
             Stuff.SetDoubleBuffered(listView1);
+            Stuff.SetDoubleBuffered(listView3);
+            listView3.HideSelection = false;
+            listView2.HideSelection = false;
 
             if (File.Exists("cache.xml"))
             {

@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Russian Commander")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Only for case-insensitive filesystem")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("fel88")]
 [assembly: AssemblyProduct("Commander: containers, tags, extractors and navigation")]

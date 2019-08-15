@@ -444,17 +444,8 @@ namespace commander
             }
         }
 
-        private void textBox3_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-
-
-        private void panel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
+        
+        
 
         private void listView3_SelectedIndexChanged(object sender, EventArgs e)
         {

@@ -760,7 +760,7 @@ namespace commander
         public static void IndexFile(IFileInfo selectedFile)
         {
             if (!selectedFile.Extension.ToLower().EndsWith("djvu")) return;
-
+            
             DjvuDocument doc = new DjvuDocument(selectedFile.FullName);
             var cnt = doc.Pages.Count();
             StringBuilder sbb = new StringBuilder();
