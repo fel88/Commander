@@ -301,7 +301,7 @@ namespace commander
                         from = fileListControl2;
                         to = fileListControl1;
                     }
-                    if (from.SelectedFile != null)
+                    /*if (from.SelectedFiles != null)
                     {
                         bool allow = true;
                         var p1 = Path.Combine(to.CurrentDirectory.FullName,
@@ -314,7 +314,6 @@ namespace commander
                             {
                                 allow = false;
                             }
-
                         }
 
                         if (allow)
@@ -322,38 +321,34 @@ namespace commander
                             File.Copy(from.SelectedFile.FullName, p1, true);
                             to.UpdateList(to.CurrentDirectory.FullName);
                         }
-                    }
-                    if (from.SelectedDirectory != null)
+                    }*/
+                    var self = from.SelectedFiles;
+                    var seld = from.SelectedDirectories;
+                    if (seld != null || self != null)
                     {
                         //copy recursively all files and dirs
-                        var list = Stuff.GetAllFiles(from.SelectedDirectory);
-                        var dirs = Stuff.GetAllDirs(from.SelectedDirectory);
-                        foreach (var item in dirs)
+                        var prnt = from.CurrentDirectory;
+                        List<IFileInfo> list = new List<IFileInfo>();
+                        List<IDirectoryInfo> dirs = new List<IDirectoryInfo>();
+                        if (self != null)
                         {
-                            var relPath = item.FullName.Replace(from.SelectedDirectory.FullName, "");
-                            var target = Path.Combine(to.CurrentDirectory.FullName, relPath);
-                            if (!Directory.Exists(target))
-                            {
-                                Directory.CreateDirectory(target);
-                            }
+                            list.AddRange(self);
                         }
-                        foreach (var item in list)
+                        if (seld != null)
                         {
-                            var relPath = item.FullName.Replace(from.SelectedDirectory.FullName, "").Trim(new char[] { '\\' });
-                            var target = Path.Combine(to.CurrentDirectory.FullName, relPath);
-                            if (File.Exists(target))
+                            foreach (var item in seld)
                             {
-                                if (Stuff.Question("File " + target + " already exist. Overwrite?") == DialogResult.Yes)
-                                {
-                                    File.Copy(item.FullName, target, true);
-                                }
+                                Stuff.GetAllFiles(item, list);
+                                Stuff.GetAllDirs(item, dirs);
                             }
-                            else
-                            {
-                                File.Copy(item.FullName, target, true);
-                            }
+                            
                         }
+                                                
 
+                        CopyDialog cpd = new CopyDialog();
+                        cpd.Init(list.ToArray(), dirs.ToArray(), to.CurrentDirectory, prnt);
+                        cpd.ShowDialog();
+                      
                     }
                 }
 

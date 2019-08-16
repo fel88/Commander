@@ -581,6 +581,27 @@ namespace commander
                 return null;
             }
         }
+        public IDirectoryInfo[] SelectedDirectories
+        {
+            get
+            {
+                if (listView1.SelectedItems.Count > 0)
+                {
+                    List<IDirectoryInfo> dirs = new List<IDirectoryInfo>();
+                    for (int i = 0; i < listView1.SelectedItems.Count; i++)
+                    {
+                        var si = listView1.SelectedItems[i].Tag;
+                        if (si is IDirectoryInfo)
+                        {
+                            dirs.Add(si as IDirectoryInfo);
+                        }                        
+                    }
+                    return dirs.ToArray();
+                }
+
+                return null;
+            }
+        }
 
         public IFileInfo SelectedFile
         {
@@ -598,7 +619,27 @@ namespace commander
                 return null;
             }
         }
+        public IFileInfo[] SelectedFiles
+        {
+            get
+            {
+                if (listView1.SelectedItems.Count > 0)
+                {
+                    List<IFileInfo> files = new List<IFileInfo>();
+                    for (int i = 0; i < listView1.SelectedItems.Count; i++)
+                    {
+                        var si = listView1.SelectedItems[i].Tag;
+                        if (si is IFileInfo)
+                        {
+                            files.Add(si as IFileInfo);
+                        }
+                    }
+                    return files.ToArray();
+                }
 
+                return null;
+            }
+        }
 
 
         private void listView1_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -1200,9 +1241,9 @@ namespace commander
                         grp1.DropDownItems.Add(ss);
                         remain--;
                     }
-                    
+
                 }
-               
+
 
 
             }

@@ -78,6 +78,18 @@
     <Compile Include="ChangePasswordDialog.Designer.cs">
       <DependentUpon>ChangePasswordDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="CopyDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CopyDialog.Designer.cs">
+      <DependentUpon>CopyDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CopyReplaceDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CopyReplaceDialog.Designer.cs">
+      <DependentUpon>CopyReplaceDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="DedupContext.cs" />
     <Compile Include="CmdShortcutInfo.cs" />
     <Compile Include="ConsoleOutputWindow.cs">
@@ -289,6 +301,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ConsoleOutputWindow.resx">
       <DependentUpon>ConsoleOutputWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CopyDialog.resx">
+      <DependentUpon>CopyDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CopyReplaceDialog.resx">
+      <DependentUpon>CopyReplaceDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Desktop.resx">
       <DependentUpon>Desktop.cs</DependentUpon>
