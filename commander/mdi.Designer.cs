@@ -35,6 +35,7 @@
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.desktopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.webToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.browserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extractorsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.youtubeToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.vkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -57,6 +58,7 @@
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.renameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyPathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.urlBookmarksToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -105,10 +107,20 @@
             // 
             // webToolStripMenuItem
             // 
+            this.webToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.browserToolStripMenuItem,
+            this.urlBookmarksToolStripMenuItem});
             this.webToolStripMenuItem.Name = "webToolStripMenuItem";
             this.webToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
             this.webToolStripMenuItem.Text = "Web";
             this.webToolStripMenuItem.Click += new System.EventHandler(this.WebToolStripMenuItem_Click);
+            // 
+            // browserToolStripMenuItem
+            // 
+            this.browserToolStripMenuItem.Name = "browserToolStripMenuItem";
+            this.browserToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.browserToolStripMenuItem.Text = "Browser";
+            this.browserToolStripMenuItem.Click += new System.EventHandler(this.BrowserToolStripMenuItem_Click);
             // 
             // extractorsToolStripMenuItem
             // 
@@ -240,7 +252,7 @@
             // indexesListToolStripMenuItem
             // 
             this.indexesListToolStripMenuItem.Name = "indexesListToolStripMenuItem";
-            this.indexesListToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.indexesListToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
             this.indexesListToolStripMenuItem.Text = "manger";
             this.indexesListToolStripMenuItem.Click += new System.EventHandler(this.IndexesListToolStripMenuItem_Click);
             // 
@@ -282,6 +294,13 @@
             this.copyPathToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
             this.copyPathToolStripMenuItem.Text = "copy path";
             this.copyPathToolStripMenuItem.Click += new System.EventHandler(this.CopyPathToolStripMenuItem_Click);
+            // 
+            // urlBookmarksToolStripMenuItem
+            // 
+            this.urlBookmarksToolStripMenuItem.Name = "urlBookmarksToolStripMenuItem";
+            this.urlBookmarksToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.urlBookmarksToolStripMenuItem.Text = "Url bookmarks";
+            this.urlBookmarksToolStripMenuItem.Click += new System.EventHandler(this.UrlBookmarksToolStripMenuItem_Click);
             // 
             // mdi
             // 
@@ -334,5 +353,7 @@
         private System.Windows.Forms.ToolStripMenuItem vkToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem indexToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem indexesListToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem browserToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem urlBookmarksToolStripMenuItem;
     }
 }

@@ -22,43 +22,12 @@ namespace commander
         }
 
 
-        public string[] parseItems(string lns, string key1, string key2)
-        {
-            string accum = "";
-            bool inside = false;
-            string accum2 = "";
-            List<string> list = new List<string>();
-            for (int i = 0; i < lns.Length; i++)
-            {
-                if (accum.Length > Math.Max(key1.Length, key2.Length))
-                {
-                    accum = accum.Remove(0, 1);
-                }
-                accum += lns[i];
-                if (accum.EndsWith(key1))
-                {
-                    inside = true;
-                }
 
-                if (inside && accum.EndsWith(key2))
-                {
-                    inside = false;
-                    list.Add(accum2);
-                    accum2 = "";
-                }
-
-                if (inside)
-                {
-                    accum2 += lns[i];
-                }
-            }
-            return list.ToArray();
-        }
         private void button1_Click(object sender, EventArgs e)
         {
             var txt = richTextBox1.Text;
             var lns = File.ReadAllText(txt);
-            var list = parseItems(lns, "<a", "/a>");
+            var list = Stuff.ParseHtmlItems(lns, "<a", "/a>");
 
             listView1.Items.Clear();
             foreach (var item in list)
@@ -105,8 +74,8 @@ namespace commander
             //richTextBox2.Text = webBrowser1.DocumentText;
 
 
-            var list = parseItems(str, "<meta", "/>");
-            var list2 = parseItems(str, "<a", "/a>");
+            var list = Stuff.ParseHtmlItems(str, "<meta", "/>");
+            var list2 = Stuff.ParseHtmlItems(str, "<a", "/a>");
 
             foreach (var item in list.Union(list2))
             {
@@ -204,15 +173,15 @@ namespace commander
                    listView1.Invoke((Action)(() =>
                   {
                       var item = listView1.Items[i];
-                       //  iscomplete = false;
-                       var str = wc.DownloadString((string)(item as ListViewItem).Tag);
+                      //  iscomplete = false;
+                      var str = wc.DownloadString((string)(item as ListViewItem).Tag);
                       if (savePic)
                       {
                           savePicFunc(str);
                       }
 
-                       //webBrowser1.Navigate((string)(item as ListViewItem).Tag, null, null, "User-Agent: Mozilla/5.0");
-                       toolStripStatusLabel1.Text = "skipped: " + skipped + "  saved: " + saved;
+                      //webBrowser1.Navigate((string)(item as ListViewItem).Tag, null, null, "User-Agent: Mozilla/5.0");
+                      toolStripStatusLabel1.Text = "skipped: " + skipped + "  saved: " + saved;
                   }));
                }
 

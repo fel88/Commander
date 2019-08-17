@@ -43,6 +43,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -78,6 +79,7 @@
     <Compile Include="ChangePasswordDialog.Designer.cs">
       <DependentUpon>ChangePasswordDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="ComboBoxItem.cs" />
     <Compile Include="CopyDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -107,12 +109,7 @@
     </Compile>
     <Compile Include="DirectoryInfoWrapper.cs" />
     <Compile Include="DiskFilesystem.cs" />
-    <Compile Include="DjvuPreviewer.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="DjvuPreviewer.Designer.cs">
-      <DependentUpon>DjvuPreviewer.cs</DependentUpon>
-    </Compile>
+    <Compile Include="Extensions.cs" />
     <Compile Include="FileInfoWrapper.cs" />
     <Compile Include="FileListControl.cs">
       <SubType>UserControl</SubType>
@@ -127,6 +124,12 @@
       <DependentUpon>Explorer.cs</DependentUpon>
     </Compile>
     <Compile Include="FilesystemLibrary.cs" />
+    <Compile Include="DjvuReader.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DjvuReader.Designer.cs">
+      <DependentUpon>DjvuReader.cs</DependentUpon>
+    </Compile>
     <Compile Include="HotkeyShortcutInfo.cs" />
     <Compile Include="IFileListControl.cs" />
     <Compile Include="IFilesystem.cs" />
@@ -145,6 +148,14 @@
     </Compile>
     <Compile Include="ShellContextMenu.cs" />
     <Compile Include="SimpleProxyCache.cs" />
+    <Compile Include="TabInfo.cs" />
+    <Compile Include="UrlBookmark.cs" />
+    <Compile Include="UrlBookmarksWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UrlBookmarksWindow.Designer.cs">
+      <DependentUpon>UrlBookmarksWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="VirtualDirectoryInfo.cs" />
     <Compile Include="VirtualFileInfo.cs" />
     <Compile Include="VirtualFilesystem.cs" />
@@ -281,6 +292,9 @@
     <Compile Include="VideoPlayer.Designer.cs">
       <DependentUpon>VideoPlayer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Watermark.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="YoutubeExtractorWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -311,20 +325,23 @@
     <EmbeddedResource Include="Desktop.resx">
       <DependentUpon>Desktop.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DjvuPreviewer.resx">
-      <DependentUpon>DjvuPreviewer.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="FileListControl.resx">
       <DependentUpon>FileListControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Explorer.resx">
       <DependentUpon>Explorer.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="DjvuReader.resx">
+      <DependentUpon>DjvuReader.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="IndexesManagerWindow.resx">
       <DependentUpon>IndexesManagerWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="QuickTagsWindow.resx">
       <DependentUpon>QuickTagsWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UrlBookmarksWindow.resx">
+      <DependentUpon>UrlBookmarksWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="VkExtractorForm.resx">
       <DependentUpon>VkExtractorForm.cs</DependentUpon>

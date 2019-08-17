@@ -24,7 +24,7 @@ namespace commander
             fileListControl2.TabOwnerString = "right";
             fileListControl1.MountIsoAction = mouseIsoAction;
             fileListControl1.IsoExtractAction = isoExtractAction;
-
+            Shown += Explorer_Shown;
 
             fileListControl1.DeleteFileAction += FileListControl1_DeleteFileAction;
             fileListControl2.DeleteFileAction += FileListControl1_DeleteFileAction;
@@ -37,7 +37,7 @@ namespace commander
             gpreviewer = new GifViewerPanel() { Dock = DockStyle.Fill };
             vpreviewer = new VideoPlayer() { Dock = DockStyle.Fill };
             textPreviewer = new TextPreviewer() { Dock = DockStyle.Fill };
-            dpreviewer = new DjvuPreviewer() { Dock = DockStyle.Fill };
+            dpreviewer = new DjvuReader() { Dock = DockStyle.Fill };
 
             fileListControl1.AddSelectedFileChangedAction((x) =>
            {
@@ -48,6 +48,7 @@ namespace commander
                splitContainer1.Panel2.Controls.Remove(previewer);
                splitContainer1.Panel2.Controls.Remove(vpreviewer);
                splitContainer1.Panel2.Controls.Remove(textPreviewer);
+               splitContainer1.Panel2.Controls.Remove(dpreviewer);
                if (exts.Contains(x.Extension))
                {
                    splitContainer1.Panel2.Controls.Add(textPreviewer);
@@ -90,6 +91,12 @@ namespace commander
                }
 
            });
+        }
+
+        private void Explorer_Shown(object sender, EventArgs e)
+        {
+            fileListControl1.Init();
+            fileListControl2.Init();
         }
 
         private void FileListControl1_DeleteFileAction(FileListControl arg1, IFileInfo arg2)
@@ -163,7 +170,7 @@ namespace commander
                     File.WriteAllBytes(pp, data);
                 }
 
-                MessageBox.Show("Extraction complete!");
+                Stuff.Info("Extraction complete!");
             }
         }
 
@@ -413,7 +420,7 @@ namespace commander
         ImgViewerPanel previewer;
         GifViewerPanel gpreviewer;
         VideoPlayer vpreviewer;
-        DjvuPreviewer dpreviewer;
+        DjvuReader dpreviewer;
         TextPreviewer textPreviewer = new TextPreviewer() { Dock = DockStyle.Fill };
         bool IsPreviewMode = false;
         private void TablePreviewerToolStripMenuItem_Click(object sender, EventArgs e)

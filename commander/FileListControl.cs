@@ -70,6 +70,10 @@ namespace commander
 
         }
 
+        public void Init()
+        {
+            watermark1.Init();
+        }
         private void ListView1_MouseLeave(object sender, EventArgs e)
         {
             pressed = false;
@@ -236,7 +240,7 @@ namespace commander
         {
             listView1.Invoke((Action)(() =>
             {
-                UpdateList(new DirectoryInfoWrapper(CurrentDirectory.FullName), textBox2.Text);
+                UpdateList(new DirectoryInfoWrapper(CurrentDirectory.FullName), watermark1.Text);
             }));
 
         }
@@ -247,10 +251,11 @@ namespace commander
 
         }
 
+        
         public void NavigateTo(string path)
         {
             SetPath(path);
-            UpdateList(new DirectoryInfoWrapper(textBox1.Text), textBox2.Text);
+            UpdateList(new DirectoryInfoWrapper(textBox1.Text), Filter);
         }
 
         public bool DirFilterEnable
@@ -340,11 +345,8 @@ namespace commander
             {
 
             }
-            UpdateList(new DirectoryInfoWrapper(path), textBox2.Text);
+            UpdateList(new DirectoryInfoWrapper(path), Filter);
         }
-
-
-
 
         public bool SaveSorting = false;
         public void UpdateList(string path, string filter)
@@ -594,7 +596,7 @@ namespace commander
                         if (si is IDirectoryInfo)
                         {
                             dirs.Add(si as IDirectoryInfo);
-                        }                        
+                        }
                     }
                     return dirs.ToArray();
                 }
@@ -640,7 +642,23 @@ namespace commander
                 return null;
             }
         }
-
+        public ListViewItem[] SelectedLvis
+        {
+            get
+            {
+                if (listView1.SelectedItems.Count > 0)
+                {
+                    List<ListViewItem> lvis = new List<ListViewItem>();
+                    for (int i = 0; i < listView1.SelectedItems.Count; i++)
+                    {
+                        var si = listView1.SelectedItems[i];
+                        lvis.Add(si);
+                    }
+                    return lvis.ToArray();
+                }
+                return null;
+            }
+        }
 
         private void listView1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
@@ -666,7 +684,7 @@ namespace commander
 
         public void UpdateList()
         {
-            UpdateList(textBox1.Text, textBox2.Text);
+            UpdateList(textBox1.Text, Filter);
 
         }
 
@@ -678,13 +696,13 @@ namespace commander
             }
             else
             {
-                UpdateList(CurrentDirectory.FullName, textBox2.Text);
+                UpdateList(CurrentDirectory.FullName, Filter);
             }
         }
 
         public void SetFilter(string mask, bool dirFilter = false)
         {
-            textBox2.Text = mask;
+            watermark1.Text = mask;
             checkBox1.Checked = dirFilter;
         }
 
@@ -713,7 +731,7 @@ namespace commander
         {
             get
             {
-                return textBox2.Text;
+                return watermark1.Text;
             }
         }
 
@@ -730,7 +748,7 @@ namespace commander
             {
                 var bb = x as ToolStripButton;
                 var tabinf = bb.Tag as TabInfo;
-                textBox2.Text = tabinf.Filter;
+                watermark1.Text = tabinf.Filter;
                 UpdateList(tabinf.Path, tabinf.Filter);
 
             };
@@ -820,10 +838,8 @@ namespace commander
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-            UpdateList(CurrentDirectory.FullName, textBox2.Text);
+            UpdateList(CurrentDirectory.FullName, Filter);
         }
-
-
 
 
         void ExecuteSelected()
@@ -901,7 +917,7 @@ namespace commander
                     try
                     {
                         var f = listView1.SelectedItems[0].Tag as IDirectoryInfo;
-                        UpdateList(f, textBox2.Text);
+                        UpdateList(f, Filter);
                     }
                     catch (Exception ex)
                     {
@@ -917,12 +933,12 @@ namespace commander
 
                         if (listView1.SelectedItems[0].Tag == libraryRootObject)
                         {
-                            UpdateLibrariesList(null, textBox2.Text);
+                            UpdateLibrariesList(null, Filter);
                         }
                         else
                         {
                             var f = listView1.SelectedItems[0].Tag as FilesystemLibrary;
-                            UpdateLibrariesList(new DirectoryInfoWrapper(f.BaseDirectory), textBox2.Text);
+                            UpdateLibrariesList(new DirectoryInfoWrapper(f.BaseDirectory), Filter);
                         }
                     }
                     catch (UnauthorizedAccessException ex)
@@ -1033,12 +1049,21 @@ namespace commander
         {
             listView1.Items.Remove(lvi);
         }
+        void DeleteItemsFromListView(ListViewItem[] lvis)
+        {
+            listView1.BeginUpdate();
+            foreach (var lvi in lvis)
+            {
+                listView1.Items.Remove(lvi);
+            }
+            listView1.EndUpdate();
+        }
         void DeleteSelected()
         {
             if (!ListView.Focused) return;
 
-            ////////////
-            if (listView1.SelectedItems.Count > 0)
+
+            if (listView1.SelectedItems.Count == 1)
             {
                 if (listView1.SelectedItems[0].Tag is IFileInfo)
                 {
@@ -1086,13 +1111,113 @@ namespace commander
                 if (listView1.SelectedItems[0].Tag is IDirectoryInfo)
                 {
                     var f = listView1.SelectedItems[0].Tag as IDirectoryInfo;
-                    if (MessageBox.Show("Delete " + f.Name + " directory and all contents?", "Commander", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    if (Stuff.Question("Delete " + f.Name + " directory and all contents?") == DialogResult.Yes)
                     {
                         Directory.Delete(f.FullName, true);
+
+                        if (Stuff.Question("Delete all tags if exist?") == DialogResult.Yes)
+                        {
+                            var fls2 = Stuff.GetAllFiles(f);
+                            //remove tags
+                            foreach (var zitem in fls2)
+                            {
+                                foreach (var titem in Stuff.Tags)
+                                {
+                                    if (titem.ContainsFile(zitem.FullName))
+                                    {
+
+                                        titem.DeleteFile(zitem.FullName);
+                                    }
+                                }
+                            }
+                        }
+
                         UpdateList(CurrentDirectory.FullName);
                     }
                 }
+                return;
             }
+            ////////////
+            var self = SelectedFiles;
+            var lvis = SelectedLvis;
+            var seld = SelectedDirectories;
+            List<IFileInfo> fls = new List<IFileInfo>();
+            List<IDirectoryInfo> drs = new List<IDirectoryInfo>();
+
+            if (self != null)
+            {
+                fls.AddRange(self);
+            }
+            if (seld != null)
+            {
+                drs.AddRange(seld);
+            }
+            if (Stuff.Question("Are your sure to delete: " + drs.Count + " directories and " + fls.Count + " files?") == DialogResult.Yes)
+            {
+                var res = Stuff.Question("Delete all tags if exist?") == DialogResult.Yes;
+
+                watcher.EnableRaisingEvents = false;
+                foreach (var item in drs)
+                {
+                    var fls2 = Stuff.GetAllFiles(item);
+                    if (res)
+                    {
+                        //remove tags
+                        foreach (var zitem in fls2)
+                        {
+                            foreach (var titem in Stuff.Tags)
+                            {
+                                if (titem.ContainsFile(zitem.FullName))
+                                {
+                                    titem.DeleteFile(zitem.FullName);
+                                }
+                            }
+                        }
+                    }
+                    Directory.Delete(item.FullName, true);
+                }
+                bool yesToAll = false;
+                foreach (var fitem in fls)
+                {
+                    DeleteFileAction(this, fitem);
+                    var attr = File.GetAttributes(fitem.FullName);
+                    bool allow = true;
+                    if (attr.HasFlag(FileAttributes.ReadOnly))
+                    {
+                        if (yesToAll || Stuff.Question("Some files are read-only, do you want to delete it anyway?") == DialogResult.Yes)
+                        {
+                            yesToAll = true;
+                            File.SetAttributes(SelectedFile.FullName, FileAttributes.Normal);
+
+                        }
+                        else
+                        {
+                            allow = false;
+                        }
+                    }
+                    if (allow)
+                    {
+                        if (res)
+                        {
+                            //remove tags
+                            foreach (var item in Stuff.Tags)
+                            {
+                                if (item.ContainsFile(fitem.FullName))
+                                {
+                                    item.DeleteFile(fitem.FullName);
+                                }
+                            }
+                        }
+
+                        File.Delete(fitem.FullName);
+
+                        //UpdateList(CurrentDirectory.FullName);
+                    }
+                }
+                watcher.EnableRaisingEvents = true;
+                DeleteItemsFromListView(lvis);                
+            }
+
         }
 
         private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1827,28 +1952,22 @@ namespace commander
             Stuff.IndexFile(SelectedFile);
 
         }
-    }
 
-    public class TabInfo
-    {
-        public string Hint;
-        public string Path;
-        public string Filter;
-        public string Owner;
+        private void Watermark1_TextChanged(object sender, EventArgs e)
+        {
+            if (Mode == ViewModeEnum.Tags)
+            {
+                tagControl.UpdateList(CurrentTag);
+            }
+            else
+            {
+                UpdateList(CurrentDirectory.FullName, watermark1.Text);
+            }
+        }
     }
     public enum ViewModeEnum
     {
         Filesystem, Libraries, Tags
-    }
-
-    public class ComboBoxItem
-    {
-        public object Tag;
-        public string Name;
-        public override string ToString()
-        {
-            return Name;
-        }
     }
 
     public class FileContextMenuItem
@@ -1856,14 +1975,6 @@ namespace commander
         public string Title;
         public string AppName;
         public string Arguments;
-    }
-
-    public static class Extensions
-    {
-        public static bool IsItemVisible(this ListView lv, ListViewItem item)
-        {
-            return item.Bounds.IntersectsWith(lv.ClientRectangle);
-        }
     }
 }
 

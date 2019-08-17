@@ -21,9 +21,14 @@ namespace commander
         {
             InitializeComponent();
             webBrowser1.ScriptErrorsSuppressed = true;
+            Stuff.SetDoubleBuffered(listView1);
+            foreach (var item in Stuff.Libraries)
+            {
+                comboBox1.Items.Add(new ComboBoxItem() { Tag = item, Name = item.Name });
+            }
         }
 
-        
+
         private void TextBox1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
@@ -32,7 +37,7 @@ namespace commander
             }
         }
 
-        
+
         private void ToolStripDropDownButton1_DropDownOpening(object sender, EventArgs e)
         {
             toolStripDropDownButton1.DropDownItems.Clear();
@@ -88,28 +93,52 @@ namespace commander
 
         private void TextBox2_TextChanged(object sender, EventArgs e)
         {
-            var arr = textBox2.Text.Split(new char[] { '\r', '\n', ' ' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
-            //var c = comboBox1.SelectedItem as ComboBoxItem;
-            //var fsl = c.Tag as FilesystemLibrary;
 
-            foreach (var item in arr)
-            {
-                listView1.Items.Add(new ListViewItem(new string[] { item, "" }) { Tag = item });
-            }
         }
 
         private void Button1_Click(object sender, EventArgs e)
         {
-            int index = 0;
+            FilesystemLibrary lib = null;
+            if (listView1.Items.Count == 0)
+            {
+                Stuff.Error("No files to save.");
+                return;
+            }
+            if (radioButton1.Checked)
+            {
+                if (!Directory.Exists(textBox3.Text))
+                {
+                    Stuff.Error("Directory not exist: " + textBox3.Text);
+                    return;
+                }
+            }
+            else
+            {
+                if (comboBox1.SelectedItem == null)
+                {
+                    Stuff.Error("Library to save not selected.");
+                    return;
+                }
+                lib = (comboBox1.SelectedItem as ComboBoxItem).Tag as FilesystemLibrary;
+            }
             foreach (var item in listView1.Items)
             {
-                var str = ((string)(item as ListViewItem).Tag);
+                var uri = ((Uri)(item as ListViewItem).Tag);
 
-                
+
                 using (WebClient wc = new WebClient())
                 {
-                    wc.DownloadFile(str, Path.Combine(textBox3.Text, index + ".png"));
-                    index++;
+                    var name = uri.Segments.Last();
+                    var path = Path.Combine(textBox3.Text, name);
+                    if (radioButton1.Checked)
+                    {
+                        wc.DownloadFile(uri.ToString(), path);
+                    }
+                    else
+                    {
+                        path = Path.Combine((lib as FilesystemLibrary).BaseDirectory, name);
+                        wc.DownloadFile(uri.ToString(), path);
+                    }
                 }
             }
         }
@@ -117,6 +146,47 @@ namespace commander
         private void ToolStripDropDownButton1_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void ClearToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            uris.Clear();
+            listView1.Items.Clear();
+        }
+
+        HashSet<string> uris = new HashSet<string>();
+        private void TextBox2_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.V && e.Modifiers == Keys.Control)
+            {
+                e.SuppressKeyPress = true;
+                try
+                {
+                    var txt = Clipboard.GetText();
+                    var arr = txt.Split(new char[] { '\r', '\n', ' ' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
+
+                    listView1.BeginUpdate();
+                    foreach (var item in arr)
+                    {                        
+                        var uri = new Uri(item);
+                        if (uris.Add(uri.ToString()))
+                        {
+                            listView1.Items.Add(new ListViewItem(new string[] { item, uri.Segments.Last() }) { Tag = uri });
+                        }
+                    }
+                   
+                }
+                catch (Exception ex)
+                {
+                    Stuff.Error(ex.Message);
+                }
+                finally
+                {
+                    listView1.EndUpdate();
+                    listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+                    listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+                }
+            }
         }
     }
 }

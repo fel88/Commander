@@ -268,7 +268,7 @@ namespace commander
 
         private void WebToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            OpenWindow(new Browser());
+            
         }
 
         private void ToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -459,6 +459,16 @@ namespace commander
         private void IsoEditorToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void BrowserToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenWindow(new Browser());
+        }
+
+        private void UrlBookmarksToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenWindow(new UrlBookmarksWindow());
         }
     }
 

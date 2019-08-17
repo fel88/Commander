@@ -67,6 +67,53 @@ namespace commander
 
             return Icons[d];
         }
+
+
+        public static string[] ParseHtmlItems(string lns, string key1, string key2)
+        {
+            string accum = "";
+            bool inside = false;
+            StringBuilder accum2 = new StringBuilder();
+            List<string> list = new List<string>();
+            for (int i = 0; i < lns.Length; i++)
+            {
+                if (accum.Length > Math.Max(key1.Length, key2.Length))
+                {
+                    accum = accum.Remove(0, 1);
+                }
+                accum += lns[i];
+                if (accum.EndsWith(key1))
+                {
+                    inside = true;
+                }
+
+                if (inside && accum.EndsWith(key2))
+                {
+                    inside = false;
+                    list.Add(accum2.ToString());
+                    accum2.Clear();
+                }
+
+                if (inside)
+                {
+                    accum2.Append(lns[i]);
+                }
+            }
+            return list.ToArray();
+        }
+        internal static void DeleteBookmark(UrlBookmark bm)
+        {
+            UrlBookmarks.Remove(bm);
+            Stuff.IsDirty = true;
+        }
+
+        public static List<UrlBookmark> UrlBookmarks = new List<UrlBookmark>();
+        internal static void AddUrlBookmark(UrlBookmark b)
+        {
+            UrlBookmarks.Add(b);
+            IsDirty = true;
+        }
+
         public static IFilesystem DefaultFileSystem = new DiskFilesystem();
         public static List<MountInfo> MountInfos = new List<MountInfo>();
         public static ImageList list = null;
@@ -489,6 +536,15 @@ namespace commander
                 var f = new OfflineSiteInfo() { Path = path };
                 Stuff.OfflineSites.Add(f);
             }
+            foreach (var book in s.Descendants("bookmark"))
+            {
+                var uri = book.Attribute("uri").Value;
+                var orig = book.Attribute("original").Value;
+                var info = Encoding.UTF8.GetString(Convert.FromBase64String(book.Attribute("info").Value));
+
+                var f = new UrlBookmark() { OriginalUrl = orig, Info = info, Uri = new Uri(uri) };
+                Stuff.AddUrlBookmark(f);
+            }
         }
 
         public static void SaveSettings()
@@ -620,17 +676,23 @@ namespace commander
                 }
             }
             sb.AppendLine("</fileContextMenuItems>");
-            sb.AppendLine("<offlineSites>");
 
+            sb.AppendLine("<offlineSites>");
             foreach (var item in Stuff.OfflineSites)
             {
                 sb.AppendLine($"<site>");
                 sb.Append("<![CDATA[" + item.Path);
                 sb.Append("]]>");
                 sb.AppendLine("</site>");
-
             }
             sb.AppendLine("</offlineSites>");
+
+            sb.AppendLine("<bookmarks>");
+            foreach (var item in Stuff.UrlBookmarks)
+            {
+                sb.AppendLine($"<bookmark uri=\"{item.Uri.ToString()}\" info=\"{Convert.ToBase64String(Encoding.UTF8.GetBytes(item.Info))}\" original=\"{item.OriginalUrl}\"/>");
+            }
+            sb.AppendLine("</bookmarks>");
 
             sb.AppendLine("</settings>");
             File.WriteAllText("settings.xml", sb.ToString());
@@ -760,14 +822,14 @@ namespace commander
         public static void IndexFile(IFileInfo selectedFile)
         {
             if (!selectedFile.Extension.ToLower().EndsWith("djvu")) return;
-            
+
             DjvuDocument doc = new DjvuDocument(selectedFile.FullName);
             var cnt = doc.Pages.Count();
             StringBuilder sbb = new StringBuilder();
             for (int i = 0; i < cnt; i++)
             {
-                var txt = doc.Pages[i].GetTextForLocation(new System.Drawing.Rectangle(0, 0, doc.Pages[i].Width, doc.Pages[i].Height));                
-                sbb.AppendLine(txt.Replace("\r", "").Replace("\t", ""));                
+                var txt = doc.Pages[i].GetTextForLocation(new System.Drawing.Rectangle(0, 0, doc.Pages[i].Width, doc.Pages[i].Height));
+                sbb.AppendLine(txt.Replace("\r", "").Replace("\t", ""));
             }
 
             Stuff.AddIndex(new IndexInfo() { Path = selectedFile.FullName, Text = sbb.ToString() });

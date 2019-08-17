@@ -38,6 +38,7 @@
             this.toolStripDropDownButton2 = new System.Windows.Forms.ToolStripDropDownButton();
             this.compareMD5ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.compareBinaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.insertClipboardAsFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripDropDownButton3 = new System.Windows.Forms.ToolStripDropDownButton();
             this.hiddenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hideToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -47,7 +48,7 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.fileListControl1 = new commander.FileListControl();
             this.fileListControl2 = new commander.FileListControl();
-            this.insertClipboardAsFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.massRenamerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -128,7 +129,8 @@
             this.toolStripDropDownButton2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.compareMD5ToolStripMenuItem,
             this.compareBinaryToolStripMenuItem,
-            this.insertClipboardAsFileToolStripMenuItem});
+            this.insertClipboardAsFileToolStripMenuItem,
+            this.massRenamerToolStripMenuItem});
             this.toolStripDropDownButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton2.Image")));
             this.toolStripDropDownButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton2.Name = "toolStripDropDownButton2";
@@ -148,6 +150,13 @@
             this.compareBinaryToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
             this.compareBinaryToolStripMenuItem.Text = "Compare binary";
             this.compareBinaryToolStripMenuItem.Click += new System.EventHandler(this.CompareBinaryToolStripMenuItem_Click);
+            // 
+            // insertClipboardAsFileToolStripMenuItem
+            // 
+            this.insertClipboardAsFileToolStripMenuItem.Name = "insertClipboardAsFileToolStripMenuItem";
+            this.insertClipboardAsFileToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+            this.insertClipboardAsFileToolStripMenuItem.Text = "Insert clipboard as file";
+            this.insertClipboardAsFileToolStripMenuItem.Click += new System.EventHandler(this.InsertClipboardAsFileToolStripMenuItem_Click);
             // 
             // toolStripDropDownButton3
             // 
@@ -235,12 +244,11 @@
             this.fileListControl2.Size = new System.Drawing.Size(495, 529);
             this.fileListControl2.TabIndex = 1;
             // 
-            // insertClipboardAsFileToolStripMenuItem
+            // massRenamerToolStripMenuItem
             // 
-            this.insertClipboardAsFileToolStripMenuItem.Name = "insertClipboardAsFileToolStripMenuItem";
-            this.insertClipboardAsFileToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
-            this.insertClipboardAsFileToolStripMenuItem.Text = "Insert clipboard as file";
-            this.insertClipboardAsFileToolStripMenuItem.Click += new System.EventHandler(this.InsertClipboardAsFileToolStripMenuItem_Click);
+            this.massRenamerToolStripMenuItem.Name = "massRenamerToolStripMenuItem";
+            this.massRenamerToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+            this.massRenamerToolStripMenuItem.Text = "Mass renamer";
             // 
             // Explorer
             // 
@@ -285,6 +293,7 @@
         private System.Windows.Forms.ToolStripMenuItem changePasswordToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton toolStripButton1;
         private System.Windows.Forms.ToolStripMenuItem insertClipboardAsFileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem massRenamerToolStripMenuItem;
     }
 }
 
