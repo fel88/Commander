@@ -196,12 +196,12 @@ namespace commander
                             if (tagStorageSearchMode)
                             {
 
-                                if (!tagFilters.All(z => z.Files.Contains(item.FullName)))
+                                if (!tagFilters.All(z => z.ContainsFile(item.FullName)))
                                 {
                                     continue;
 
                                 }
-                                if (!exceptTagFilters.All(z => !z.Files.Contains(item.FullName)))
+                                if (!exceptTagFilters.All(z => !z.ContainsFile(item.FullName)))
                                 {
                                     continue;
 

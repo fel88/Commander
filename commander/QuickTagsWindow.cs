@@ -69,7 +69,7 @@ namespace commander
         void UpdateTagsInfo(IFileInfo f)
         {
             listView1.Items.Clear();
-            var tt = Stuff.Tags.Where(z => z.Files.Contains(f.FullName));
+            var tt = Stuff.Tags.Where(z => z.ContainsFile(f.FullName));
             foreach (var item in tt)
             {
                 listView1.Items.Add(item.Name);
@@ -87,7 +87,7 @@ namespace commander
             UpdateTagsInfo(f);
             allow = false;
             Text = "Tags of: " + f.Name;
-            var tt = Stuff.Tags.Where(z => z.Files.Contains(f.FullName));
+            var tt = Stuff.Tags.Where(z => z.ContainsFile(f.FullName));
             
             for (int i = 0; i < checkedListBox1.Items.Count; i++)
             {

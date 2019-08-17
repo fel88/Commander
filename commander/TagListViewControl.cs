@@ -115,7 +115,7 @@ namespace commander
                 {
                     if (!Stuff.ShowHidden && item.IsHidden) continue;
                     if (!IsFilterPass(item.Name, fltrs)) continue;
-                    listView1.Items.Add(new ListViewItem(new string[] { item.Name, item.Files.Count + "" }) { Tag = item });
+                    listView1.Items.Add(new ListViewItem(new string[] { item.Name, item.Files.Count() + "" }) { Tag = item });
                 }
             }
             else

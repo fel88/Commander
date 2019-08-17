@@ -38,6 +38,7 @@ namespace commander
             vpreviewer = new VideoPlayer() { Dock = DockStyle.Fill };
             textPreviewer = new TextPreviewer() { Dock = DockStyle.Fill };
             dpreviewer = new DjvuReader() { Dock = DockStyle.Fill };
+            pdfPreviewer = new PdfPreviewer() { Dock = DockStyle.Fill };
 
             fileListControl1.AddSelectedFileChangedAction((x) =>
            {
@@ -49,6 +50,8 @@ namespace commander
                splitContainer1.Panel2.Controls.Remove(vpreviewer);
                splitContainer1.Panel2.Controls.Remove(textPreviewer);
                splitContainer1.Panel2.Controls.Remove(dpreviewer);
+               splitContainer1.Panel2.Controls.Remove(pdfPreviewer);
+               
                if (exts.Contains(x.Extension))
                {
                    splitContainer1.Panel2.Controls.Add(textPreviewer);
@@ -70,6 +73,12 @@ namespace commander
                {
                    dpreviewer.UnloadBook();
                }
+               if (new string[] { ".pdf" }.Contains(x.Extension.ToLower()))
+               {
+                   splitContainer1.Panel2.Controls.Add(pdfPreviewer);
+                   pdfPreviewer.Init(x.FullName);
+               }
+               
                if (gexts.Contains(x.Extension.ToLower()))
                {
                    splitContainer1.Panel2.Controls.Add(previewer);
@@ -348,14 +357,14 @@ namespace commander
                                 Stuff.GetAllFiles(item, list);
                                 Stuff.GetAllDirs(item, dirs);
                             }
-                            
+
                         }
-                                                
+
 
                         CopyDialog cpd = new CopyDialog();
                         cpd.Init(list.ToArray(), dirs.ToArray(), to.CurrentDirectory, prnt);
                         cpd.ShowDialog();
-                      
+
                     }
                 }
 
@@ -365,7 +374,7 @@ namespace commander
                     if (fileListControl1.SelectedFile != null && fileListControl2.CurrentTag != null)
                     {
                         var fn = fileListControl1.SelectedFile.FullName;
-                        if (!fileListControl2.CurrentTag.Files.Contains(fn))
+                        if (!fileListControl2.CurrentTag.ContainsFile(fn))
                         {
                             fileListControl2.CurrentTag.AddFile(fn);
                             MessageBox.Show(Path.GetFileName(fn) + " tagged as " + fileListControl2.CurrentTag.Name);
@@ -421,6 +430,8 @@ namespace commander
         GifViewerPanel gpreviewer;
         VideoPlayer vpreviewer;
         DjvuReader dpreviewer;
+        PdfPreviewer pdfPreviewer;
+
         TextPreviewer textPreviewer = new TextPreviewer() { Dock = DockStyle.Fill };
         bool IsPreviewMode = false;
         private void TablePreviewerToolStripMenuItem_Click(object sender, EventArgs e)

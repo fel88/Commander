@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProxyLib", "ProxyLib\ProxyL
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DjvuNet", "..\CommonLibs\DjvuNet\DjvuNet.csproj", "{E681B178-E5F8-4782-89C8-F32720B1464A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfiumViewer", "..\CommonLibs\PdfiumViewer\PdfiumViewer.csproj", "{438914B6-5D1C-482C-B942-5C0E057EEF6F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{E681B178-E5F8-4782-89C8-F32720B1464A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E681B178-E5F8-4782-89C8-F32720B1464A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E681B178-E5F8-4782-89C8-F32720B1464A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{438914B6-5D1C-482C-B942-5C0E057EEF6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{438914B6-5D1C-482C-B942-5C0E057EEF6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{438914B6-5D1C-482C-B942-5C0E057EEF6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{438914B6-5D1C-482C-B942-5C0E057EEF6F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -80,6 +86,7 @@ Global
 		{034228F5-7BCD-4137-ADFF-2A6CB530453A} = {7AC29A97-4DFA-40C4-9859-E2470E6639C0}
 		{ECDC127F-8DEF-4F99-8300-72C13597339D} = {7AC29A97-4DFA-40C4-9859-E2470E6639C0}
 		{E681B178-E5F8-4782-89C8-F32720B1464A} = {7AC29A97-4DFA-40C4-9859-E2470E6639C0}
+		{438914B6-5D1C-482C-B942-5C0E057EEF6F} = {7AC29A97-4DFA-40C4-9859-E2470E6639C0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7A94723F-DEEC-4DA6-925D-410A8973C90F}

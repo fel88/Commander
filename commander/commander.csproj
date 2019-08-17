@@ -139,6 +139,12 @@
     <Compile Include="IndexesManagerWindow.Designer.cs">
       <DependentUpon>IndexesManagerWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="PdfPreviewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PdfPreviewer.Designer.cs">
+      <DependentUpon>PdfPreviewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="PreviewHelper.cs" />
     <Compile Include="QuickTagsWindow.cs">
       <SubType>Form</SubType>
@@ -337,6 +343,9 @@
     <EmbeddedResource Include="IndexesManagerWindow.resx">
       <DependentUpon>IndexesManagerWindow.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="PdfPreviewer.resx">
+      <DependentUpon>PdfPreviewer.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="QuickTagsWindow.resx">
       <DependentUpon>QuickTagsWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -441,6 +450,10 @@
     <ProjectReference Include="..\..\CommonLibs\GifLib\GifLib.csproj">
       <Project>{034228f5-7bcd-4137-adff-2a6cb530453a}</Project>
       <Name>GifLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\CommonLibs\PdfiumViewer\PdfiumViewer.csproj">
+      <Project>{438914b6-5d1c-482c-b942-5c0e057eef6f}</Project>
+      <Name>PdfiumViewer</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\CommonLibs\YoutubeExtractor\YoutubeExtractor.csproj">
       <Project>{ecdc127f-8def-4f99-8300-72c13597339d}</Project>

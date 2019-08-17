@@ -422,6 +422,8 @@ namespace commander
             {
                 var id = int.Parse(item.Attribute("id").Value);
                 var path = item.Value;
+                //var dir = new DirectoryInfo(path);
+                //path = dir.Parent.GetDirectories(dir.Name).First().FullName;
                 direntries.Add(new DirectoryEntry() { Id = id, Path = path });
             }
             foreach (var item in entries.Descendants("file"))
@@ -429,7 +431,13 @@ namespace commander
                 var id = int.Parse(item.Attribute("id").Value);
                 var dirId = int.Parse(item.Attribute("dirId").Value);
                 var name = item.Value;
-                fileentries.Add(new FileEntry() { Id = id, Directory = direntries.First(z => z.Id == dirId), Name = name });
+                
+                var dir = direntries.First(z => z.Id == dirId);
+                //var path = Path.Combine(dir.Path, name);
+                //var diri = new DirectoryInfo(dir.Path);                
+                //name = diri.GetFiles(name).First().Name;
+                
+                fileentries.Add(new FileEntry() { Id = id, Directory = dir, Name = name });
             }
             #endregion
 
@@ -774,7 +782,7 @@ namespace commander
             List<TagInfo> tags = new List<TagInfo>();
             foreach (var item in fls)
             {
-                var ww = Stuff.Tags.Where(z => z.Files.Contains(item.FullName));
+                var ww = Stuff.Tags.Where(z => z.ContainsFile(item.FullName));
                 tags.AddRange(ww);
             }
             tags = tags.Distinct().ToList();
@@ -785,7 +793,7 @@ namespace commander
             foreach (var item in tags)
             {
                 sb.AppendLine($"<tag name=\"{item.Name}\">");
-                var aa = fls.Where(z => item.Files.Contains(z.FullName)).ToArray();
+                var aa = fls.Where(z => item.ContainsFile(z.FullName)).ToArray();
                 foreach (var aitem in aa)
                 {
                     sb.AppendLine($"<file><![CDATA[{aitem.FullName.Replace(dir.FullName, "").Trim(new char[] { '\\' })}]]></file>");

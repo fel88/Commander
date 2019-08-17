@@ -1351,7 +1351,7 @@ namespace commander
                     {
                         if (remain == 0) break;
                         var item = cands[index++];
-                        var ww = files.Count(z => item.Files.Contains(z.FullName));
+                        var ww = files.Count(z => item.ContainsFile(z.FullName));
                         var state = CheckState.Indeterminate;
                         if (ww == 0) { state = CheckState.Unchecked; }
                         if (ww == files.Count) { state = CheckState.Checked; }
@@ -1376,7 +1376,7 @@ namespace commander
             {
                 foreach (var item in cands)
                 {
-                    var ww = files.Count(z => item.Files.Contains(z.FullName));
+                    var ww = files.Count(z => item.ContainsFile(z.FullName));
                     var state = CheckState.Indeterminate;
                     if (ww == 0) { state = CheckState.Unchecked; }
                     if (ww == files.Count) { state = CheckState.Checked; }
@@ -1857,7 +1857,7 @@ namespace commander
                     foreach (var fitem in item.Elements("file"))
                     {
                         var path = fitem.Value;
-                        if (!tag.Files.Contains(path))
+                        if (!tag.ContainsFile(path))
                         {
                             tag.AddFile(path);
                         }
