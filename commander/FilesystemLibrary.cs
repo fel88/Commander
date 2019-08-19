@@ -6,18 +6,18 @@ namespace commander
 {
     public class FilesystemLibrary : ILibrary
     {
-        public string BaseDirectory;
+        public IDirectoryInfo BaseDirectory;
 
         public string Name { get; set; }
 
         public void AppendFile(string path, byte[] data)
         {
-            File.WriteAllBytes(Path.Combine(BaseDirectory, path), data);
+            File.WriteAllBytes(Path.Combine(BaseDirectory.FullName, path), data);
         }
 
         public string[] EnumerateFiles()
         {
-            var dir = new DirectoryInfoWrapper(BaseDirectory);
+            var dir = new DirectoryInfoWrapper(BaseDirectory.FullName);
             return Stuff.GetAllFiles(dir).Select(z => z.FullName).ToArray();
         }
 

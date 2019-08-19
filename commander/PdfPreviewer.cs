@@ -12,9 +12,12 @@ namespace commander
 {
     public partial class PdfPreviewer : UserControl
     {
+        public IFileInfo CurrentFile { get; internal set; }
+
         public PdfPreviewer()
         {
             InitializeComponent();
+            
         }
         private PdfDocument OpenDocument(string fileName)
         {
@@ -29,10 +32,18 @@ namespace commander
             }
         }
 
-        public void Init(string fullName)
+        public void Init(IFileInfo fl)
         {
+            CurrentFile = fl;
             pdfViewer1.Document?.Dispose();
-            pdfViewer1.Document = OpenDocument(fullName);
+            pdfViewer1.Document = OpenDocument(fl.FullName);            
+        }
+
+        internal void Reset()
+        {
+            var temp = pdfViewer1.Document;            
+            pdfViewer1.Document = null;
+            temp.Dispose();
         }
     }
 }

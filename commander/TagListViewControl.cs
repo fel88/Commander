@@ -398,7 +398,7 @@ namespace commander
                     var files = dd.Files.Select(z => new FileInfoWrapper(z));
 
                     DedupContext ctx = new DedupContext(new IDirectoryInfo[] { }, files.OfType<IFileInfo>().ToArray());
-                    var groups = RepeatsWindow.FindRepeats(ctx);
+                    var groups = RepeatsWindow.FindDuplicates(ctx);
                     if (groups.Count() == 0)
                     {
                         Stuff.Info("No duplicates found.");
@@ -407,7 +407,7 @@ namespace commander
                     {
                         RepeatsWindow rp = new RepeatsWindow();
                         rp.MdiParent = mdi.MainForm;
-                        rp.SetRepeats(ctx, groups.ToArray());
+                        rp.SetGroups(ctx, groups.ToArray());
                         rp.Show();
                     }
                 }
@@ -428,7 +428,7 @@ namespace commander
                         }
                     }
                     DedupContext ctx = new DedupContext(dd.ToArray(), ff.ToArray());
-                    var groups = RepeatsWindow.FindRepeats(ctx);
+                    var groups = RepeatsWindow.FindDuplicates(ctx);
                     if (groups.Count() == 0)
                     {
                         Stuff.Info("No duplicates found.");
@@ -437,7 +437,7 @@ namespace commander
                     {
                         RepeatsWindow rp = new RepeatsWindow();
                         rp.MdiParent = mdi.MainForm;
-                        rp.SetRepeats(ctx, groups.ToArray());
+                        rp.SetGroups(ctx, groups.ToArray());
                         rp.Show();
                     }
                 }

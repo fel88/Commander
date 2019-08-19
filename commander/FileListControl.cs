@@ -13,6 +13,7 @@ using commander.Properties;
 using isoViewer;
 using System.Xml.Linq;
 using DjvuNet;
+using PluginLib;
 
 namespace commander
 {
@@ -251,7 +252,7 @@ namespace commander
 
         }
 
-        
+
         public void NavigateTo(string path)
         {
             SetPath(path);
@@ -548,7 +549,7 @@ namespace commander
 
                 listView1.SmallImageList = Stuff.list;
                 listView1.LargeImageList = Stuff.list;
-                if (Stuff.Libraries.OfType<FilesystemLibrary>().Any(z => z.BaseDirectory == path.FullName))
+                if (Stuff.Libraries.OfType<FilesystemLibrary>().Any(z => z.BaseDirectory.FullName.ToLower() == path.FullName.ToLower()))
                 {
 
 
@@ -601,6 +602,26 @@ namespace commander
                     return dirs.ToArray();
                 }
 
+                return null;
+            }
+        }
+        public ILibrary[] SelectedLibraries
+        {
+            get
+            {
+                if (listView1.SelectedItems.Count > 0)
+                {
+                    List<ILibrary> libs = new List<ILibrary>();
+                    for (int i = 0; i < listView1.SelectedItems.Count; i++)
+                    {
+                        var si = listView1.SelectedItems[i].Tag;
+                        if (si is ILibrary)
+                        {
+                            libs.Add(si as ILibrary);
+                        }
+                    }
+                    return libs.ToArray();
+                }
                 return null;
             }
         }
@@ -938,7 +959,7 @@ namespace commander
                         else
                         {
                             var f = listView1.SelectedItems[0].Tag as FilesystemLibrary;
-                            UpdateLibrariesList(new DirectoryInfoWrapper(f.BaseDirectory), Filter);
+                            UpdateLibrariesList(f.BaseDirectory, Filter);
                         }
                     }
                     catch (UnauthorizedAccessException ex)
@@ -1098,7 +1119,7 @@ namespace commander
                             }
 
                             watcher.EnableRaisingEvents = false;
-                            File.Delete(f.FullName);
+                            f.Filesystem.DeleteFile(f);
                             watcher.EnableRaisingEvents = true;
                             DeleteItemFromListView(lvi);
 
@@ -1174,7 +1195,8 @@ namespace commander
                             }
                         }
                     }
-                    Directory.Delete(item.FullName, true);
+                    item.Filesystem.DeleteDirectory(item, true);
+                    
                 }
                 bool yesToAll = false;
                 foreach (var fitem in fls)
@@ -1209,13 +1231,13 @@ namespace commander
                             }
                         }
 
-                        File.Delete(fitem.FullName);
+                        fitem.Filesystem.DeleteFile(fitem);
 
                         //UpdateList(CurrentDirectory.FullName);
                     }
                 }
                 watcher.EnableRaisingEvents = true;
-                DeleteItemsFromListView(lvis);                
+                DeleteItemsFromListView(lvis);
             }
 
         }
@@ -1617,7 +1639,7 @@ namespace commander
                     if (tag is FilesystemLibrary)
                     {
                         var l = tag as FilesystemLibrary;
-                        d = new DirectoryInfoWrapper(l.BaseDirectory);
+                        d = l.BaseDirectory;
                     }
                     else
                     {
@@ -1695,14 +1717,14 @@ namespace commander
                     if (tag is FilesystemLibrary)
                     {
                         var l = tag as FilesystemLibrary;
-                        d = new DirectoryInfoWrapper(l.BaseDirectory);
+                        d = l.BaseDirectory;
                     }
                     else
                     {
                         d = listView1.SelectedItems[0].Tag as IDirectoryInfo;
                     }
                     DedupContext ctx = new DedupContext(new[] { d }, new IFileInfo[] { });
-                    var groups = RepeatsWindow.FindRepeats(ctx);
+                    var groups = RepeatsWindow.FindDuplicates(ctx);
                     if (groups.Count() == 0)
                     {
                         Stuff.Info("No duplicates found.");
@@ -1711,7 +1733,7 @@ namespace commander
                     {
                         RepeatsWindow rp = new RepeatsWindow();
                         rp.MdiParent = mdi.MainForm;
-                        rp.SetRepeats(ctx, groups.ToArray());
+                        rp.SetGroups(ctx, groups.ToArray());
                         rp.Show();
                     }
                 }
@@ -1732,7 +1754,7 @@ namespace commander
                         }
                     }
                     DedupContext ctx = new DedupContext(dd.ToArray(), ff.ToArray());
-                    var groups = RepeatsWindow.FindRepeats(ctx);
+                    var groups = RepeatsWindow.FindDuplicates(ctx);
                     if (groups.Count() == 0)
                     {
                         Stuff.Info("No duplicates found.");
@@ -1741,7 +1763,7 @@ namespace commander
                     {
                         RepeatsWindow rp = new RepeatsWindow();
                         rp.MdiParent = mdi.MainForm;
-                        rp.SetRepeats(ctx, groups.ToArray());
+                        rp.SetGroups(ctx, groups.ToArray());
                         rp.Show();
                     }
                 }
@@ -1826,7 +1848,7 @@ namespace commander
                     var f = listView1.SelectedItems[0].Tag as DirectoryInfo;
                     if (MessageBox.Show("Make " + f.Name + " library?", "Commander", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
-                        Stuff.Libraries.Add(new FilesystemLibrary() { BaseDirectory = f.FullName, Name = f.Name });
+                        Stuff.Libraries.Add(new FilesystemLibrary() { BaseDirectory = new DirectoryInfoWrapper(f.FullName), Name = f.Name });
                         Stuff.IsDirty = true;
                     }
                 }
@@ -1963,6 +1985,35 @@ namespace commander
             {
                 UpdateList(CurrentDirectory.FullName, watermark1.Text);
             }
+        }
+
+        private void ImagesDeduplicationsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+                var self = SelectedFiles;
+                var seld = SelectedDirectories;
+                var sell = SelectedLibraries.OfType<FilesystemLibrary>();
+
+                List<IDirectoryInfo> dirs = new List<IDirectoryInfo>();
+                dirs.AddRange(seld);
+                dirs.AddRange(sell.Select(z => z.BaseDirectory));
+
+                DedupContext ctx = new DedupContext(dirs.ToArray(), self.ToArray());
+                var groups = ImagesDeduplicationWindow.FindDuplicates(ctx);
+                if (groups.Count() == 0)
+                {
+                    Stuff.Info("No duplicates found.");
+                }
+                else
+                {
+                    ImagesDeduplicationWindow rp = new ImagesDeduplicationWindow();
+                    rp.MdiParent = mdi.MainForm;
+                    rp.SetGroups(ctx, groups.ToArray());
+                    rp.Show();
+                }
+            }
+
         }
     }
     public enum ViewModeEnum

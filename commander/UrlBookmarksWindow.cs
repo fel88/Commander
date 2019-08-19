@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Net;
+using System.Net.Security;
 using System.Text;
 using System.Web;
 using System.Windows.Forms;
@@ -19,6 +20,7 @@ namespace commander
             InitializeComponent();
             Stuff.SetDoubleBuffered(listView1);
             Shown += UrlBookmarksWindow_Shown;
+            
             UpdateList();
             pictureBox1.Image = DrawInfoIcon();
             pictureBox1.MouseHover += PictureBox1_MouseHover;
@@ -42,6 +44,17 @@ namespace commander
         }
 
         HashSet<string> hash = new HashSet<string>();
+
+        void DeleteSelected()
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+            var bm = listView1.SelectedItems[0].Tag as UrlBookmark;
+            if (Stuff.Question("Delete " + bm.OriginalUrl + " from bookmarks?") == DialogResult.Yes)
+            {
+                listView1.Items.Remove(listView1.SelectedItems[0]);
+                Stuff.DeleteBookmark(bm);
+            }
+        }
         private void ListView1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.F2)
@@ -59,16 +72,17 @@ namespace commander
             }
             if (e.KeyCode == Keys.Delete)
             {
-                if (listView1.SelectedItems.Count == 0) return;
-                var bm = listView1.SelectedItems[0].Tag as UrlBookmark;
-                if (Stuff.Question("Delete " + bm.OriginalUrl + " from bookmarks?") == DialogResult.Yes)
-                {
-                    Stuff.DeleteBookmark(bm);
-                }
+                DeleteSelected();
+
             }
             if (e.Modifiers == Keys.Control && e.KeyCode == Keys.V)
             {
                 var txt = Clipboard.GetText();
+                if (Stuff.UrlBookmarks.Any(z => z.OriginalUrl == txt))
+                {
+                    Stuff.Warning("same url already exist.");
+                    return;
+                }
                 if (hash.Add(txt))
                 {
                     var dec = HttpUtility.UrlDecode(txt);
@@ -123,9 +137,10 @@ namespace commander
             listView1.Items.Clear();
             foreach (var item in Stuff.UrlBookmarks)
             {
+                
                 bool pass = false;
                 if (item.OriginalUrl.ToLower().Contains(watermark1.Text.ToLower())) pass = true;
-                if (item.Info.ToLower().Contains(watermark1.Text.ToLower())) pass = true;
+                if (!string.IsNullOrEmpty(item.Info) && item.Info.ToLower().Contains(watermark1.Text.ToLower())) pass = true;
 
                 if (!pass) continue;
                 listView1.Items.Add(new ListViewItem(new string[] { item.OriginalUrl, item.Info }) { Tag = item });
@@ -146,9 +161,29 @@ namespace commander
                 Process.Start(r.OriginalUrl);
             }
         }
-
+        public static void InitiateSSLTrust()
+        {
+            try
+            {
+                //Change SSL checks so that all checks pass
+                ServicePointManager.ServerCertificateValidationCallback =
+                   new RemoteCertificateValidationCallback(
+                        delegate
+                        { return true; }
+                    );
+            }
+            catch (Exception ex)
+            {
+                //ActivityLog.InsertSyncActivity(ex);
+            }
+        }
         private void UpdateTitleToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //InitiateSSLTrust();
+            // using System.Net;
+            ServicePointManager.Expect100Continue = true;
+            //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls;
+            ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072;
             if (listView1.SelectedItems.Count == 0) return;
             if (listView1.SelectedItems[0].Tag is UrlBookmark)
             {
@@ -205,6 +240,11 @@ namespace commander
         private void AddDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DeleteSelected();
         }
     }
 }

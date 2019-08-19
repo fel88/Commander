@@ -5,9 +5,26 @@ namespace commander
 {
     public class DiskFilesystem : IFilesystem
     {
+        public bool IsReadOnly { get; set; } 
+
         public Image BitmapFromFile(string fullName)
         {
             return Bitmap.FromFile(fullName);
+        }
+
+        public void DeleteDirectory(IDirectoryInfo item, bool recursive)
+        {
+            Directory.Delete(item.FullName, recursive);
+        }
+
+        public void DeleteFile(string fullName)
+        {
+            File.Delete(fullName);
+        }
+
+        public void DeleteFile(IFileInfo file)
+        {
+            File.Delete(file.FullName);
         }
 
         public byte[] ReadAllBytes(string path)

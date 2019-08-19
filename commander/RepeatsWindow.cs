@@ -18,7 +18,7 @@ namespace commander
             Stuff.SetDoubleBuffered(listView1);
         }
 
-        public static IFileInfo[][] FindRepeats(DedupContext dup)
+        public static IFileInfo[][] FindDuplicates(DedupContext dup)
         {
             List<IFileInfo> files = new List<IFileInfo>();
             foreach (var d in dup.Dirs)
@@ -27,7 +27,7 @@ namespace commander
             }
             files.AddRange(dup.Files);
             files = files.Where(z => z.Exist).ToList();
-            
+
 
             var grp1 = files.GroupBy(z => z.Length).Where(z => z.Count() > 1).ToArray();
             List<IFileInfo[]> groups = new List<IFileInfo[]>();
@@ -38,13 +38,13 @@ namespace commander
                 if (cnt0 == 0) continue;
                 groups.AddRange(arr0.Select(z => z.ToArray()).ToArray());
             }
-            
+
             //todo: binary compare candidates
             return groups.ToArray();
         }
 
         public DedupContext Context;
-        public void SetRepeats(DedupContext ctx , IFileInfo[][] repeats)
+        public void SetGroups(DedupContext ctx, IFileInfo[][] repeats)
         {
             Context = ctx;
             listView1.Items.Clear();
@@ -133,12 +133,12 @@ namespace commander
         private void Button1_Click(object sender, EventArgs e)
         {
             listView1.Items.Clear();
-            var grps = FindRepeats(Context);
+            var grps = FindDuplicates(Context);
             if (grps.Count() == 0)
             {
                 Stuff.Info("No duplicates found.");
             }
-            SetRepeats(Context, grps);
+            SetGroups(Context, grps);
         }
 
         private void button2_Click(object sender, EventArgs e)

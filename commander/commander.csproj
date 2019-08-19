@@ -107,6 +107,7 @@
     <Compile Include="Desktop.Designer.cs">
       <DependentUpon>Desktop.cs</DependentUpon>
     </Compile>
+    <Compile Include="DirectBitmap.cs" />
     <Compile Include="DirectoryInfoWrapper.cs" />
     <Compile Include="DiskFilesystem.cs" />
     <Compile Include="Extensions.cs" />
@@ -133,6 +134,12 @@
     <Compile Include="HotkeyShortcutInfo.cs" />
     <Compile Include="IFileListControl.cs" />
     <Compile Include="IFilesystem.cs" />
+    <Compile Include="ImagesDeduplicationWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ImagesDeduplicationWindow.Designer.cs">
+      <DependentUpon>ImagesDeduplicationWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="IndexesManagerWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -339,6 +346,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="DjvuReader.resx">
       <DependentUpon>DjvuReader.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ImagesDeduplicationWindow.resx">
+      <DependentUpon>ImagesDeduplicationWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="IndexesManagerWindow.resx">
       <DependentUpon>IndexesManagerWindow.cs</DependentUpon>

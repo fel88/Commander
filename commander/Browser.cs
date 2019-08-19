@@ -136,7 +136,7 @@ namespace commander
                     }
                     else
                     {
-                        path = Path.Combine((lib as FilesystemLibrary).BaseDirectory, name);
+                        path = Path.Combine((lib as FilesystemLibrary).BaseDirectory.FullName, name);
                         wc.DownloadFile(uri.ToString(), path);
                     }
                 }

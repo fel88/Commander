@@ -41,6 +41,7 @@ namespace commander
                         {
                             return null;
                         }
+
                     }
                 }
                 return ExeIcons[fn];
@@ -431,12 +432,12 @@ namespace commander
                 var id = int.Parse(item.Attribute("id").Value);
                 var dirId = int.Parse(item.Attribute("dirId").Value);
                 var name = item.Value;
-                
+
                 var dir = direntries.First(z => z.Id == dirId);
                 //var path = Path.Combine(dir.Path, name);
                 //var diri = new DirectoryInfo(dir.Path);                
                 //name = diri.GetFiles(name).First().Name;
-                
+
                 fileentries.Add(new FileEntry() { Id = id, Directory = dir, Name = name });
             }
             #endregion
@@ -457,7 +458,7 @@ namespace commander
             {
                 var name = descendant.Attribute("name").Value;
                 var path = descendant.Attribute("path").Value;
-                Stuff.Libraries.Add(new FilesystemLibrary() { Name = name, BaseDirectory = path });
+                Stuff.Libraries.Add(new FilesystemLibrary() { Name = name, BaseDirectory = new DirectoryInfoWrapper(path) });
             }
 
             foreach (var descendant in s.Descendants("hotkey"))
@@ -546,8 +547,8 @@ namespace commander
             }
             foreach (var book in s.Descendants("bookmark"))
             {
-                var uri = book.Attribute("uri").Value;
-                var orig = book.Attribute("original").Value;
+                var uri = Encoding.UTF8.GetString(Convert.FromBase64String(book.Attribute("uri").Value));
+                var orig = Encoding.UTF8.GetString(Convert.FromBase64String(book.Attribute("original").Value));
                 var info = Encoding.UTF8.GetString(Convert.FromBase64String(book.Attribute("info").Value));
 
                 var f = new UrlBookmark() { OriginalUrl = orig, Info = info, Uri = new Uri(uri) };
@@ -698,7 +699,12 @@ namespace commander
             sb.AppendLine("<bookmarks>");
             foreach (var item in Stuff.UrlBookmarks)
             {
-                sb.AppendLine($"<bookmark uri=\"{item.Uri.ToString()}\" info=\"{Convert.ToBase64String(Encoding.UTF8.GetBytes(item.Info))}\" original=\"{item.OriginalUrl}\"/>");
+                string b64 = string.Empty;
+                if (!string.IsNullOrEmpty(item.Info))
+                {
+                    b64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(item.Info));
+                }
+                sb.AppendLine($"<bookmark uri=\"{ Convert.ToBase64String(Encoding.UTF8.GetBytes(item.Uri.ToString()))}\" info=\"{b64}\" original=\"{Convert.ToBase64String(Encoding.UTF8.GetBytes(item.OriginalUrl))}\"/>");
             }
             sb.AppendLine("</bookmarks>");
 

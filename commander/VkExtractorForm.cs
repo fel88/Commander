@@ -19,14 +19,19 @@ namespace commander
         {
             InitializeComponent();
             //webBrowser1.DocumentCompleted += WebBrowser1_DocumentCompleted;
+            Stuff.SetDoubleBuffered(listView1);
+            Stuff.SetDoubleBuffered(listView2);
+            Stuff.SetDoubleBuffered(listView3);
         }
 
 
 
         private void button1_Click(object sender, EventArgs e)
         {
+            
             var txt = richTextBox1.Text;
-            var lns = File.ReadAllText(txt);
+            //var lns = File.ReadAllText(txt);
+            var lns = txt;
             var list = Stuff.ParseHtmlItems(lns, "<a", "/a>");
 
             listView1.Items.Clear();
@@ -69,6 +74,8 @@ namespace commander
 
         int skipped = 0;
         int saved = 0;
+        int errors = 0;
+        int links = 0;
         public void savePicFunc(string str)
         {
             //richTextBox2.Text = webBrowser1.DocumentText;
@@ -76,50 +83,65 @@ namespace commander
 
             var list = Stuff.ParseHtmlItems(str, "<meta", "/>");
             var list2 = Stuff.ParseHtmlItems(str, "<a", "/a>");
-
+            int totalLinks = 0;
             foreach (var item in list.Union(list2))
             {
                 if (!item.Contains("http")) continue;
                 var ar1 = item.Split(new char[] { ' ', '\"' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
-                var fr = ar1.FirstOrDefault(z => z.Contains("jpg") || z.Contains("png") || z.Contains("gif"));
-                if (fr != null)
+                var ww = ar1.Where(z => z.Contains("jpg") || z.Contains("png") || z.Contains("gif"));
+
+                foreach (var fr in ww)
                 {
+                    totalLinks++;
                     try
                     {
                         listView2.Invoke((Action)(() =>
                         {
                             listView2.Items.Add(new ListViewItem(fr) { Tag = fr });
-                            WebClient wc = new WebClient();
-                            var data = wc.DownloadData(fr);
-                            if (data.Length >= 0)
+                            links++;
+                            using (WebClient wc = new WebClient())
                             {
-                                MemoryStream ms = new MemoryStream(data);
-                                if (showPics)
-                                {
-                                    var img = Image.FromStream(ms);
-                                    pictureBox1.Image = img;
-                                }
-                                ms.Seek(0, SeekOrigin.Begin);
-                                var hash = Stuff.CalcMD5(ms);
-                                if (md5cache.Add(hash))
-                                {
-                                    saved++;
-                                    File.WriteAllBytes(Path.Combine(textBox1.Text, DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day + "-" + DateTime.Now.Minute + "-" + DateTime.Now.Hour + "-" + DateTime.Now.Second + ".png"), data);
-                                    //img.Save(Path.Combine(textBox1.Text, DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day + "-" + DateTime.Now.Minute + "-" + DateTime.Now.Hour + "-" + DateTime.Now.Second + ".png"));
-                                }
-                                else
-                                {
-                                    skipped++;
-                                }
+                                var uri = new Uri(fr);
 
-                                ms.Dispose();
+                                var data = wc.DownloadData(fr);
+                                if (data.Length >= 0)
+                                {
+                                    MemoryStream ms = new MemoryStream(data);
+                                    if (showPics)
+                                    {
+                                        var img = Image.FromStream(ms);
+                                        pictureBox1.Image = img;
+                                    }
+                                    ms.Seek(0, SeekOrigin.Begin);
+                                    var hash = Stuff.CalcMD5(ms);
+                                    if (md5cache.Add(hash))
+                                    {
+                                        var fp = Path.Combine(textBox1.Text, uri.Segments.Last());
+                                        if (File.Exists(fp))
+                                        {
+                                            throw new Exception("hash not found, but file exist");
+                                        }
+                                        saved++;
+                                        File.WriteAllBytes(fp, data);
+                                        /*File.WriteAllBytes(Path.Combine(textBox1.Text, DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day + "-" + DateTime.Now.Minute + "-" + DateTime.Now.Hour + "-" + DateTime.Now.Second + ".png"), data);*/
+                                        //img.Save(Path.Combine(textBox1.Text, DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day + "-" + DateTime.Now.Minute + "-" + DateTime.Now.Hour + "-" + DateTime.Now.Second + ".png"));
+                                    }
+                                    else
+                                    {
+                                        skipped++;
+                                    }
+
+                                    ms.Dispose();
+                                }
                             }
                         }));
+
                         break;
 
                     }
                     catch (Exception ex)
                     {
+                        errors++;
                         listView3.Invoke((Action)(() =>
                         {
                             listView3.Items.Add(new ListViewItem(new string[] { ex.Message }) { Tag = ex });
@@ -128,6 +150,15 @@ namespace commander
                 }
 
             }
+
+            if (totalLinks == 0)
+            {
+                listView3.Invoke((Action)(() =>
+                {
+                    listView3.Items.Add(new ListViewItem(new string[] { "no links: " + str }) { Tag = str, BackColor = Color.Yellow });
+                }));
+            }
+
         }
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -161,32 +192,61 @@ namespace commander
             }
             skipped = 0;
             saved = 0;
-            WebClient wc = new WebClient();
-            wc.Headers.Add("User-Agent: Mozilla/5.0");
+            List<string> ss = new List<string>();
+            for (int i = 0; i < listView1.Items.Count; i++)
+            {
+                ss.Add((string)listView1.Items[i].Tag);
+            }
             th = new Thread(() =>
            {
 
 
-               for (int i = 0; i < cnt; i++)
+               for (int i = 0; i < ss.Count; i++)
                {
-                   //while (!iscomplete) { Thread.Sleep(10); }
-                   listView1.Invoke((Action)(() =>
-                  {
-                      var item = listView1.Items[i];
-                      //  iscomplete = false;
-                      var str = wc.DownloadString((string)(item as ListViewItem).Tag);
-                      if (savePic)
-                      {
-                          savePicFunc(str);
-                      }
+                   statusStrip1.Invoke((Action)(() =>
+                   {
+                       toolStripProgressBar1.Visible = true;
+                       toolStripProgressBar1.Value = (int)Math.Round(((float)i / (ss.Count)) * 100f);
+                   }));
+                   try
+                   {
+                       if (useDelay)
+                       {
+                           Thread.Sleep(delay);
+                       }
+                       using (WebClient wc = new WebClient())
+                       {
+                           wc.Headers.Add("User-Agent: Mozilla/5.0");
+                           //while (!iscomplete) { Thread.Sleep(10); }
 
-                      //webBrowser1.Navigate((string)(item as ListViewItem).Tag, null, null, "User-Agent: Mozilla/5.0");
-                      toolStripStatusLabel1.Text = "skipped: " + skipped + "  saved: " + saved;
-                  }));
+                           var item = ss[i];
+                           //  iscomplete = false;
+                           var str = wc.DownloadString(item);
+                           if (savePic)
+                           {
+                               savePicFunc(str);
+                           }
+
+                           //webBrowser1.Navigate((string)(item as ListViewItem).Tag, null, null, "User-Agent: Mozilla/5.0");
+                           statusStrip1.Invoke((Action)(() =>
+                           {
+                               toolStripStatusLabel1.Text = "skipped: " + skipped + "  saved: " + saved + "; errors: " + errors+"; links extracted: "+links;
+                           }));
+
+                       }
+                   }
+                   catch (Exception ex)
+                   {
+                       errors++;
+                   }
                }
+               statusStrip1.Invoke((Action)(() =>
+               {
+                   toolStripStatusLabel1.Text = "skipped: " + skipped + "  saved: " + saved + "; errors: " + errors + "; links extracted: " + links;
+                   toolStripProgressBar1.Value = 100;
+                   toolStripProgressBar1.Visible = false;
 
-
-
+               }));
            });
             th.IsBackground = true;
             th.Start();
@@ -207,6 +267,47 @@ namespace commander
                 th.Abort();
             }
         }
-    }
 
+        private void ListView3_SelectedIndexChanged(object sender, EventArgs e)
+        {
+           
+        }
+
+        private void ListView3_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (listView3.SelectedItems.Count == 0) return;
+            Clipboard.SetText((string)listView3.SelectedItems[0].Tag);
+        }
+
+        bool useDelay = false;
+        int delay = 1000;
+        private void CheckBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            useDelay = checkBox2.Checked;
+        }
+
+        private void TextBox2_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                delay = int.Parse(textBox2.Text);
+                textBox2.BackColor = Color.White;
+            }
+            catch(Exception ex)
+            {
+                textBox2.BackColor = Color.Red;
+            }
+        }
+
+        private void CopyAllToClipboardToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < listView2.Items.Count; i++)
+            {
+                var str = (string)listView2.Items[i].Tag;
+                sb.AppendLine(str);
+            }
+            Clipboard.SetText(sb.ToString());
+        }
+    }
 }

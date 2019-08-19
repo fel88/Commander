@@ -76,7 +76,7 @@ namespace commander
                if (new string[] { ".pdf" }.Contains(x.Extension.ToLower()))
                {
                    splitContainer1.Panel2.Controls.Add(pdfPreviewer);
-                   pdfPreviewer.Init(x.FullName);
+                   pdfPreviewer.Init(x);
                }
                
                if (gexts.Contains(x.Extension.ToLower()))
@@ -110,11 +110,14 @@ namespace commander
 
         private void FileListControl1_DeleteFileAction(FileListControl arg1, IFileInfo arg2)
         {
-            if (previewer.CurrentFile == null) return;
-            if (previewer.CurrentFile.FullName == arg2.FullName)
+            
+            if (previewer.CurrentFile != null && previewer.CurrentFile.FullName == arg2.FullName)
             {
                 previewer.ResetImage();
-
+            }
+            if (pdfPreviewer.CurrentFile != null && pdfPreviewer.CurrentFile.FullName == arg2.FullName)
+            {
+                pdfPreviewer.Reset();
             }
         }
 

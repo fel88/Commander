@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -91,6 +92,22 @@ namespace commander
             h.IsEnabled = e.Item.Checked;
             e.Item.SubItems[0].Text = h.IsEnabled + "";
             Stuff.IsDirty = true;
+        }
+
+        private void Button1_Click(object sender, EventArgs e)
+        {
+            int cnt = 0;
+            while (true)
+            {
+                if (!File.Exists($"settings{cnt}_backup.xml"))
+                {
+                    break;
+                }
+                cnt++;
+            }
+            var path = $"settings{cnt}_backup.xml";
+            File.Copy("settings.xml", path);
+            toolStripStatusLabel1.Text = "Backup saved to: " + path;
         }
     }
 }
