@@ -121,6 +121,7 @@ namespace commander
                 }
                 lib = (comboBox1.SelectedItem as ComboBoxItem).Tag as FilesystemLibrary;
             }
+            int skipped = 0;
             foreach (var item in listView1.Items)
             {
                 var uri = ((Uri)(item as ListViewItem).Tag);
@@ -130,17 +131,18 @@ namespace commander
                 {
                     var name = uri.Segments.Last();
                     var path = Path.Combine(textBox3.Text, name);
-                    if (radioButton1.Checked)
-                    {
-                        wc.DownloadFile(uri.ToString(), path);
-                    }
-                    else
+                    if (radioButton2.Checked)
                     {
                         path = Path.Combine((lib as FilesystemLibrary).BaseDirectory.FullName, name);
-                        wc.DownloadFile(uri.ToString(), path);
                     }
+                    if (File.Exists(path))
+                    {
+                        skipped++;
+                    }
+                    wc.DownloadFile(uri.ToString(), path);
                 }
             }
+            toolStripStatusLabel1.Text = "Total: " + listView1.Items.Count + "; Skipped: " + skipped;
         }
 
         private void ToolStripDropDownButton1_Click(object sender, EventArgs e)
@@ -166,15 +168,23 @@ namespace commander
                     var arr = txt.Split(new char[] { '\r', '\n', ' ' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
 
                     listView1.BeginUpdate();
+                    int added = 0;
+                    int duplicates = 0;
                     foreach (var item in arr)
-                    {                        
+                    {
                         var uri = new Uri(item);
                         if (uris.Add(uri.ToString()))
                         {
                             listView1.Items.Add(new ListViewItem(new string[] { item, uri.Segments.Last() }) { Tag = uri });
+                            added++;
+                        }
+                        else
+                        {
+                            duplicates++;
                         }
                     }
-                   
+                    toolStripStatusLabel1.Text = "Added: " + added + "; skipped: " + duplicates;
+
                 }
                 catch (Exception ex)
                 {

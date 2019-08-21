@@ -51,7 +51,7 @@ namespace commander
                splitContainer1.Panel2.Controls.Remove(textPreviewer);
                splitContainer1.Panel2.Controls.Remove(dpreviewer);
                splitContainer1.Panel2.Controls.Remove(pdfPreviewer);
-               
+
                if (exts.Contains(x.Extension))
                {
                    splitContainer1.Panel2.Controls.Add(textPreviewer);
@@ -78,7 +78,7 @@ namespace commander
                    splitContainer1.Panel2.Controls.Add(pdfPreviewer);
                    pdfPreviewer.Init(x);
                }
-               
+
                if (gexts.Contains(x.Extension.ToLower()))
                {
                    splitContainer1.Panel2.Controls.Add(previewer);
@@ -110,7 +110,7 @@ namespace commander
 
         private void FileListControl1_DeleteFileAction(FileListControl arg1, IFileInfo arg2)
         {
-            
+
             if (previewer.CurrentFile != null && previewer.CurrentFile.FullName == arg2.FullName)
             {
                 previewer.ResetImage();
@@ -578,10 +578,17 @@ namespace commander
         private void ToolStripButton1_Click_1(object sender, EventArgs e)
         {
             var temp = fileListControl1.CurrentDirectory.FullName;
+            var temp2 = fileListControl1.Filter;
+            var temp3 = fileListControl1.DirFilterEnable;
+
             fileListControl1.SetPath(fileListControl2.CurrentDirectory.FullName);
             fileListControl1.UpdateList();
+            fileListControl1.SetFilter(fileListControl2.Filter, fileListControl2.DirFilterEnable);
+            
+
             fileListControl2.SetPath(temp);
             fileListControl2.UpdateList();
+            fileListControl2.SetFilter(temp2, temp3);            
         }
 
         private void InsertClipboardAsFileToolStripMenuItem_Click(object sender, EventArgs e)
@@ -604,5 +611,6 @@ namespace commander
         }
     }
 }
+
 
 

@@ -53,6 +53,8 @@
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.tableLayoutPanel1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -62,6 +64,7 @@
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -77,7 +80,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(747, 441);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(747, 419);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // toolStrip1
@@ -120,7 +123,7 @@
             this.tabControl1.Location = new System.Drawing.Point(3, 33);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(741, 405);
+            this.tabControl1.Size = new System.Drawing.Size(741, 383);
             this.tabControl1.TabIndex = 3;
             // 
             // tabPage1
@@ -129,7 +132,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(733, 379);
+            this.tabPage1.Size = new System.Drawing.Size(733, 357);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Web browser";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -146,7 +149,7 @@
             this.tableLayoutPanel2.RowCount = 2;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(727, 373);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(727, 351);
             this.tableLayoutPanel2.TabIndex = 1;
             // 
             // webBrowser1
@@ -155,7 +158,7 @@
             this.webBrowser1.Location = new System.Drawing.Point(3, 28);
             this.webBrowser1.MinimumSize = new System.Drawing.Size(20, 20);
             this.webBrowser1.Name = "webBrowser1";
-            this.webBrowser1.Size = new System.Drawing.Size(721, 342);
+            this.webBrowser1.Size = new System.Drawing.Size(721, 320);
             this.webBrowser1.TabIndex = 0;
             // 
             // textBox1
@@ -175,7 +178,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(733, 379);
+            this.tabPage2.Size = new System.Drawing.Size(733, 357);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Mass loader";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -282,7 +285,7 @@
             this.listView1.GridLines = true;
             this.listView1.Location = new System.Drawing.Point(7, 94);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(720, 280);
+            this.listView1.Size = new System.Drawing.Size(720, 258);
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -309,12 +312,28 @@
             this.clearToolStripMenuItem.Text = "clear";
             this.clearToolStripMenuItem.Click += new System.EventHandler(this.ClearToolStripMenuItem_Click);
             // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel1});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 419);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(747, 22);
+            this.statusStrip1.TabIndex = 1;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
+            // 
             // Browser
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(747, 441);
             this.Controls.Add(this.tableLayoutPanel1);
+            this.Controls.Add(this.statusStrip1);
             this.Name = "Browser";
             this.Text = "Browser";
             this.tableLayoutPanel1.ResumeLayout(false);
@@ -331,7 +350,10 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.contextMenuStrip1.ResumeLayout(false);
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -360,5 +382,7 @@
         private System.Windows.Forms.RadioButton radioButton1;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
     }
 }

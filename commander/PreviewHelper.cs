@@ -32,7 +32,8 @@ namespace commander
             {
                 lastHighlighted.BackColor = lastColor;
             }
-            preview.Parent = null;
+            //preview.Parent = null;
+            preview.Visible = false;
         }
         PreviewControl preview = new PreviewControl();
         public bool ShowPreview = true;
@@ -109,6 +110,7 @@ namespace commander
 
         private void ShowHint(MouseEventArgs e, ListViewItem node, IFileInfo fi)
         {
+
             if (lastHighlighted != null)
             {
 
@@ -119,31 +121,19 @@ namespace commander
             lastColor = node.BackColor;
             node.BackColor = SystemColors.Highlight;
 
-            Control toplevel = (FileListControl as Control).TopLevelControl;
-            toplevel = listView1;
-            if (toplevel != null)
-            {
-                LoadAsyncPreview(fi);
+            LoadAsyncPreview(fi);
 
-                preview.BackColor = SystemColors.Highlight;
-                preview.Width = _previewWidth + PreviewControl.PreviewGap * 2;
-                preview.Height = _previewHeight + PreviewControl.PreviewGap * 2;
+            preview.BackColor = SystemColors.Highlight;
+            preview.Width = _previewWidth + PreviewControl.PreviewGap * 2;
+            preview.Height = _previewHeight + PreviewControl.PreviewGap * 2;
 
-                UpdatePreviewLocation(node);
-
-                toplevel.Controls.Add(preview);
-                toplevel.Controls.SetChildIndex(preview, 0);
-            }
-            else
-            {
-                preview.Parent = null;
-            }
+            UpdatePreviewLocation(node);
+            preview.Visible = true;
         }
 
         void UpdatePreviewLocation(ListViewItem node)
-        {
-            Control toplevel = (FileListControl as Control).TopLevelControl;
-            toplevel = listView1;
+        {            
+            var toplevel = listView1;
             Point p_node = toplevel.PointToClient(listView1.PointToScreen(node.Bounds.Location));
             var bnds = node.Bounds;
             preview.Location =
@@ -161,6 +151,8 @@ namespace commander
 
         private void ThreadLoader()
         {
+
+            //listView1.Controls.Add(preview);
             while (!StopThreadLoader)
             {
                 Thread.MemoryBarrier();
@@ -330,11 +322,14 @@ namespace commander
         IFileListControl FileListControl;
         public void Append(IFileListControl flc, ListView lv)
         {
-            FileListControl = flc;            
+            FileListControl = flc;
             listView1 = lv;
             lv.MouseLeave += ListView1_MouseLeave;
             lv.MouseMove += listView1_MouseMove;
             RunPreview();
+
+            listView1.Controls.Add(preview);
+            //listView1.Controls.SetChildIndex(preview, listView1.Controls.Count - 1);
         }
 
         public void Stop()

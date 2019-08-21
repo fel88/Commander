@@ -22,6 +22,13 @@ namespace commander
         public FileListControl()
         {
             InitializeComponent();
+            sfc = new SearchFilterControl() { Dock = DockStyle.Bottom };
+
+            Stuff.SetDoubleBuffered(sfc);
+            SizeChanged += FileListControl_SizeChanged;
+            sfc.Height = 25;
+            listView1.Controls.Add(sfc);
+            sfc.Init(this);
             listView1.MouseLeave += ListView1_MouseLeave;
             listView1.ColumnClick += ListView1_ColumnClick;
             listView1.HideSelection = false;
@@ -71,6 +78,12 @@ namespace commander
 
         }
 
+        private void FileListControl_SizeChanged(object sender, EventArgs e)
+        {
+            sfc.UpdatePosition();
+        }
+
+        SearchFilterControl sfc;
         public void Init()
         {
             watermark1.Init();
@@ -249,7 +262,6 @@ namespace commander
         public void SetPath(string path)
         {
             textBox1.Text = path;
-
         }
 
 
@@ -328,11 +340,39 @@ namespace commander
 
         public IDirectoryInfo CurrentDirectory;
         public TagInfo CurrentTag;
+        public bool ExFilters;
+        public Func<IFileInfo, bool> ExFileFilter;
+        public Func<IDirectoryInfo, bool> ExDirFilter;
+
         public bool IsFilterPass(string str, string[] filters)
         {
             str = str.ToLower();
             if (filters.Length == 0) return true;
             return filters.Any(z => str.Contains(z));
+        }
+
+        public bool IsExtFileFilterPass(IFileInfo str)
+        {
+            if (ExFilters && ExFileFilter != null)
+            {
+                if (!ExFileFilter(str))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public bool IsExtDirFilterPass(IDirectoryInfo str)
+        {
+            if (ExFilters && ExFileFilter != null)
+            {
+                if (!ExDirFilter(str))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         public void UpdateList(string path)
@@ -458,6 +498,7 @@ namespace commander
                 }
 
                 if (checkBox1.Checked && !IsFilterPass(directoryInfo.Name, fltrs)) continue;
+                if (!IsExtDirFilterPass(directoryInfo)) continue;
                 listView1.Items.Add(new ListViewItem(new string[] { directoryInfo.Name, "", "", directoryInfo.LastWriteTime.ToString() })
                 {
                     Tag = directoryInfo,
@@ -481,6 +522,7 @@ namespace commander
                     var ext = Path.GetExtension(fileInfo.FullName);
 
                     if (!IsFilterPass(fileInfo.Name, fltrs)) continue;
+                    if (!IsExtFileFilterPass(fileInfo)) continue;
                     var astr = (fileInfo.Attributes).ToString();
 
 
@@ -1196,7 +1238,7 @@ namespace commander
                         }
                     }
                     item.Filesystem.DeleteDirectory(item, true);
-                    
+
                 }
                 bool yesToAll = false;
                 foreach (var fitem in fls)

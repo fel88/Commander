@@ -31,6 +31,7 @@
             this.components = new System.ComponentModel.Container();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.button1 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
@@ -47,7 +48,6 @@
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.button1 = new System.Windows.Forms.Button();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.tabControl1.SuspendLayout();
@@ -83,6 +83,16 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "General";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(9, 56);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(147, 23);
+            this.button1.TabIndex = 7;
+            this.button1.Text = "Backup settings";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.Button1_Click);
             // 
             // label1
             // 
@@ -123,7 +133,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(526, 224);
+            this.tabPage2.Size = new System.Drawing.Size(526, 202);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "File menu items";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -140,7 +150,7 @@
             this.listView1.GridLines = true;
             this.listView1.Location = new System.Drawing.Point(3, 3);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(520, 218);
+            this.listView1.Size = new System.Drawing.Size(520, 196);
             this.listView1.TabIndex = 12;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -188,7 +198,7 @@
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(526, 224);
+            this.tabPage3.Size = new System.Drawing.Size(526, 202);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Hotkeys actions";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -205,10 +215,11 @@
             this.listView2.GridLines = true;
             this.listView2.Location = new System.Drawing.Point(3, 3);
             this.listView2.Name = "listView2";
-            this.listView2.Size = new System.Drawing.Size(520, 218);
+            this.listView2.Size = new System.Drawing.Size(520, 196);
             this.listView2.TabIndex = 13;
             this.listView2.UseCompatibleStateImageBehavior = false;
             this.listView2.View = System.Windows.Forms.View.Details;
+            this.listView2.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.ListView2_ItemCheck);
             this.listView2.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.ListView2_ItemChecked);
             // 
             // columnHeader4
@@ -225,16 +236,6 @@
             // 
             this.columnHeader6.Text = "Hotkey";
             this.columnHeader6.Width = 250;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(9, 56);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(147, 23);
-            this.button1.TabIndex = 7;
-            this.button1.Text = "Backup settings";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.Button1_Click);
             // 
             // statusStrip1
             // 

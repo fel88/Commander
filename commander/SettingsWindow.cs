@@ -17,6 +17,7 @@ namespace commander
             InitializeComponent();
             Stuff.SetDoubleBuffered(listView1);
             Stuff.SetDoubleBuffered(listView2);
+
             checkBox1.Checked = PreviewHelper.AllowHints;
             switch (PreviewHelper.HintMode)
             {
@@ -35,6 +36,7 @@ namespace commander
 
             UpdateHotkeys();
         }
+
 
         private void UpdateHotkeys()
         {
@@ -87,11 +89,7 @@ namespace commander
 
         private void ListView2_ItemChecked(object sender, ItemCheckedEventArgs e)
         {
-            var h = e.Item.Tag as HotkeyShortcutInfo;
-            if (h.IsEnabled == e.Item.Checked) return;
-            h.IsEnabled = e.Item.Checked;
-            e.Item.SubItems[0].Text = h.IsEnabled + "";
-            Stuff.IsDirty = true;
+
         }
 
         private void Button1_Click(object sender, EventArgs e)
@@ -108,6 +106,18 @@ namespace commander
             var path = $"settings{cnt}_backup.xml";
             File.Copy("settings.xml", path);
             toolStripStatusLabel1.Text = "Backup saved to: " + path;
+        }
+
+        private void ListView2_ItemCheck(object sender, ItemCheckEventArgs e)
+        {
+            var item = listView2.Items[e.Index];
+            var h = listView2.Items[e.Index].Tag as HotkeyShortcutInfo;
+            //var h = e.Index.Tag as HotkeyShortcutInfo;
+            var b = e.NewValue == CheckState.Checked;
+            if (h.IsEnabled == b) return;
+            h.IsEnabled = b;
+            item.SubItems[0].Text = h.IsEnabled + "";
+            Stuff.IsDirty = true;
         }
     }
 }

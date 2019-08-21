@@ -159,6 +159,12 @@
     <Compile Include="QuickTagsWindow.Designer.cs">
       <DependentUpon>QuickTagsWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="SearchFilterControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SearchFilterControl.Designer.cs">
+      <DependentUpon>SearchFilterControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="ShellContextMenu.cs" />
     <Compile Include="SimpleProxyCache.cs" />
     <Compile Include="TabInfo.cs" />
@@ -358,6 +364,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="QuickTagsWindow.resx">
       <DependentUpon>QuickTagsWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SearchFilterControl.resx">
+      <DependentUpon>SearchFilterControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UrlBookmarksWindow.resx">
       <DependentUpon>UrlBookmarksWindow.cs</DependentUpon>

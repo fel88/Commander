@@ -48,8 +48,8 @@ namespace commander
             {
                 e.Graphics.DrawString(Text, Font, SystemBrushes.GrayText, new Point(0, 0));
             }
-
-            base.OnPaint(e);
+         
+            base.OnPaint(e);            
         }
 
         public string Hint { get; set; }
