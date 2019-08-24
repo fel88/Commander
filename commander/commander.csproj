@@ -153,6 +153,12 @@
       <DependentUpon>PdfPreviewer.cs</DependentUpon>
     </Compile>
     <Compile Include="PreviewHelper.cs" />
+    <Compile Include="QuickTagsUserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="QuickTagsUserControl.Designer.cs">
+      <DependentUpon>QuickTagsUserControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="QuickTagsWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -168,6 +174,12 @@
     <Compile Include="ShellContextMenu.cs" />
     <Compile Include="SimpleProxyCache.cs" />
     <Compile Include="TabInfo.cs" />
+    <Compile Include="TagPanelHelper.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TagPanelHelper.Designer.cs">
+      <DependentUpon>TagPanelHelper.cs</DependentUpon>
+    </Compile>
     <Compile Include="UrlBookmark.cs" />
     <Compile Include="UrlBookmarksWindow.cs">
       <SubType>Form</SubType>
@@ -362,11 +374,17 @@
     <EmbeddedResource Include="PdfPreviewer.resx">
       <DependentUpon>PdfPreviewer.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="QuickTagsUserControl.resx">
+      <DependentUpon>QuickTagsUserControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="QuickTagsWindow.resx">
       <DependentUpon>QuickTagsWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SearchFilterControl.resx">
       <DependentUpon>SearchFilterControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TagPanelHelper.resx">
+      <DependentUpon>TagPanelHelper.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UrlBookmarksWindow.resx">
       <DependentUpon>UrlBookmarksWindow.cs</DependentUpon>

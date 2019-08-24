@@ -551,7 +551,7 @@ namespace commander
 
         private void HideToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Stuff.ShowHidden = false;
+            Stuff.SetShowHidden(false);
             fileListControl1.UpdateAllLists();
             fileListControl2.UpdateAllLists();
         }
@@ -561,7 +561,7 @@ namespace commander
             PasswordDialog pdlg = new PasswordDialog();
             if (pdlg.ShowDialog() == DialogResult.OK)
             {
-                Stuff.ShowHidden = true;
+                Stuff.SetShowHidden(true);
                 fileListControl1.UpdateAllLists();
                 fileListControl2.UpdateAllLists();
             }
@@ -584,11 +584,11 @@ namespace commander
             fileListControl1.SetPath(fileListControl2.CurrentDirectory.FullName);
             fileListControl1.UpdateList();
             fileListControl1.SetFilter(fileListControl2.Filter, fileListControl2.DirFilterEnable);
-            
+
 
             fileListControl2.SetPath(temp);
             fileListControl2.UpdateList();
-            fileListControl2.SetFilter(temp2, temp3);            
+            fileListControl2.SetFilter(temp2, temp3);
         }
 
         private void InsertClipboardAsFileToolStripMenuItem_Click(object sender, EventArgs e)

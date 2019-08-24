@@ -130,6 +130,18 @@ namespace commander
                 IndexAdded(ii);
             }
         }
+
+        public static event Action<HelperEnum> HelperVisibleChanged;
+
+        public static  void OnHelperVisibleChanged(HelperEnum h)
+        {
+            HelperVisibleChanged(h);
+        }
+        
+
+        public static bool TagsHelperVisible = true;
+        public static bool FiltersHelperVisible = true;
+
         public static Icon ExtractAssociatedIcon(String filePath)
         {
             try
@@ -556,6 +568,13 @@ namespace commander
             }
         }
 
+        internal static void RenameTag(TagInfo selectedTag, string value)
+        {
+            selectedTag.Name = value;
+            Stuff.IsDirty = true;
+            TagsListChanged?.Invoke();
+        }
+
         public static void SaveSettings()
         {
             StringBuilder sb = new StringBuilder();
@@ -729,8 +748,15 @@ namespace commander
             return tagInfo;
         }
 
+        
+
         public static List<ILibrary> Libraries = new List<ILibrary>();
         public static List<TagInfo> Tags = new List<TagInfo>();
+        public static void SetShowHidden(bool val)
+        {
+            ShowHidden = val;
+            TagsListChanged();
+        }
         public static bool ShowHidden = false;
 
         public static string CreateMD5(string input)

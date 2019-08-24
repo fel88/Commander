@@ -7,5 +7,6 @@ namespace commander
         event Action<IFileInfo> SelectedFileChanged;
         IFileInfo SelectedFile { get; }
         void ParentClosing();
+        void Rename();
     }
 }

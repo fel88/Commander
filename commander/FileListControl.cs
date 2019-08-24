@@ -8,11 +8,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using System.Reflection;
 using commander.Properties;
 using isoViewer;
 using System.Xml.Linq;
-using DjvuNet;
 using PluginLib;
 
 namespace commander
@@ -23,11 +21,18 @@ namespace commander
         {
             InitializeComponent();
             sfc = new SearchFilterControl() { Dock = DockStyle.Bottom };
+            tuc = new TagPanelHelper() { };
+
 
             Stuff.SetDoubleBuffered(sfc);
+            Stuff.SetDoubleBuffered(tuc);
+
+            tuc.Init(this, null);
+
             SizeChanged += FileListControl_SizeChanged;
             sfc.Height = 25;
             listView1.Controls.Add(sfc);
+            listView1.Controls.Add(tuc);
             sfc.Init(this);
             listView1.MouseLeave += ListView1_MouseLeave;
             listView1.ColumnClick += ListView1_ColumnClick;
@@ -37,6 +42,7 @@ namespace commander
             tagControl.Init(this);
             listView1.MouseMove += ListView1_MouseMove1;
 
+            Stuff.HelperVisibleChanged += Stuff_HelperVisibleChanged;  
             tagControl.FollowAction = (x) =>
             {
                 if (FollowAction != null)
@@ -78,15 +84,36 @@ namespace commander
 
         }
 
+        private void Stuff_HelperVisibleChanged(HelperEnum arg1)
+        {
+            switch (arg1)
+            {
+                case HelperEnum.TagsHelper:
+                    tuc.Visible = Stuff.TagsHelperVisible;
+                    break;
+                case HelperEnum.FiltersHelper:
+                    sfc.Visible = Stuff.FiltersHelperVisible;
+                    break;
+            }
+        }
+
         private void FileListControl_SizeChanged(object sender, EventArgs e)
         {
             sfc.UpdatePosition();
+            tuc.UpdatePosition();
+            /*
+            tuc.Width = (int)(listView1.Width * 0.3f);
+            tuc.Height = listView1.ClientRectangle.Height - SystemInformation.CaptionHeight;
+            tuc.Left = listView1.ClientRectangle.Width - tuc.Width;
+            tuc.Top = listView1.ClientRectangle.Top + SystemInformation.CaptionHeight;*/
         }
 
         SearchFilterControl sfc;
+        TagPanelHelper tuc;
         public void Init()
         {
             watermark1.Init();
+            tuc.Init();
         }
         private void ListView1_MouseLeave(object sender, EventArgs e)
         {
@@ -210,16 +237,7 @@ namespace commander
             if (Mode == ViewModeEnum.Tags)
             {
                 if (!tagControl.ContainsFocus) return;
-                if (tagControl.SelectedTag != null)
-                {
-                    RenameDialog rd = new RenameDialog();
-                    rd.Value = tagControl.SelectedTag.Name;
-                    if (rd.ShowDialog() == DialogResult.OK)
-                    {
-                        tagControl.SelectedTag.Name = rd.Value;
-                    }
-                    tagControl.UpdateList(null);
-                }
+                tagControl.Rename();                
             }
             else
             {

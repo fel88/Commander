@@ -18,6 +18,11 @@ namespace commander
             Stuff.SetDoubleBuffered(listView1);
             Stuff.SetDoubleBuffered(listView2);
 
+            allowFire = false;
+            checkBox2.Checked = Stuff.FiltersHelperVisible;
+            checkBox3.Checked = Stuff.TagsHelperVisible;
+            allowFire = true;
+
             checkBox1.Checked = PreviewHelper.AllowHints;
             switch (PreviewHelper.HintMode)
             {
@@ -119,5 +124,25 @@ namespace commander
             item.SubItems[0].Text = h.IsEnabled + "";
             Stuff.IsDirty = true;
         }
+
+        bool allowFire = false;
+        private void CheckBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!allowFire) return;
+            Stuff.FiltersHelperVisible = checkBox2.Checked;
+            Stuff.OnHelperVisibleChanged(HelperEnum.FiltersHelper);
+        }
+
+        private void CheckBox3_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!allowFire) return;
+            Stuff.TagsHelperVisible = checkBox3.Checked;
+            Stuff.OnHelperVisibleChanged(HelperEnum.TagsHelper);
+        }
+    }
+
+    public enum HelperEnum
+    {
+        TagsHelper, FiltersHelper
     }
 }

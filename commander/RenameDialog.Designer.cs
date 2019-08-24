@@ -43,11 +43,13 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(279, 52);
+            this.ClientSize = new System.Drawing.Size(279, 38);
             this.ControlBox = false;
             this.Controls.Add(this.textBox1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "RenameDialog";
-            this.Text = "RenameDialog";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.Text = "rename";
             this.ResumeLayout(false);
             this.PerformLayout();
 

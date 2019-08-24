@@ -471,5 +471,20 @@ namespace commander
             if (SelectedFile == null) return;
             Stuff.IndexFile(SelectedFile);
         }
+
+        public void Rename()
+        {
+            if (SelectedTag == null) return;
+
+            RenameDialog rd = new RenameDialog();
+            rd.Value = SelectedTag.Name;
+            if (rd.ShowDialog() == DialogResult.OK)
+            {                
+                Stuff.RenameTag(SelectedTag, rd.Value);                
+            }
+            UpdateList(null);
+
+            
+        }
     }
 }

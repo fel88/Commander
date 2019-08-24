@@ -80,7 +80,7 @@
             this.listView1.GridLines = true;
             this.listView1.Location = new System.Drawing.Point(3, 53);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(288, 94);
+            this.listView1.Size = new System.Drawing.Size(294, 94);
             this.listView1.TabIndex = 2;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -126,7 +126,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(294, 150);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(300, 150);
             this.tableLayoutPanel1.TabIndex = 3;
             // 
             // panel1
@@ -139,7 +139,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(3, 23);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(288, 24);
+            this.panel1.Size = new System.Drawing.Size(294, 24);
             this.panel1.TabIndex = 3;
             // 
             // comboBox1
@@ -184,7 +184,7 @@
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Margin = new System.Windows.Forms.Padding(0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(294, 20);
+            this.panel2.Size = new System.Drawing.Size(300, 20);
             this.panel2.TabIndex = 4;
             // 
             // label1
@@ -199,11 +199,11 @@
             // button3
             // 
             this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button3.Location = new System.Drawing.Point(221, 0);
+            this.button3.Location = new System.Drawing.Point(230, 0);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(71, 21);
+            this.button3.Size = new System.Drawing.Size(70, 21);
             this.button3.TabIndex = 0;
-            this.button3.Text = "hide/show";
+            this.button3.Text = "show/hide";
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.Button3_Click);
             // 
@@ -214,7 +214,7 @@
             this.Controls.Add(this.tableLayoutPanel1);
             this.Margin = new System.Windows.Forms.Padding(0);
             this.Name = "SearchFilterControl";
-            this.Size = new System.Drawing.Size(294, 150);
+            this.Size = new System.Drawing.Size(300, 150);
             this.contextMenuStrip1.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
