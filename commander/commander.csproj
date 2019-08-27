@@ -146,6 +146,7 @@
     <Compile Include="IndexesManagerWindow.Designer.cs">
       <DependentUpon>IndexesManagerWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="IsoFilesystem.cs" />
     <Compile Include="PdfPreviewer.cs">
       <SubType>UserControl</SubType>
     </Compile>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IsoLib;
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -8,12 +9,12 @@ namespace commander
     public class IsoFileWrapper : IFileInfo
     {
         public MountInfo MountInfo;
-        public IsoFileWrapper(MountInfo minfo,  isoViewer.DirectoryRecord ff)
+        public IsoFileWrapper(MountInfo minfo, DirectoryRecord ff)
         {
             MountInfo = minfo;
             Reader = minfo.Reader;
             record = ff;
-            isoViewer.DirectoryRecord rec = ff;
+            DirectoryRecord rec = ff;
             StringBuilder sb = new StringBuilder();
             while (rec != null)
             {
@@ -29,20 +30,22 @@ namespace commander
                 }
                 rec = rec.Parent;
             }
-            fullName = sb.ToString();
+            fullName = sb.ToString().Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).First();
+            name = Path.GetFileName(fullName);
             ext = Path.GetExtension(fullName);
 
         }
         string ext;
         string fullName;
-        isoViewer.DirectoryRecord record;
+        string name;
+        DirectoryRecord record;
 
 
-        public isoViewer.IsoReader Reader;
+        public IsoReader Reader;
 
         public string FullName => fullName;
 
-        public string Name => record.Name;
+        public string Name => name;
 
         public string DirectoryName => new FileInfo(fullName).DirectoryName;
 
@@ -52,12 +55,12 @@ namespace commander
 
         public long Length => record.DataLength;
 
-        public IDirectoryInfo Directory => new IsoDirectoryInfoWrapper(MountInfo, record.Parent);
+        public IDirectoryInfo Directory { get; set; }
 
         public FileAttributes Attributes => FileAttributes.ReadOnly;
 
         public bool Exist => true;
 
-        public IFilesystem Filesystem => Directory.Filesystem;
+        public IFilesystem Filesystem { get; set; }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace commander
+﻿using IsoLib;
+
+namespace commander
 {
     public class MountInfo
     {
@@ -11,6 +13,7 @@
             }
         }
         public IFileInfo IsoPath;
-        public isoViewer.IsoReader Reader;
+        public IsoReader Reader;
+        public IDirectoryInfo MountTarget;
     }
 }

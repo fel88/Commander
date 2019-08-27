@@ -19,11 +19,13 @@ namespace commander
         }
 
         GifLib.GifContainer container;
-        internal void SetImage(string fullName)
+        internal void SetImage(IFileInfo file)
         {
-            container = GifLib.GifParser.Parse(fullName);
-            frame = 0;            
-
+            using (var stream = file.Filesystem.OpenReadOnlyStream(file))
+            {
+                container = GifLib.GifParser.Parse(stream);
+                frame = 0;
+            }
         }
         int frame = 0;
         private void Timer1_Tick(object sender, EventArgs e)

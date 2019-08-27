@@ -54,5 +54,45 @@ namespace commander
         {
             throw new System.NotImplementedException();
         }
+
+        public string ReadAllText(string path)
+        {
+            var fr = Files.First(z => z.FullName == path);
+            if (UseIndexes)
+            {
+                var frr = Stuff.Indexes.FirstOrDefault(z => z.Path == fr.FileInfo.FullName);
+                if (frr != null)
+                {
+                    return frr.Text;
+                }
+            }
+            return File.ReadAllText(fr.FileInfo.FullName);
+        }
+
+        public bool FileHasTag(IFileInfo file, TagInfo tag)
+        {
+            var vf = file as VirtualFileInfo;
+            return tag.ContainsFile(vf.FileInfo.FullName);
+        }
+
+        public Stream OpenReadOnlyStream(IFileInfo file)
+        {
+            return new FileStream((file as VirtualFileInfo).FileInfo.FullName, FileMode.Open, FileAccess.Read);
+        }
+
+        public VirtualFileInfo ToVirtualFileInfo(IFileInfo f)
+        {
+            return f as VirtualFileInfo;
+        }
+
+        public string ReadAllText(IFileInfo file)
+        {
+            return File.ReadAllText(ToVirtualFileInfo(file).FileInfo.FullName);
+        }
+
+        public void WriteAllText(IFileInfo fileInfo, string text)
+        {
+            File.WriteAllText(ToVirtualFileInfo(fileInfo).FileInfo.FullName, text);
+        }
     }
 }

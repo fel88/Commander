@@ -1,4 +1,5 @@
-﻿using isoViewer;
+﻿using IsoLib;
+using isoViewer;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -216,7 +217,7 @@ namespace commander
             try
             {
 
-                isoViewer.IsoReader reader = new IsoReader();
+                IsoReader reader = new IsoReader();
                 reader.Parse(fullName);
                 pvdd = reader.Pvds.Last();
 

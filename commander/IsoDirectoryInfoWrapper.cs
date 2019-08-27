@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IsoLib;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -7,9 +8,10 @@ namespace commander
     public class IsoDirectoryInfoWrapper : IDirectoryInfo
     {
         public MountInfo MountInfo;
-        public IsoDirectoryInfoWrapper(MountInfo minfo, isoViewer.DirectoryRecord ff)
+        public IsoDirectoryInfoWrapper(MountInfo minfo, DirectoryRecord ff)
         {
             MountInfo = minfo;
+
             Reader = minfo.Reader;
             if (ff == minfo.Reader.WorkPvd.RootDir)
             {
@@ -21,10 +23,10 @@ namespace commander
             }
             record = ff;
         }
-        isoViewer.DirectoryRecord record;
+        DirectoryRecord record;
 
         string _name;
-        public isoViewer.IsoReader Reader;
+        public IsoReader Reader;
 
         public string FullName => Path.Combine(MountInfo.Path, _name);
 
@@ -32,26 +34,13 @@ namespace commander
 
         public DateTime LastWriteTime => MountInfo.IsoPath.LastWriteTime;
 
-        public IDirectoryInfo Parent
-        {
-            get
-            {
-                if (record.Parent == null)
-                {
-                    return new DirectoryInfoWrapper(MountInfo.Path);
-                }
-                else
-                {
-                    return new IsoDirectoryInfoWrapper(MountInfo, record.Parent);
-                }
-            }
-        }
+        public IDirectoryInfo Parent { get; set; }
 
         public bool Exists => true;
 
         public IDirectoryInfo Root => new DirectoryInfoWrapper(MountInfo.Path);
 
-        public IFilesystem Filesystem => Stuff.DefaultFileSystem;
+        public IFilesystem Filesystem { get; set; }
 
         public IEnumerable<IDirectoryInfo> GetDirectories()
         {
@@ -61,7 +50,11 @@ namespace commander
                 if (record.Parent != null && item.LBA == record.Parent.LBA) continue;
                 if (!item.IsDirectory) continue;
 
-                yield return new IsoDirectoryInfoWrapper(MountInfo, item);
+                yield return new IsoDirectoryInfoWrapper(MountInfo, item)
+                {
+                    Filesystem = Filesystem,
+                    Parent = (item.Parent == null) ? (new DirectoryInfoWrapper(MountInfo.Path)) : (IDirectoryInfo)this
+                };
             }
         }
 
@@ -71,7 +64,7 @@ namespace commander
             {
                 if (item.LBA == record.LBA) continue;
                 if (!item.IsFile) continue;
-                yield return new IsoFileWrapper(MountInfo, item);
+                yield return new IsoFileWrapper(MountInfo, item) { Directory = this, Filesystem = Filesystem };
             }
         }
     }

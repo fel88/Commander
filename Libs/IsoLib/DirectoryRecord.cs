@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace isoViewer
+namespace IsoLib
 {
     public class DirectoryRecord
     {

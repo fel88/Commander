@@ -1,4 +1,5 @@
-﻿using isoViewer;
+﻿using IsoLib;
+using isoViewer;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -87,7 +88,7 @@ namespace commander
                if (new string[] { ".gif" }.Contains(x.Extension.ToLower()))
                {
                    splitContainer1.Panel2.Controls.Add(gpreviewer);
-                   gpreviewer.SetImage(x.FullName);
+                   gpreviewer.SetImage(x);
                }
                if (new string[] { ".mpg", ".flv", ".wmv", ".mp4", ".avi", ".mkv" }.Contains(x.Extension.ToLower()))
                {
@@ -193,8 +194,11 @@ namespace commander
             {
                 t = fileListControl2;
             }
-            Stuff.MountInfos.Add(new MountInfo() { IsoPath = obj, Path = t.CurrentDirectory.FullName });
-            t.UpdateList(t.CurrentDirectory.FullName);
+            if (Stuff.Question("Mount: " + obj.FullName + " to " + t.CurrentDirectory.FullName + "?") == DialogResult.Yes)
+            {
+                Stuff.MountInfos.Add(new MountInfo() { IsoPath = obj, Path = t.CurrentDirectory.FullName });
+                t.UpdateList(t.CurrentDirectory.FullName);
+            }
         }
 
         public FileListControl[] FileListControls => new[] { fileListControl1, fileListControl2 };

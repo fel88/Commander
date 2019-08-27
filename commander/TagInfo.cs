@@ -20,6 +20,10 @@ namespace commander
         {   
             return hash.Contains(fn.ToLower());
         }
+        public bool ContainsFile(IFileInfo fn)
+        {
+            return fn.Filesystem.FileHasTag(fn, this);            
+        }
         public void AddFile(string fn)
         {
             if (!ContainsFile(fn))

@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 
-namespace isoViewer
+namespace IsoLib
 {
     public class IsoReader
     {

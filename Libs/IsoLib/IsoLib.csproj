@@ -48,6 +48,43 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DirectoryRecord.cs" />
+    <Compile Include="DiscUtils\BaseVolumeDescriptor.cs" />
+    <Compile Include="DiscUtils\BootDeviceEmulation.cs" />
+    <Compile Include="DiscUtils\BootInitialEntry.cs" />
+    <Compile Include="DiscUtils\BootValidationEntry.cs" />
+    <Compile Include="DiscUtils\BootVolumeDescriptor.cs" />
+    <Compile Include="DiscUtils\BootVolumeDescriptorRegion.cs" />
+    <Compile Include="DiscUtils\BuildDirectoryInfo.cs" />
+    <Compile Include="DiscUtils\BuildDirectoryMember.cs" />
+    <Compile Include="DiscUtils\BuilderBufferExtent.cs" />
+    <Compile Include="DiscUtils\BuilderExtent.cs" />
+    <Compile Include="DiscUtils\BuilderStreamExtent.cs" />
+    <Compile Include="DiscUtils\BuildFileInfo.cs" />
+    <Compile Include="DiscUtils\BuildParameters.cs" />
+    <Compile Include="DiscUtils\BuiltStream.cs" />
+    <Compile Include="DiscUtils\CDBuilder.cs" />
+    <Compile Include="DiscUtils\CommonVolumeDescriptor.cs" />
+    <Compile Include="DiscUtils\DirectoryExtent.cs" />
+    <Compile Include="DiscUtils\DirectoryRecord.cs" />
+    <Compile Include="DiscUtils\FileExtent.cs" />
+    <Compile Include="DiscUtils\FileFlags.cs" />
+    <Compile Include="DiscUtils\IBuffer.cs" />
+    <Compile Include="DiscUtils\IsoUtilities.cs" />
+    <Compile Include="DiscUtils\Ownership.cs" />
+    <Compile Include="DiscUtils\PathTable.cs" />
+    <Compile Include="DiscUtils\PathTableRecord.cs" />
+    <Compile Include="DiscUtils\PrimaryVolumeDescriptor.cs" />
+    <Compile Include="DiscUtils\PrimaryVolumeDescriptorRegion.cs" />
+    <Compile Include="DiscUtils\Sizes.cs" />
+    <Compile Include="DiscUtils\StreamExtent.cs" />
+    <Compile Include="DiscUtils\SupplementaryVolumeDescriptor.cs" />
+    <Compile Include="DiscUtils\SupplementaryVolumeDescriptorRegion.cs" />
+    <Compile Include="DiscUtils\Utilities.cs" />
+    <Compile Include="DiscUtils\VolumeDescriptorDiskRegion.cs" />
+    <Compile Include="DiscUtils\VolumeDescriptorSetTerminator.cs" />
+    <Compile Include="DiscUtils\VolumeDescriptorSetTerminatorRegion.cs" />
+    <Compile Include="DiscUtils\VolumeDescriptorType.cs" />
+    <Compile Include="DiscUtils\ZeroStream.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="IsoLibViewer.cs">
       <SubType>Form</SubType>
@@ -56,7 +93,6 @@
       <DependentUpon>IsoLibViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="IsoReader.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PVD.cs" />
     <EmbeddedResource Include="IsoLibViewer.resx">

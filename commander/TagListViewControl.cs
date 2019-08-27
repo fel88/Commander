@@ -344,7 +344,18 @@ namespace commander
             vfs.Files = vdir.ChildsFiles.OfType<VirtualFileInfo>().ToList();
             if (sfd.ShowDialog() == DialogResult.OK)
             {
-                Stuff.PackToIso(vdir, sfd.FileName);
+                PackToIsoSettings stg = new PackToIsoSettings();
+                stg.Dirs.Add(vdir);
+                stg.Path = sfd.FileName;
+                stg.IncludeMeta = true;
+                stg.Root = vdir;
+                stg.AfterPackFinished = () => { Stuff.Info("Pack complete!"); };
+                stg.VolumeId = tag.Name.Replace(' ', '_');
+                if (stg.VolumeId.Length > 32)
+                {
+                    stg.VolumeId = stg.VolumeId.Substring(0, 32);
+                }
+                Stuff.PackToIso(stg);
             }
         }
 
@@ -479,12 +490,12 @@ namespace commander
             RenameDialog rd = new RenameDialog();
             rd.Value = SelectedTag.Name;
             if (rd.ShowDialog() == DialogResult.OK)
-            {                
-                Stuff.RenameTag(SelectedTag, rd.Value);                
+            {
+                Stuff.RenameTag(SelectedTag, rd.Value);
             }
             UpdateList(null);
 
-            
+
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using DjvuNet;
+using IsoLib.DiscUtils;
 using PluginLib;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Linq;
 
@@ -115,7 +117,7 @@ namespace commander
             IsDirty = true;
         }
 
-        public static IFilesystem DefaultFileSystem = new DiskFilesystem();
+        public static IFilesystem DefaultFileSystem = new DiskFilesystem();        
         public static List<MountInfo> MountInfos = new List<MountInfo>();
         public static ImageList list = null;
         public static List<IndexInfo> Indexes = new List<IndexInfo>();
@@ -133,11 +135,11 @@ namespace commander
 
         public static event Action<HelperEnum> HelperVisibleChanged;
 
-        public static  void OnHelperVisibleChanged(HelperEnum h)
+        public static void OnHelperVisibleChanged(HelperEnum h)
         {
             HelperVisibleChanged(h);
         }
-        
+
 
         public static bool TagsHelperVisible = true;
         public static bool FiltersHelperVisible = true;
@@ -748,7 +750,7 @@ namespace commander
             return tagInfo;
         }
 
-        
+
 
         public static List<ILibrary> Libraries = new List<ILibrary>();
         public static List<TagInfo> Tags = new List<TagInfo>();
@@ -808,13 +810,13 @@ namespace commander
             fs.Write(nn, 0, nn.Length);
             fs.Write(bb, 0, bb.Length);
         }
-        private static string GenerateMetaXml(IDirectoryInfo dir)
+        private static string GenerateMetaXml(IFileInfo[] fls, IDirectoryInfo root)
         {
-            var fls = Stuff.GetAllFiles(dir);
+            //var fls = Stuff.GetAllFiles(dir);
             List<TagInfo> tags = new List<TagInfo>();
             foreach (var item in fls)
             {
-                var ww = Stuff.Tags.Where(z => z.ContainsFile(item.FullName));
+                var ww = Stuff.Tags.Where(z => z.ContainsFile(item));
                 tags.AddRange(ww);
             }
             tags = tags.Distinct().ToList();
@@ -825,10 +827,10 @@ namespace commander
             foreach (var item in tags)
             {
                 sb.AppendLine($"<tag name=\"{item.Name}\">");
-                var aa = fls.Where(z => item.ContainsFile(z.FullName)).ToArray();
+                var aa = fls.Where(z => item.ContainsFile(z)).ToArray();
                 foreach (var aitem in aa)
                 {
-                    sb.AppendLine($"<file><![CDATA[{aitem.FullName.Replace(dir.FullName, "").Trim(new char[] { '\\' })}]]></file>");
+                    sb.AppendLine($"<file><![CDATA[{aitem.FullName.Replace(root.FullName, "").Trim(new char[] { '\\' })}]]></file>");
                 }
                 sb.AppendLine($"</tag>");
             }
@@ -839,12 +841,87 @@ namespace commander
 
         }
 
-        internal static void PackToIso(IDirectoryInfo dir, string path)
+
+
+        public static void PopulateFromFolder(CDBuilder builder, IDirectoryInfo di, string basePath)
         {
-            var fls = Stuff.GetAllFiles(dir);
+            foreach (IFileInfo file in di.GetFiles())
+            {
+                if (file is VirtualFileInfo)
+                {
+                    var vfi = file as VirtualFileInfo;
+                    builder.AddFile(file.FullName.Substring(basePath.Length), vfi.FileInfo.FullName);
+                }
+                else
+                {
+                    builder.AddFile(file.FullName.Substring(basePath.Length), file.FullName);
+                }
+            }
+
+            foreach (IDirectoryInfo dir in di.GetDirectories())
+            {
+                PopulateFromFolder(builder, dir, basePath);
+            }
+        }
+
+        internal static void PackToIso(PackToIsoSettings stg)
+        {
+
+            CDBuilder builder = new CDBuilder();
+            builder.ProgresReport = stg.ProgressReport;
+            List<IFileInfo> files = new List<IFileInfo>();
+            foreach (var item in stg.Dirs)
+            {
+                Stuff.GetAllFiles(item, files);
+            }
+            files.AddRange(stg.Files);
+
+            if (stg.IncludeMeta)
+            {
+                var mm = GenerateMetaXml(files.ToArray(), stg.Root);
+                builder.AddDirectory(".indx");
+                builder.AddFile(".indx\\meta.xml", Encoding.UTF8.GetBytes(mm));
+            }
+            builder.VolumeIdentifier = stg.VolumeId;
+            Thread th = new Thread(() =>
+            {
+                if (stg.BeforePackStart != null)
+                {
+                    stg.BeforePackStart();
+                }
+                foreach (var item in stg.Dirs)
+                {
+                    PopulateFromFolder(builder, item, item.FullName);
+                }
+
+                foreach (var item in stg.Files)
+                {
+                    if (item is VirtualFileInfo)
+                    {
+                        var vfi = item as VirtualFileInfo;
+                        builder.AddFile(item.FullName, vfi.FileInfo.FullName);
+                    }
+                    else
+                    {
+                        builder.AddFile(item.FullName, item.FullName);
+                    }
+                }
+                if (stg.AfterPackFinished != null)
+                {
+                    stg.AfterPackFinished();
+                }
+                builder.Build(stg.Path);
+
+            });
+            th.IsBackground = true;
+            th.Start();
+
+            return;
+            /*var fls = Stuff.GetAllFiles(dir);
             var drs = Stuff.GetAllDirs(dir);
             //generate meta.xml
             var mm = GenerateMetaXml(dir);
+
             using (FileStream fs = new FileStream(path, FileMode.Create))
             {
                 AppendFileToIso(fs, ".indx\\meta.xml", Encoding.UTF8.GetBytes(mm));
@@ -856,7 +933,7 @@ namespace commander
                     var rep = item.FullName.Replace(dir.FullName, "").Trim(new char[] { '\\' });
                     AppendFileToIso(fs, rep, bb);
                 }
-            }
+            }*/
         }
 
         public static void IndexFile(IFileInfo selectedFile)
@@ -912,5 +989,17 @@ namespace commander
         public string Name;
         public string FullName => Path.Combine(Directory.Path, Name);
     }
-
+    public class PackToIsoSettings
+    {
+        public bool AlllFilesInRoot = false;
+        public List<IDirectoryInfo> Dirs = new List<IDirectoryInfo>();
+        public List<IFileInfo> Files = new List<IFileInfo>();
+        public string Path;
+        public Action BeforePackStart;
+        public Action AfterPackFinished;
+        public Action<float> ProgressReport;
+        public string VolumeId = "Volume";
+        public IDirectoryInfo Root;
+        public bool IncludeMeta = false;
+    }
 }

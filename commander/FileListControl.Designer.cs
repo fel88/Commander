@@ -51,6 +51,8 @@
             this.openInTextEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.indexToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imagesDeduplicationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toClipboardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.asTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.folderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.txtFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -80,11 +82,12 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.watermark1 = new commander.Watermark();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.label2 = new System.Windows.Forms.Label();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -92,7 +95,7 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.removeTabToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.watermark1 = new commander.Watermark();
+            this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.contextMenuStrip2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -211,7 +214,8 @@
             this.openInImageViewerToolStripMenuItem1,
             this.openInTextEditorToolStripMenuItem,
             this.indexToolStripMenuItem,
-            this.imagesDeduplicationsToolStripMenuItem});
+            this.imagesDeduplicationsToolStripMenuItem,
+            this.toClipboardToolStripMenuItem});
             this.operationsToolStripMenuItem.Name = "operationsToolStripMenuItem";
             this.operationsToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
             this.operationsToolStripMenuItem.Text = "operations";
@@ -278,6 +282,21 @@
             this.imagesDeduplicationsToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
             this.imagesDeduplicationsToolStripMenuItem.Text = "images deduplications";
             this.imagesDeduplicationsToolStripMenuItem.Click += new System.EventHandler(this.ImagesDeduplicationsToolStripMenuItem_Click);
+            // 
+            // toClipboardToolStripMenuItem
+            // 
+            this.toClipboardToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.asTextToolStripMenuItem});
+            this.toClipboardToolStripMenuItem.Name = "toClipboardToolStripMenuItem";
+            this.toClipboardToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+            this.toClipboardToolStripMenuItem.Text = "to clipboard";
+            // 
+            // asTextToolStripMenuItem
+            // 
+            this.asTextToolStripMenuItem.Name = "asTextToolStripMenuItem";
+            this.asTextToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.asTextToolStripMenuItem.Text = "as text";
+            this.asTextToolStripMenuItem.Click += new System.EventHandler(this.AsTextToolStripMenuItem_Click);
             // 
             // newToolStripMenuItem
             // 
@@ -486,7 +505,8 @@
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel1});
+            this.toolStripStatusLabel1,
+            this.toolStripProgressBar1});
             this.statusStrip1.Location = new System.Drawing.Point(0, 337);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(521, 20);
@@ -516,6 +536,33 @@
             this.panel1.Size = new System.Drawing.Size(521, 75);
             this.panel1.TabIndex = 2;
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.Panel1_Paint);
+            // 
+            // comboBox2
+            // 
+            this.comboBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Items.AddRange(new object[] {
+            "Filesystem",
+            "Libraries",
+            "Tags"});
+            this.comboBox2.Location = new System.Drawing.Point(427, 27);
+            this.comboBox2.Name = "comboBox2";
+            this.comboBox2.Size = new System.Drawing.Size(91, 21);
+            this.comboBox2.TabIndex = 9;
+            this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.ComboBox2_SelectedIndexChanged);
+            // 
+            // watermark1
+            // 
+            this.watermark1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.watermark1.ForeColor = System.Drawing.SystemColors.GrayText;
+            this.watermark1.Hint = "Enter to filter";
+            this.watermark1.Location = new System.Drawing.Point(48, 27);
+            this.watermark1.Name = "watermark1";
+            this.watermark1.Size = new System.Drawing.Size(186, 20);
+            this.watermark1.TabIndex = 13;
+            this.watermark1.TextChanged += new System.EventHandler(this.Watermark1_TextChanged);
             // 
             // checkBox2
             // 
@@ -559,21 +606,6 @@
             this.label2.Size = new System.Drawing.Size(37, 13);
             this.label2.TabIndex = 10;
             this.label2.Text = "Mode:";
-            // 
-            // comboBox2
-            // 
-            this.comboBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Items.AddRange(new object[] {
-            "Filesystem",
-            "Libraries",
-            "Tags"});
-            this.comboBox2.Location = new System.Drawing.Point(427, 27);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(91, 21);
-            this.comboBox2.TabIndex = 9;
-            this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.ComboBox2_SelectedIndexChanged);
             // 
             // comboBox1
             // 
@@ -643,17 +675,11 @@
             this.removeTabToolStripMenuItem.Text = "Remove tab";
             this.removeTabToolStripMenuItem.Click += new System.EventHandler(this.removeTabToolStripMenuItem_Click);
             // 
-            // watermark1
+            // toolStripProgressBar1
             // 
-            this.watermark1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.watermark1.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.watermark1.Hint = "Enter to filter";
-            this.watermark1.Location = new System.Drawing.Point(48, 27);
-            this.watermark1.Name = "watermark1";
-            this.watermark1.Size = new System.Drawing.Size(186, 20);
-            this.watermark1.TabIndex = 13;
-            this.watermark1.TextChanged += new System.EventHandler(this.Watermark1_TextChanged);
+            this.toolStripProgressBar1.Name = "toolStripProgressBar1";
+            this.toolStripProgressBar1.Size = new System.Drawing.Size(100, 14);
+            this.toolStripProgressBar1.Visible = false;
             // 
             // FileListControl
             // 
@@ -742,5 +768,8 @@
         private System.Windows.Forms.ToolStripMenuItem indexToolStripMenuItem;
         private Watermark watermark1;
         private System.Windows.Forms.ToolStripMenuItem imagesDeduplicationsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toClipboardToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem asTextToolStripMenuItem;
+        private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
     }
 }

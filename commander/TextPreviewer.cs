@@ -18,20 +18,28 @@ namespace commander
             richTextBox1.Font = new Font("Consolas", 11);
         }
 
+        IFileInfo FileInfo;
         internal void LoadFile(IFileInfo x)
         {
             richTextBox1.Enabled = true;
-            richTextBox1.Text = File.ReadAllText(x.FullName);
+            var txt = x.Filesystem.ReadAllText(x);
+            richTextBox1.Text = txt;
             path = x.FullName;
+            FileInfo = x;
         }
 
         string path;
 
         private void ToolStripButton1_Click(object sender, EventArgs e)
         {
+            if (FileInfo.Filesystem.IsReadOnly)
+            {
+                Stuff.Warning("Filesystem of file is readonly.");
+                return;
+            }
             if (MessageBox.Show("Save file " + path + "?", mdi.MainForm.Text, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                File.WriteAllText(path, richTextBox1.Text);
+                FileInfo.Filesystem.WriteAllText(FileInfo, richTextBox1.Text);                
             }
         }
 

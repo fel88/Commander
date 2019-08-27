@@ -28,7 +28,7 @@ namespace commander
 
         private void button1_Click(object sender, EventArgs e)
         {
-            
+
             var txt = richTextBox1.Text;
             //var lns = File.ReadAllText(txt);
             var lns = txt;
@@ -98,43 +98,54 @@ namespace commander
                         listView2.Invoke((Action)(() =>
                         {
                             listView2.Items.Add(new ListViewItem(fr) { Tag = fr });
-                            links++;
-                            using (WebClient wc = new WebClient())
-                            {
-                                var uri = new Uri(fr);
+                        }));
+                        links++;
+                        using (WebClient wc = new WebClient())
+                        {
+                            var uri = new Uri(fr);
 
-                                var data = wc.DownloadData(fr);
-                                if (data.Length >= 0)
+                            var data = wc.DownloadData(fr);
+                            if (data.Length >= 0)
+                            {
+                                MemoryStream ms = new MemoryStream(data);
+                                if (showPics)
                                 {
-                                    MemoryStream ms = new MemoryStream(data);
-                                    if (showPics)
+                                    var img = Image.FromStream(ms);
+                                    listView2.Invoke((Action)(() =>
                                     {
-                                        var img = Image.FromStream(ms);
                                         pictureBox1.Image = img;
-                                    }
-                                    ms.Seek(0, SeekOrigin.Begin);
-                                    var hash = Stuff.CalcMD5(ms);
-                                    if (md5cache.Add(hash))
+                                    }));
+                                }
+                                ms.Seek(0, SeekOrigin.Begin);
+                                var hash = Stuff.CalcMD5(ms);
+                                if (md5cache.Add(hash))
+                                {
+                                    var fp = Path.Combine(textBox1.Text, uri.Segments.Last());
+                                    if (File.Exists(fp))
                                     {
-                                        var fp = Path.Combine(textBox1.Text, uri.Segments.Last());
-                                        if (File.Exists(fp))
-                                        {
-                                            throw new Exception("hash not found, but file exist");
-                                        }
+                                        throw new Exception("hash not found, but file exist");
+                                    }
+                                    if ((data.Length / 1024) > sizeFilterKb)
+                                    {
                                         saved++;
                                         File.WriteAllBytes(fp, data);
-                                        /*File.WriteAllBytes(Path.Combine(textBox1.Text, DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day + "-" + DateTime.Now.Minute + "-" + DateTime.Now.Hour + "-" + DateTime.Now.Second + ".png"), data);*/
-                                        //img.Save(Path.Combine(textBox1.Text, DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day + "-" + DateTime.Now.Minute + "-" + DateTime.Now.Hour + "-" + DateTime.Now.Second + ".png"));
                                     }
                                     else
                                     {
                                         skipped++;
                                     }
-
-                                    ms.Dispose();
+                                    /*File.WriteAllBytes(Path.Combine(textBox1.Text, DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day + "-" + DateTime.Now.Minute + "-" + DateTime.Now.Hour + "-" + DateTime.Now.Second + ".png"), data);*/
+                                    //img.Save(Path.Combine(textBox1.Text, DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day + "-" + DateTime.Now.Minute + "-" + DateTime.Now.Hour + "-" + DateTime.Now.Second + ".png"));
                                 }
+                                else
+                                {
+                                    skipped++;
+                                }
+
+                                ms.Dispose();
                             }
-                        }));
+                        }
+
 
                         break;
 
@@ -230,7 +241,7 @@ namespace commander
                            //webBrowser1.Navigate((string)(item as ListViewItem).Tag, null, null, "User-Agent: Mozilla/5.0");
                            statusStrip1.Invoke((Action)(() =>
                            {
-                               toolStripStatusLabel1.Text = "skipped: " + skipped + "  saved: " + saved + "; errors: " + errors+"; links extracted: "+links;
+                               toolStripStatusLabel1.Text = "skipped: " + skipped + "  saved: " + saved + "; errors: " + errors + "; links extracted: " + links;
                            }));
 
                        }
@@ -270,7 +281,7 @@ namespace commander
 
         private void ListView3_SelectedIndexChanged(object sender, EventArgs e)
         {
-           
+
         }
 
         private void ListView3_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -293,7 +304,7 @@ namespace commander
                 delay = int.Parse(textBox2.Text);
                 textBox2.BackColor = Color.White;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 textBox2.BackColor = Color.Red;
             }
@@ -308,6 +319,19 @@ namespace commander
                 sb.AppendLine(str);
             }
             Clipboard.SetText(sb.ToString());
+        }
+
+        int sizeFilterKb = 10;
+        private void TextBox3_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                sizeFilterKb = int.Parse(textBox3.Text);
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
     }
 }

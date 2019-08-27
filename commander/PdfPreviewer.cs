@@ -31,12 +31,25 @@ namespace commander
                 return null;
             }
         }
+        private PdfDocument OpenDocument(IFileInfo file)
+        {
+            try
+            {
+                
+                return PdfDocument.Load(this, file.Filesystem.OpenReadOnlyStream(file));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
+            }
+        }
 
         public void Init(IFileInfo fl)
         {
             CurrentFile = fl;
             pdfViewer1.Document?.Dispose();
-            pdfViewer1.Document = OpenDocument(fl.FullName);            
+            pdfViewer1.Document = OpenDocument(fl);            
         }
 
         internal void Reset()

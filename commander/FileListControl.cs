@@ -12,6 +12,8 @@ using commander.Properties;
 using isoViewer;
 using System.Xml.Linq;
 using PluginLib;
+using System.Threading;
+using IsoLib;
 
 namespace commander
 {
@@ -42,7 +44,7 @@ namespace commander
             tagControl.Init(this);
             listView1.MouseMove += ListView1_MouseMove1;
 
-            Stuff.HelperVisibleChanged += Stuff_HelperVisibleChanged;  
+            Stuff.HelperVisibleChanged += Stuff_HelperVisibleChanged;
             tagControl.FollowAction = (x) =>
             {
                 if (FollowAction != null)
@@ -101,11 +103,6 @@ namespace commander
         {
             sfc.UpdatePosition();
             tuc.UpdatePosition();
-            /*
-            tuc.Width = (int)(listView1.Width * 0.3f);
-            tuc.Height = listView1.ClientRectangle.Height - SystemInformation.CaptionHeight;
-            tuc.Left = listView1.ClientRectangle.Width - tuc.Width;
-            tuc.Top = listView1.ClientRectangle.Top + SystemInformation.CaptionHeight;*/
         }
 
         SearchFilterControl sfc;
@@ -237,7 +234,7 @@ namespace commander
             if (Mode == ViewModeEnum.Tags)
             {
                 if (!tagControl.ContainsFocus) return;
-                tagControl.Rename();                
+                tagControl.Rename();
             }
             else
             {
@@ -475,11 +472,13 @@ namespace commander
                     {
                         if (f.Reader == null)
                         {
-                            isoViewer.IsoReader reader = new isoViewer.IsoReader();
+                            IsoReader reader = new IsoReader();
                             reader.Parse(f.IsoPath.FullName);
                             f.Reader = reader;
                         }
                         var r = new IsoDirectoryInfoWrapper(f, f.Reader.WorkPvd.RootDir);
+                        r.Parent = path;
+                        r.Filesystem = new IsoFilesystem() { IsoFileInfo = f.IsoPath };
                         dd.Add(r);
                     }
                 }
@@ -793,13 +792,23 @@ namespace commander
             comboBox1.Items.Clear();
             foreach (var item in drivs)
             {
-
-                comboBox1.Items.Add(new ComboBoxItem()
+                if (!item.IsReady)
                 {
-                    Tag = item,
-                    Name = item.Name +
-                    (string.IsNullOrEmpty(item.VolumeLabel) ? "" : ("(" + item.VolumeLabel + ")")) + " " + Stuff.GetUserFriendlyFileSize(item.AvailableFreeSpace) + " / " + Stuff.GetUserFriendlyFileSize(item.TotalSize)
-                });
+                    comboBox1.Items.Add(new ComboBoxItem()
+                    {
+                        Tag = item,
+                        Name = item.Name
+                    });
+                }
+                else
+                {
+                    comboBox1.Items.Add(new ComboBoxItem()
+                    {
+                        Tag = item,
+                        Name = item.Name +
+                        (string.IsNullOrEmpty(item.VolumeLabel) ? "" : ("(" + item.VolumeLabel + ")")) + " " + Stuff.GetUserFriendlyFileSize(item.AvailableFreeSpace) + " / " + Stuff.GetUserFriendlyFileSize(item.TotalSize)
+                    });
+                }
             }
         }
 
@@ -930,7 +939,8 @@ namespace commander
                 if (listView1.SelectedItems[0].Tag is IFileInfo)
                 {
                     var f = listView1.SelectedItems[0].Tag as IFileInfo;
-                    if (f.Extension.Contains("bat") && MessageBox.Show("show internal console?", Text, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    DialogResult cancel = DialogResult.OK;
+                    if (f.Extension.Contains("bat") && (cancel = MessageBox.Show("show internal console?", Text, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question)) == DialogResult.Yes)
                     {
                         ConsoleOutputWindow cow = new ConsoleOutputWindow();
                         ProcessStartInfo psi = new ProcessStartInfo();
@@ -963,7 +973,7 @@ namespace commander
 
                         mdi.MainForm.OpenWindow(cow);
                     }
-                    else if (f.Extension.ToLower().EndsWith(".iso") && MessageBox.Show("use internal viewer?", Text, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    else if (f.Extension.ToLower().EndsWith(".iso") && (cancel = MessageBox.Show("use internal viewer?", Text, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question)) == DialogResult.Yes)
                     {
                         IsoLibViewer frm = new IsoLibViewer() { Dock = DockStyle.Fill };
 
@@ -983,7 +993,7 @@ namespace commander
                         frm.Controls.Add(vp);
                         frm.Show();
                     }*/
-                    else
+                    else if (cancel != DialogResult.Cancel)
                     {
                         ProcessStartInfo psi = new ProcessStartInfo();
                         psi.WorkingDirectory = f.DirectoryName;
@@ -1072,6 +1082,7 @@ namespace commander
         {
             var citem = comboBox1.SelectedItem as ComboBoxItem;
             var di = citem.Tag as DriveInfo;
+            if (!di.IsReady) { Stuff.Error("Device is not ready!"); return; }
             textBox1.Text = di.Name;
             UpdateList(textBox1.Text);
         }
@@ -1151,6 +1162,11 @@ namespace commander
                     var lvi = listView1.SelectedItems[0];
                     var f = lvi.Tag as IFileInfo;
 
+                    if (f.Filesystem.IsReadOnly)
+                    {
+                        Stuff.Warning("Filesystem is readonly.");
+                        return;
+                    }
                     if (Stuff.Question("Delete file: " + SelectedFile.FullName + "?") == DialogResult.Yes)
                     {
                         DeleteFileAction(this, f);
@@ -1192,6 +1208,11 @@ namespace commander
                 if (listView1.SelectedItems[0].Tag is IDirectoryInfo)
                 {
                     var f = listView1.SelectedItems[0].Tag as IDirectoryInfo;
+                    if (f.Filesystem.IsReadOnly)
+                    {
+                        Stuff.Warning("Filesystem is readonly.");
+                        return;
+                    }
                     if (Stuff.Question("Delete " + f.Name + " directory and all contents?") == DialogResult.Yes)
                     {
                         Directory.Delete(f.FullName, true);
@@ -1232,6 +1253,11 @@ namespace commander
             if (seld != null)
             {
                 drs.AddRange(seld);
+            }
+            if (fls.Any(z => z.Filesystem.IsReadOnly) || drs.Any(z => z.Filesystem.IsReadOnly))
+            {
+                Stuff.Warning("Filesystem is readonly.");
+                return;
             }
             if (Stuff.Question("Are your sure to delete: " + drs.Count + " directories and " + fls.Count + " files?") == DialogResult.Yes)
             {
@@ -1603,10 +1629,42 @@ namespace commander
         private void PackToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (SelectedDirectory == null) return;
+            var seld = SelectedDirectory;
             SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "iso files|*.iso";
             if (sfd.ShowDialog() == DialogResult.OK)
             {
-                //todo: pack SelectedDirectory to iso
+                PackToIsoSettings stg = new PackToIsoSettings();
+                stg.Root = seld;
+                stg.Dirs.Add(seld);
+                stg.VolumeId = seld.Name;
+                stg.ProgressReport = (f) =>
+                 {
+                     statusStrip1.Invoke((Action)(() =>
+                     {
+                         toolStripProgressBar1.Value = (int)Math.Round(f * 100);
+                     }));
+
+                 };
+                stg.AfterPackFinished = () =>
+                {
+                    Stuff.Info("Pack to iso complete!");
+                    statusStrip1.Invoke((Action)(() =>
+                    {
+                        toolStripProgressBar1.Visible = false;
+                    }));
+                };
+                stg.BeforePackStart = () =>
+                 {
+                     statusStrip1.Invoke((Action)(() =>
+                     {
+                         toolStripProgressBar1.Value = 0;
+                         toolStripProgressBar1.Visible = true;
+                     }));
+                 };
+                Stuff.PackToIso(stg);
+
+
             }
         }
 
@@ -1922,7 +1980,7 @@ namespace commander
             //merge tags, files exract (or not extract use as mount drive)
             //read .indx dir and get meta.xml file. get tags and files. then extract all files some where,or not extract.
 
-            isoViewer.IsoReader reader = new IsoReader();
+            IsoReader reader = new IsoReader();
             reader.Parse(SelectedFile.FullName);
             var recs = DirectoryRecord.GetAllRecords(reader.WorkPvd.RootDir);
             var meta = recs.FirstOrDefault(z => z.IsFile && z.Name == "meta.xml");
@@ -1962,7 +2020,32 @@ namespace commander
 
             if (sfd.ShowDialog() == DialogResult.OK)
             {
-                Stuff.PackToIso(SelectedDirectory, sfd.FileName);
+                PackToIsoSettings stg = new PackToIsoSettings();
+                stg.Dirs.Add(SelectedDirectory);
+                stg.Path = sfd.FileName;
+                stg.IncludeMeta = true;
+                stg.Root = SelectedDirectory;
+                stg.ProgressReport = (x) =>
+                {
+                    statusStrip1.Invoke((Action)(() =>
+                    {
+                        toolStripProgressBar1.Value = (int)Math.Round(x * 100);
+                    }));
+                };
+                stg.BeforePackStart = () =>
+                {
+                    statusStrip1.Invoke((Action)(() =>
+                    {
+                        toolStripProgressBar1.Value = 0;
+                        toolStripProgressBar1.Visible = true;
+                    }));
+                };
+                stg.AfterPackFinished = () =>
+                {
+                    Stuff.Info("Pack complete!"); statusStrip1.Invoke((Action)(() =>
+{ toolStripProgressBar1.Visible = false; }));
+                };
+                Stuff.PackToIso(stg);
             }
         }
 
@@ -2074,6 +2157,14 @@ namespace commander
                 }
             }
 
+        }
+
+        private void AsTextToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SelectedFile == null) return;
+            var txt = SelectedFile.Filesystem.ReadAllText(SelectedFile.FullName);
+            Clipboard.SetText(txt);
+            Stuff.Info(txt.Length + " symbols saved in clipboard.");
         }
     }
     public enum ViewModeEnum
