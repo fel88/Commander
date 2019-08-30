@@ -32,9 +32,9 @@ namespace commander
             return File.ReadAllLines(fr.FileInfo.FullName);
         }
 
-        public Image BitmapFromFile(string fullName)
+        public Image BitmapFromFile(IFileInfo file)
         {
-            var fr = Files.First(z => z.FullName == fullName);
+            var fr = Files.First(z => z.FullName == file.FullName.ToLower());
             return Bitmap.FromFile(fr.FileInfo.FullName);
         }
 

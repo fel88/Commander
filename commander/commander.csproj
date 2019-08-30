@@ -173,6 +173,7 @@
       <DependentUpon>SearchFilterControl.cs</DependentUpon>
     </Compile>
     <Compile Include="ShellContextMenu.cs" />
+    <Compile Include="ShellIcon.cs" />
     <Compile Include="SimpleProxyCache.cs" />
     <Compile Include="TabInfo.cs" />
     <Compile Include="TagPanelHelper.cs">

@@ -50,7 +50,7 @@ namespace commander
                 temp = pictureBox1.Image;
             }
             CurrentFile = fl;
-            pictureBox1.Image = fl.Filesystem.BitmapFromFile(fl.FullName);
+            pictureBox1.Image = fl.Filesystem.BitmapFromFile(fl);
             if (temp != null)
             {
                 temp.Dispose();

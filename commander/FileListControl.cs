@@ -139,7 +139,8 @@ namespace commander
                 var fileInfo = listView1.Items[i].Tag as IFileInfo;
                 if (fileInfo == null) continue;
 
-                if (File.Exists(fileInfo.FullName))
+                if(fileInfo.Filesystem.FileExist(fileInfo.FullName))
+                //if (File.Exists(fileInfo.FullName))
                 {
                     tp = Stuff.GetBitmapOfFile(fileInfo.FullName);
                 }
@@ -478,7 +479,7 @@ namespace commander
                         }
                         var r = new IsoDirectoryInfoWrapper(f, f.Reader.WorkPvd.RootDir);
                         r.Parent = path;
-                        r.Filesystem = new IsoFilesystem() { IsoFileInfo = f.IsoPath };
+                        r.Filesystem = new IsoFilesystem(f) { IsoFileInfo = f.IsoPath };
                         dd.Add(r);
                     }
                 }
@@ -630,7 +631,7 @@ namespace commander
                         }
                         var r = new IsoDirectoryInfoWrapper(f, f.Reader.WorkPvd.RootDir);
                         r.Parent = path;
-                        r.Filesystem = new IsoFilesystem() { IsoFileInfo = f.IsoPath };
+                        r.Filesystem = new IsoFilesystem(f) { IsoFileInfo = f.IsoPath };
                         dd.Add(r);
                     }
                 }
@@ -1654,6 +1655,7 @@ namespace commander
             {
                 PackToIsoSettings stg = new PackToIsoSettings();
                 stg.Root = seld;
+                stg.Path = sfd.FileName;
                 stg.Dirs.Add(seld);
                 stg.VolumeId = seld.Name;
                 stg.ProgressReport = (f) =>
@@ -2182,22 +2184,7 @@ namespace commander
 
         private void MountToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
         {
-            var mi = sender as ToolStripMenuItem;
-            mi.DropDownItems.Clear();
-            var a1 = new ToolStripMenuItem("here") { Tag = CurrentDirectory };
-            a1.Click += A1_Click;
-            mi.DropDownItems.Add(a1);
-            var a2 = new ToolStripMenuItem("to second panel") { Tag = CurrentDirectory };
-            a2.Click += A2_Click;
-            mi.DropDownItems.Add(a2);
-            mi.DropDownItems.Add(new ToolStripSeparator());
-            foreach (var item in Stuff.Libraries.OfType<FilesystemLibrary>())
-            {
-                var aa = new ToolStripMenuItem(item.Name) { Tag = item };
-                aa.Click += Aa_Click;
-                mi.DropDownItems.Add(aa);
-
-            }
+           
         }
 
         private void Aa_Click(object sender, EventArgs e)
@@ -2228,6 +2215,26 @@ namespace commander
             if (MountIsoAction != null)
             {
                 MountIsoAction(this, SelectedFile, null);
+            }
+        }
+
+        private void IsoToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+            var mi = mountToolStripMenuItem ;
+            mi.DropDownItems.Clear();
+            var a1 = new ToolStripMenuItem("here") { Tag = CurrentDirectory };
+            a1.Click += A1_Click;
+            mi.DropDownItems.Add(a1);
+            var a2 = new ToolStripMenuItem("to second panel") { Tag = CurrentDirectory };
+            a2.Click += A2_Click;
+            mi.DropDownItems.Add(a2);
+            mi.DropDownItems.Add(new ToolStripSeparator());
+            foreach (var item in Stuff.Libraries.OfType<FilesystemLibrary>())
+            {
+                var aa = new ToolStripMenuItem(item.Name) { Tag = item };
+                aa.Click += Aa_Click;
+                mi.DropDownItems.Add(aa);
+
             }
         }
     }

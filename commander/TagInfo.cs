@@ -6,9 +6,12 @@ namespace commander
     public class TagInfo
     {
         public string Name;
+        public List<string> Synonyms = new List<string>();
         public bool IsHidden;
         private List<IFileInfo> files = new List<IFileInfo>();
         private HashSet<string> hash = new HashSet<string>();
+        public List<TagInfo> Tags = new List<TagInfo>();
+
         public IEnumerable<IFileInfo> Files
         {
             get

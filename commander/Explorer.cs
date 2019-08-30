@@ -71,7 +71,7 @@ namespace commander
                if (new string[] { ".djvu" }.Contains(x.Extension.ToLower()))
                {
                    splitContainer1.Panel2.Controls.Add(dpreviewer);
-                   dpreviewer.Init(x.FullName);
+                   dpreviewer.Init(x);
                }
                else
                {
@@ -217,7 +217,7 @@ namespace commander
                 var r = new IsoDirectoryInfoWrapper(minf, minf.Reader.WorkPvd.RootDir);
                 r.Parent = new DirectoryInfoWrapper(minf.Path);
                 minf.MountTarget = r;
-                r.Filesystem = new IsoFilesystem() { IsoFileInfo = minf.IsoPath };
+                r.Filesystem = new IsoFilesystem(minf) { IsoFileInfo = minf.IsoPath };
 
                 Stuff.MountIso(minf);
                 if (target == null)

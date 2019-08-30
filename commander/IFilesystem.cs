@@ -11,7 +11,7 @@ namespace commander
         string[] ReadAllLines(string fullName);
         string ReadAllText(string fullName);
         string ReadAllText(IFileInfo file);
-        Image BitmapFromFile(string fullName);
+        Image BitmapFromFile(IFileInfo fullName);
 
         bool FileHasTag(IFileInfo file, TagInfo tag);
 

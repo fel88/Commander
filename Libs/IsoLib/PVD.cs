@@ -5,6 +5,7 @@ namespace IsoLib
 {
     public class PVD
     {
+        public uint DefaultSectorSize = 0x800;
         public uint LogicBlockSize;
         public DirectoryRecord RootDir;
         public long Address;

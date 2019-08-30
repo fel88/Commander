@@ -7,9 +7,9 @@ namespace commander
     {
         public bool IsReadOnly { get; set; } 
 
-        public Image BitmapFromFile(string fullName)
+        public Image BitmapFromFile(IFileInfo file)
         {
-            return Bitmap.FromFile(fullName);
+            return Bitmap.FromFile(file.FullName);
         }
 
         public void DeleteDirectory(IDirectoryInfo item, bool recursive)

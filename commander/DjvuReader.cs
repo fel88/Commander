@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
@@ -81,9 +82,10 @@ namespace commander
             return ret;
         }
 
-        internal void Init(string fullName)
+        internal void Init(IFileInfo file)
         {
-            LoadBook(fullName);
+            
+            LoadBook(file.Filesystem.OpenReadOnlyStream(file), file.FullName);
         }
 
         internal void UnloadBook()
@@ -141,7 +143,21 @@ namespace commander
             ReloadPages(0);
 
         }
+        public void LoadBook(Stream stream ,string path)
+        {
+            Cache.Clear();
+            pageIndex = 0;
+            sy = 0;
+            doc = new DjvuNet.DjvuDocument(stream,path);
+            sizes = new SizeF[doc.Pages.Count()];
+            for (int i = 0; i < doc.Pages.Count(); i++)
+            {
+                sizes[i] = new SizeF(doc.Pages[i].Width, doc.Pages[i].Height);
+            }
 
+            ReloadPages(0);
+
+        }
         public List<PageCache> Cache = new List<PageCache>();
         public void AddToCache(PageCache cc)
         {

@@ -38,7 +38,7 @@ namespace commander
         string ext;
         string fullName;
         string name;
-        DirectoryRecord record;
+        public DirectoryRecord record;
 
 
         public IsoReader Reader;

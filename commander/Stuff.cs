@@ -24,19 +24,23 @@ namespace commander
         public static Dictionary<string, Tuple<Bitmap, int>> ExeIcons = new Dictionary<string, Tuple<Bitmap, int>>();
         public static Tuple<Bitmap, int> GetBitmapOfFile(string fn)
         {
+            
             var d = Path.GetExtension(fn).ToLower();
+            
             if (d == ".exe" || d == ".ico")
             {
                 if (!ExeIcons.ContainsKey(fn))
                 {
-                    var ico = Stuff.ExtractAssociatedIcon(fn);
+                    //var ico = Stuff.ExtractAssociatedIcon(fn);
+                    var ico = ShellIcon.GetSmallIcon(fn);
 
                     if (ico != null)
                     {
                         try
                         {
-                            var bb = Bitmap.FromHicon(ico.Handle);
+                            var bb = Bitmap.FromHicon(ico.Handle);                            
                             bb.MakeTransparent();
+                            //var bb = ico;
                             Stuff.list.Images.Add(bb);
                             ExeIcons.Add(fn, new Tuple<Bitmap, int>(bb, Stuff.list.Images.Count - 1));
                         }
@@ -51,14 +55,16 @@ namespace commander
             }
             if (!Icons.ContainsKey(d))
             {
-                var ico = Stuff.ExtractAssociatedIcon(fn);
+                var ico = ShellIcon.GetSmallIconFromExtension(d);
+                //var ico = Stuff.ExtractAssociatedIcon(fn);
 
                 if (ico != null)
                 {
                     try
                     {
                         var bb = Bitmap.FromHicon(ico.Handle);
-                        bb.MakeTransparent();
+                         bb.MakeTransparent();
+                        //var bb = ico;
                         Stuff.list.Images.Add(bb);
                         Icons.Add(d, new Tuple<Bitmap, int>(bb, Stuff.list.Images.Count - 1));
                     }
@@ -84,7 +90,7 @@ namespace commander
         public static void Unmount(MountInfo m)
         {
             MountInfos.Remove(m);
-            
+
             //unmount all tags
             var fls = m.MountTarget.GetFiles();
             var temp = Stuff.IsDirty;
@@ -304,14 +310,14 @@ namespace commander
             }
             var r = new IsoDirectoryInfoWrapper(f, f.Reader.WorkPvd.RootDir);
             //r.Parent = null;
-            r.Filesystem = new IsoFilesystem() { IsoFileInfo = f.IsoPath };
+            r.Filesystem = new IsoFilesystem(f) { IsoFileInfo = f.IsoPath };
             if (r.Filesystem.FileExist(".indx\\meta.xml"))
             {
                 var txt = r.Filesystem.ReadAllText(".indx\\meta.xml");
                 var doc = XDocument.Parse(txt);
                 foreach (var item in doc.Descendants("tag"))
                 {
-                    var nm = item.Attribute("name").Value;                    
+                    var nm = item.Attribute("name").Value;
                     var tagg = Stuff.AddTag(new TagInfo() { Name = nm });
                     foreach (var fitem in item.Descendants("file"))
                     {
@@ -719,7 +725,7 @@ namespace commander
             sb.AppendLine("<tags>");
             foreach (var item in Stuff.Tags)
             {
-                if (item.Files.All(z => z is IsoFileWrapper))
+                if (item.Files.Any() && item.Files.All(z => z is IsoFileWrapper))
                 {
                     continue;
                 }
@@ -986,11 +992,13 @@ namespace commander
                         builder.AddFile(item.FullName, item.FullName);
                     }
                 }
+               
+                builder.Build(stg.Path);
+
                 if (stg.AfterPackFinished != null)
                 {
                     stg.AfterPackFinished();
                 }
-                builder.Build(stg.Path);
 
             });
             th.IsBackground = true;

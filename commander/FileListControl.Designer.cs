@@ -340,14 +340,14 @@
             // isoMergeToolStripMenuItem
             // 
             this.isoMergeToolStripMenuItem.Name = "isoMergeToolStripMenuItem";
-            this.isoMergeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.isoMergeToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.isoMergeToolStripMenuItem.Text = "iso merge";
             this.isoMergeToolStripMenuItem.Click += new System.EventHandler(this.IsoMergeToolStripMenuItem_Click);
             // 
             // makeLibraryToolStripMenuItem1
             // 
             this.makeLibraryToolStripMenuItem1.Name = "makeLibraryToolStripMenuItem1";
-            this.makeLibraryToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.makeLibraryToolStripMenuItem1.Size = new System.Drawing.Size(139, 22);
             this.makeLibraryToolStripMenuItem1.Text = "make library";
             this.makeLibraryToolStripMenuItem1.Click += new System.EventHandler(this.MakeLibraryToolStripMenuItem1_Click);
             // 
@@ -376,6 +376,7 @@
             this.isoToolStripMenuItem.Name = "isoToolStripMenuItem";
             this.isoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.isoToolStripMenuItem.Text = "iso";
+            this.isoToolStripMenuItem.DropDownOpening += new System.EventHandler(this.IsoToolStripMenuItem_DropDownOpening);
             // 
             // packToolStripMenuItem
             // 

@@ -143,6 +143,12 @@ namespace IsoLib
                 var p0 = fs.Position;
                 if (!rec.Parse(fs, pvd))
                 {
+                    var l = pvd.LogicBlockSize - p0 % pvd.LogicBlockSize;
+                    if (l < 100)
+                    {
+                        continue;
+                    }
+
                     break;
                 }
                 Records.Add(rec);

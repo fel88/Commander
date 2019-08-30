@@ -338,6 +338,7 @@ namespace commander
                         e.Cancel = true;
                         break;
                     case DialogResult.Yes:
+                        Stuff.UnmountAll();
                         Stuff.SaveSettings();
                         break;
 
@@ -469,6 +470,16 @@ namespace commander
         private void UrlBookmarksToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenWindow(new UrlBookmarksWindow());
+        }
+
+        private void IndexToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void PartialIndexMountListToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 
