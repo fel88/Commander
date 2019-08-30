@@ -43,7 +43,8 @@ namespace commander
 
         public IsoReader Reader;
 
-        public string FullName => fullName;
+        //public string FullName => fullName;
+        public string FullName => Path.Combine(Directory.FullName, name);
 
         public string Name => name;
 
@@ -51,7 +52,7 @@ namespace commander
 
         public string Extension => ext;
 
-        public DateTime LastWriteTime => DateTime.Now;
+        public DateTime LastWriteTime => record.DateTime;
 
         public long Length => record.DataLength;
 

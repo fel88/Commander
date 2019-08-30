@@ -615,9 +615,27 @@ namespace commander
                     listView1.Items.Add(new ListViewItem(new string[] { "..", "", "" }) { Tag = libraryRootObject });
                 }
 
+                var dd = path.GetDirectories().ToList();
 
+                var fr = Stuff.MountInfos.Where(z => Path.Equals(z.Path.Trim(new char[] { '\\' }), path.FullName.Trim(new char[] { '\\' })));
+                if (fr.Any())
+                {
+                    foreach (var f in fr)
+                    {
+                        if (f.Reader == null)
+                        {
+                            IsoReader reader = new IsoReader();
+                            reader.Parse(f.IsoPath.FullName);
+                            f.Reader = reader;
+                        }
+                        var r = new IsoDirectoryInfoWrapper(f, f.Reader.WorkPvd.RootDir);
+                        r.Parent = path;
+                        r.Filesystem = new IsoFilesystem() { IsoFileInfo = f.IsoPath };
+                        dd.Add(r);
+                    }
+                }
 
-                AppendDirsToList(path.GetDirectories().ToArray(), fltrs);
+                AppendDirsToList(dd.ToArray(), fltrs);
                 AppendFilesToList(path.GetFiles().ToArray(), fltrs);
             }
         }
@@ -1514,7 +1532,7 @@ namespace commander
                 }
                 else
                 {
-                    f.Item1.AddFile(item.FullName);
+                    f.Item1.AddFile(item);
                 }
             }
         }
@@ -1587,7 +1605,7 @@ namespace commander
 
         }
 
-        public Action<FileListControl, IFileInfo> MountIsoAction;
+        public Action<FileListControl, IFileInfo, IDirectoryInfo> MountIsoAction;
         public event Action<FileListControl, IFileInfo> DeleteFileAction;
         public Action<FileListControl, IFileInfo> IsoExtractAction;
         private void MountIsoToRightToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1670,12 +1688,7 @@ namespace commander
 
         private void MountToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (SelectedFile == null) return;
-            if (!SelectedFile.Extension.Contains("iso")) return;
-            if (MountIsoAction != null)
-            {
-                MountIsoAction(this, SelectedFile);
-            }
+
         }
 
         private void ExtractToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1694,11 +1707,11 @@ namespace commander
         {
             if (SelectedDirectory == null) return;
             var fr = Stuff.MountInfos.FirstOrDefault(z => z.FullPath == SelectedDirectory.FullName);
-            if (fr != null)
-            {
-                Stuff.MountInfos.Remove(fr);
-                UpdateList(CurrentDirectory.FullName);
-            }
+            if (fr == null) return;
+
+            Stuff.Unmount(fr);            
+            UpdateList(CurrentDirectory.FullName);
+
         }
 
         private void PropertiesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1961,12 +1974,12 @@ namespace commander
         {
             if (listView1.SelectedItems.Count > 0)
             {
-                if (listView1.SelectedItems[0].Tag is DirectoryInfo)
+                if (listView1.SelectedItems[0].Tag is IDirectoryInfo)
                 {
-                    var f = listView1.SelectedItems[0].Tag as DirectoryInfo;
-                    if (MessageBox.Show("Make " + f.Name + " library?", "Commander", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    var f = listView1.SelectedItems[0].Tag as IDirectoryInfo;
+                    if (Stuff.Question("Make " + f.Name + " library?") == DialogResult.Yes)
                     {
-                        Stuff.Libraries.Add(new FilesystemLibrary() { BaseDirectory = new DirectoryInfoWrapper(f.FullName), Name = f.Name });
+                        Stuff.Libraries.Add(new FilesystemLibrary() { BaseDirectory = f, Name = f.Name });
                         Stuff.IsDirty = true;
                     }
                 }
@@ -1999,7 +2012,7 @@ namespace commander
                         var path = fitem.Value;
                         if (!tag.ContainsFile(path))
                         {
-                            tag.AddFile(path);
+                            tag.AddFile(new FileInfoWrapper(path));
                         }
                     }
                 }
@@ -2165,6 +2178,57 @@ namespace commander
             var txt = SelectedFile.Filesystem.ReadAllText(SelectedFile.FullName);
             Clipboard.SetText(txt);
             Stuff.Info(txt.Length + " symbols saved in clipboard.");
+        }
+
+        private void MountToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+            var mi = sender as ToolStripMenuItem;
+            mi.DropDownItems.Clear();
+            var a1 = new ToolStripMenuItem("here") { Tag = CurrentDirectory };
+            a1.Click += A1_Click;
+            mi.DropDownItems.Add(a1);
+            var a2 = new ToolStripMenuItem("to second panel") { Tag = CurrentDirectory };
+            a2.Click += A2_Click;
+            mi.DropDownItems.Add(a2);
+            mi.DropDownItems.Add(new ToolStripSeparator());
+            foreach (var item in Stuff.Libraries.OfType<FilesystemLibrary>())
+            {
+                var aa = new ToolStripMenuItem(item.Name) { Tag = item };
+                aa.Click += Aa_Click;
+                mi.DropDownItems.Add(aa);
+
+            }
+        }
+
+        private void Aa_Click(object sender, EventArgs e)
+        {
+            var a = (sender as ToolStripMenuItem).Tag as FilesystemLibrary;
+            if (SelectedFile == null) return;
+            if (!SelectedFile.Extension.Contains("iso")) return;
+            if (MountIsoAction != null)
+            {
+                MountIsoAction(this, SelectedFile, a.BaseDirectory);
+            }
+        }
+
+        private void A1_Click(object sender, EventArgs e)
+        {
+            if (SelectedFile == null) return;
+            if (!SelectedFile.Extension.Contains("iso")) return;
+            if (MountIsoAction != null)
+            {
+                MountIsoAction(this, SelectedFile, CurrentDirectory);
+            }
+        }
+
+        private void A2_Click(object sender, EventArgs e)
+        {
+            if (SelectedFile == null) return;
+            if (!SelectedFile.Extension.Contains("iso")) return;
+            if (MountIsoAction != null)
+            {
+                MountIsoAction(this, SelectedFile, null);
+            }
         }
     }
     public enum ViewModeEnum

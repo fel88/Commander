@@ -5,10 +5,10 @@ namespace commander
 {
     public class VirtualFileInfo : IFileInfo
     {
-        public FileInfo FileInfo;
+        public IFileInfo FileInfo;
         
 
-        public VirtualFileInfo(FileInfo f,IDirectoryInfo dd)
+        public VirtualFileInfo(IFileInfo f,IDirectoryInfo dd)
         {
             Directory = dd;
             FileInfo = f;
@@ -30,7 +30,7 @@ namespace commander
 
         public FileAttributes Attributes => FileInfo.Attributes;
 
-        public bool Exist => FileInfo.Exists;
+        public bool Exist => FileInfo.Filesystem.FileExist(FileInfo.FullName);
 
         public IFilesystem Filesystem => Directory.Filesystem;
     }

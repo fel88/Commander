@@ -319,7 +319,7 @@ namespace commander
             var dd = (spl.Select(z => new DirectoryInfoWrapper(z))).OfType<IDirectoryInfo>().ToList();
             if (tagStorageSearchMode)
             {
-                dd = Stuff.Tags.Select(z => new VirtualDirectoryInfo(null) { ChildsFiles = z.Files.Select(u => new FileInfoWrapper(u)).OfType<IFileInfo>().ToList() }).OfType<IDirectoryInfo>().ToList();
+                dd = Stuff.Tags.Select(z => new VirtualDirectoryInfo(null) { ChildsFiles = z.Files.Select(u => u).OfType<IFileInfo>().ToList() }).OfType<IDirectoryInfo>().ToList();
             }
 
             if (checkBox2.Checked)
@@ -334,7 +334,7 @@ namespace commander
 
                 foreach (var item in Stuff.Indexes)
                 {
-                    vdir.ChildsFiles.Add(new VirtualFileInfo(new FileInfo(item.Path), vdir));
+                    vdir.ChildsFiles.Add(new VirtualFileInfo(new FileInfoWrapper(item.Path), vdir));
 
                 }
                 vfs.Files.AddRange(vdir.ChildsFiles.OfType<VirtualFileInfo>());
@@ -349,7 +349,7 @@ namespace commander
              {
                  foreach (var item in Stuff.Tags)
                  {
-                     files.AddRange(item.Files.Select(z => new FileInfoWrapper(z)));
+                     files.AddRange(item.Files.Select(z => z));
                  }
              }
              else
@@ -444,8 +444,8 @@ namespace commander
             }
         }
 
-        
-        
+
+
 
         private void listView3_SelectedIndexChanged(object sender, EventArgs e)
         {

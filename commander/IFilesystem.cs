@@ -20,6 +20,8 @@ namespace commander
         void DeleteDirectory(IDirectoryInfo item, bool recursive);
         Stream OpenReadOnlyStream(IFileInfo file);
         void WriteAllText(IFileInfo fileInfo, string text);
+
+        bool FileExist(string path );
     }
 
 }

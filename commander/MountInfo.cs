@@ -15,5 +15,6 @@ namespace commander
         public IFileInfo IsoPath;
         public IsoReader Reader;
         public IDirectoryInfo MountTarget;
+        public bool IsMounted;
     }
 }

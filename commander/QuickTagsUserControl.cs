@@ -49,7 +49,7 @@ namespace commander
             var tagg = t.Tag as TagInfo;
             if (e.NewValue == CheckState.Checked)
             {
-                tagg.AddFile(currentFile.FullName);
+                tagg.AddFile(currentFile);
             }
             if (e.NewValue == CheckState.Unchecked)
             {

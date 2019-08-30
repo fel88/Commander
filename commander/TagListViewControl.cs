@@ -144,7 +144,7 @@ namespace commander
                 {
                     try
                     {
-                        var f = new FileInfoWrapper(finfo);
+                        var f = finfo;
                         //var tp = FileListControl.GetBitmapOfFile(f.FullName);
                         //bmp.MakeTransparent();
                         // list.Images.Add(bmp);
@@ -170,12 +170,11 @@ namespace commander
                         listView1.Items.Add(
                             new ListViewItem(new string[]
                             {
-                                Path.GetFileName(
-                                    finfo)
+                                Path.GetFileName(                                    finfo.FullName)
                             })
                             {
                                 BackColor = Color.LightPink,
-                                Tag = new Tuple<IFileInfo, Exception>(new FileInfoWrapper(finfo), ex),
+                                Tag = new Tuple<IFileInfo, Exception>(finfo, ex),
 
                             });
                     }
@@ -332,15 +331,43 @@ namespace commander
         private void ToIsoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (listView1.SelectedItems.Count == 0) return;
-            if (!(listView1.SelectedItems[0].Tag is TagInfo)) return;
-            var tag = listView1.SelectedItems[0].Tag as TagInfo;
+
+            List<TagInfo> tags = new List<TagInfo>();
+            for (int i = 0; i < listView1.SelectedItems.Count; i++)
+            {
+                if (!(listView1.SelectedItems[i].Tag is TagInfo)) continue;
+                tags.Add(listView1.SelectedItems[i].Tag as TagInfo);
+            }
+
+            if (tags.Count == 0) return;
+
+
             var vfs = new VirtualFilesystem();
             var vdir = new VirtualDirectoryInfo(vfs);
-            vdir.FullName = "z:\\" + tag.Name;
+            //vdir.FullName = "z:\\" + tag.Name;
+            vdir.FullName = "z:\\";
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.DefaultExt = "iso";
             sfd.Filter = "iso images|*.iso";
-            vdir.ChildsFiles.AddRange(tag.Files.Select(z => new VirtualFileInfo(new FileInfo(z), vdir) { Directory = vdir }));
+            List<IFileInfo> flss = new List<IFileInfo>();
+            foreach (var tag in tags)
+            {
+                flss.AddRange(tag.Files);
+            }
+            var ord = flss.GroupBy(z => z.FullName.ToLower()).ToArray();
+            var ord2 = flss.GroupBy(z => z.Name.ToLower()).ToArray();
+            if (ord2.Any(z => z.Count() > 1))
+            {
+                var fer = ord2.Where(z => z.Count() > 1).Sum(z => z.Count());
+                Stuff.Warning(fer + " files has same names. Pack impossible");
+                return;
+            }
+
+            flss = ord.Select(z => z.First()).ToList();
+            flss = flss.Where(z => z.Length > 0).ToList();
+
+            vdir.ChildsFiles.AddRange(flss.Select(z => new VirtualFileInfo(z, vdir) { Directory = vdir }));
+
             vfs.Files = vdir.ChildsFiles.OfType<VirtualFileInfo>().ToList();
             if (sfd.ShowDialog() == DialogResult.OK)
             {
@@ -350,7 +377,14 @@ namespace commander
                 stg.IncludeMeta = true;
                 stg.Root = vdir;
                 stg.AfterPackFinished = () => { Stuff.Info("Pack complete!"); };
-                stg.VolumeId = tag.Name.Replace(' ', '_');
+                if (tags.Count == 1)
+                {
+                    stg.VolumeId = tags.First().Name.Replace(' ', '_');
+                }
+                else
+                {
+                    stg.VolumeId = $"Volume[{tags.Count} tags]";
+                }
                 if (stg.VolumeId.Length > 32)
                 {
                     stg.VolumeId = stg.VolumeId.Substring(0, 32);
@@ -384,7 +418,7 @@ namespace commander
                 var tag1 = listView1.SelectedItems[i].Tag;
                 if (tag1 is TagInfo)
                 {
-                    var list = (tag1 as TagInfo).Files.Select(z => new FileInfoWrapper(z));
+                    var list = (tag1 as TagInfo).Files.Select(z => z);
                     files.AddRange(list);
                 }
                 if (tag1 is IFileInfo)
@@ -406,7 +440,7 @@ namespace commander
                 if (tag is TagInfo)
                 {
                     var dd = listView1.SelectedItems[0].Tag as TagInfo;
-                    var files = dd.Files.Select(z => new FileInfoWrapper(z));
+                    var files = dd.Files.Select(z => z);
 
                     DedupContext ctx = new DedupContext(new IDirectoryInfo[] { }, files.OfType<IFileInfo>().ToArray());
                     var groups = RepeatsWindow.FindDuplicates(ctx);

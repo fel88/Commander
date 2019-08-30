@@ -94,5 +94,10 @@ namespace commander
         {
             File.WriteAllText(ToVirtualFileInfo(fileInfo).FileInfo.FullName, text);
         }
+
+        public bool FileExist(string path)
+        {
+            return Files.Any(z => z.FullName.ToLower() == path.ToLower());
+        }
     }
 }

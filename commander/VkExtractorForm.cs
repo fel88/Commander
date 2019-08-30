@@ -76,25 +76,56 @@ namespace commander
         int saved = 0;
         int errors = 0;
         int links = 0;
-        public void savePicFunc(string str)
+
+        bool strongNameSkip = false;
+
+
+        List<HttpPageInfo> Infos = new List<HttpPageInfo>();
+
+        public void savePicFunc(string _uri, string str)
         {
+            var pi = new HttpPageInfo();
+            pi.Uri = _uri;
+            Infos.Add(pi);
             //richTextBox2.Text = webBrowser1.DocumentText;
 
 
             var list = Stuff.ParseHtmlItems(str, "<meta", "/>");
             var list2 = Stuff.ParseHtmlItems(str, "<a", "/a>");
+            var list3 = Stuff.ParseHtmlItems(str, "<img", ">");
             int totalLinks = 0;
-            foreach (var item in list.Union(list2))
+            foreach (var item in list.Union(list2).Union(list3))
             {
                 if (!item.Contains("http")) continue;
                 var ar1 = item.Split(new char[] { ' ', '\"' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
                 var ww = ar1.Where(z => z.Contains("jpg") || z.Contains("png") || z.Contains("gif"));
 
-                foreach (var fr in ww)
+                foreach (var _fr in ww)
                 {
-                    totalLinks++;
+
+                    var fr = _fr;
                     try
                     {
+                        var ind1 = fr.IndexOf("http");
+                        if (ind1 > 0)
+                        {
+                            fr = fr.Substring(ind1);
+                        }
+                        string end = ".jpg";
+                        if (fr.Contains("png"))
+                        {
+                            end = "png";
+                        }
+                        if (fr.Contains("gif"))
+                        {
+                            end = "gif";
+                        }
+
+                        var ind2 = fr.IndexOf(end);
+                        fr = fr.Substring(0, ind2 + end.Length);
+
+                        pi.Links.Add(new HttpPageInfo() { Uri = fr });
+                        totalLinks++;
                         listView2.Invoke((Action)(() =>
                         {
                             listView2.Items.Add(new ListViewItem(fr) { Tag = fr });
@@ -103,7 +134,15 @@ namespace commander
                         using (WebClient wc = new WebClient())
                         {
                             var uri = new Uri(fr);
-
+                            if (strongNameSkip)
+                            {
+                                var nm = Path.Combine(textBox1.Text, uri.Segments.Last());
+                                if (File.Exists(nm))
+                                {
+                                    skipped++;
+                                    continue;
+                                }
+                            }
                             var data = wc.DownloadData(fr);
                             if (data.Length >= 0)
                             {
@@ -155,7 +194,7 @@ namespace commander
                         errors++;
                         listView3.Invoke((Action)(() =>
                         {
-                            listView3.Items.Add(new ListViewItem(new string[] { ex.Message }) { Tag = ex });
+                            listView3.Items.Add(new ListViewItem(new string[] { fr, ex.Message }) { Tag = fr + ";" + ex });
                         }));
                     }
                 }
@@ -166,7 +205,7 @@ namespace commander
             {
                 listView3.Invoke((Action)(() =>
                 {
-                    listView3.Items.Add(new ListViewItem(new string[] { "no links: " + str }) { Tag = str, BackColor = Color.Yellow });
+                    listView3.Items.Add(new ListViewItem(new string[] { "no links: " + _uri }) { Tag = _uri, BackColor = Color.Yellow });
                 }));
             }
 
@@ -175,6 +214,7 @@ namespace commander
         {
             if (listView1.SelectedItems.Count == 0) return;
             Clipboard.SetText((string)listView1.SelectedItems[0].Tag);
+            toolStripStatusLabel1.Text = "selected: " + listView1.SelectedItems.Count;
         }
 
 
@@ -183,6 +223,18 @@ namespace commander
         Thread th;
         private void button3_Click(object sender, EventArgs e)
         {
+            if (th == null)
+            {
+                button3.Text = "abort";
+            }
+            else
+            {
+                button3.Text = "download all";
+                th.Abort();
+                th = null;
+                return;
+            }
+            Infos.Clear();
             savePic = true;
             //webBrowser1.ScriptErrorsSuppressed = true;
             int cnt = listView1.Items.Count;
@@ -229,13 +281,13 @@ namespace commander
                        {
                            wc.Headers.Add("User-Agent: Mozilla/5.0");
                            //while (!iscomplete) { Thread.Sleep(10); }
-
+                           
                            var item = ss[i];
                            //  iscomplete = false;
                            var str = wc.DownloadString(item);
                            if (savePic)
                            {
-                               savePicFunc(str);
+                               savePicFunc(item, str);
                            }
 
                            //webBrowser1.Navigate((string)(item as ListViewItem).Tag, null, null, "User-Agent: Mozilla/5.0");
@@ -251,6 +303,8 @@ namespace commander
                        errors++;
                    }
                }
+
+
                statusStrip1.Invoke((Action)(() =>
                {
                    toolStripStatusLabel1.Text = "skipped: " + skipped + "  saved: " + saved + "; errors: " + errors + "; links extracted: " + links;
@@ -258,6 +312,10 @@ namespace commander
                    toolStripProgressBar1.Visible = false;
 
                }));
+               if (checkBox3.Checked)//close on complete
+               {
+                   Application.Exit();
+               }
            });
             th.IsBackground = true;
             th.Start();
@@ -333,5 +391,72 @@ namespace commander
 
             }
         }
+
+        private void CheckBox4_CheckedChanged(object sender, EventArgs e)
+        {
+            strongNameSkip = checkBox4.Checked;
+        }
+
+        private void CopyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView3.SelectedItems.Count == 0) return;
+            Clipboard.SetText((string)listView3.SelectedItems[0].Tag);
+        }
+
+        private void CopyAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < listView3.Items.Count; i++)
+            {
+                sb.AppendLine((string)listView3.Items[i].Tag);
+            }
+            Clipboard.SetText(sb.ToString());
+        }
+
+        private void SaveAsXmlTreeToClipboardToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("<?xml version=\"1.0\"?>");
+            sb.AppendLine("<root>");
+            foreach (var item in Infos)
+            {
+                if (item.Links.Any())
+                {
+                    sb.AppendLine($"<item uri=\"{item.Uri}\">");
+                    foreach (var litem in item.Links)
+                    {
+                        sb.AppendLine($"<item uri=\"{litem.Uri}\"/>");
+                    }
+                    sb.AppendLine($"</item>");
+                }
+                else
+                {
+                    sb.AppendLine($"<item uri=\"{item.Uri}\"/>");
+                }
+            }
+            sb.AppendLine("</root>");
+            Clipboard.SetText(sb.ToString());
+        }
+
+        private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            listView1.BeginUpdate();
+            List<ListViewItem> todel = new List<ListViewItem>();
+            foreach (var item in listView1.SelectedItems)
+            {
+                todel.Add(item as ListViewItem);
+            }
+            for (int i = 0; i < todel.Count; i++)
+            {
+                listView1.Items.Remove(todel[i]);
+            }
+            listView1.EndUpdate();
+        }
+    }
+
+    public class HttpPageInfo
+    {
+        public string Uri;
+        public List<HttpPageInfo> Links = new List<HttpPageInfo>();
     }
 }

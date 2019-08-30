@@ -45,9 +45,31 @@ namespace commander
             throw new System.NotImplementedException();
         }
 
+        public bool FileExist(string path)
+        {
+            using (var fs = new FileStream(IsoFileInfo.FullName, FileMode.Open, FileAccess.Read))
+            {
+                IsoReader reader = new IsoReader();
+                reader.Parse(fs);
+                var ret = DirectoryRecord.GetAllRecords(reader.WorkPvd.RootDir);
+                return ret.Any(x => x.IsFile && x.FullPath.ToLower() == path.ToLower());
+            }
+        }
+        public IFileInfo GetFile(string path)
+        {
+            using (var fs = new FileStream(IsoFileInfo.FullName, FileMode.Open, FileAccess.Read))
+            {
+                IsoReader reader = new IsoReader();
+                reader.Parse(fs);
+                var ret = DirectoryRecord.GetAllRecords(reader.WorkPvd.RootDir);
+                var aa = ret.First(x => x.IsFile && x.FullPath.ToLower() == path.ToLower());
+                return new IsoFileWrapper(new MountInfo() { IsoPath = IsoFileInfo }, aa) { Filesystem = this };
+            }
+        }
+
         public bool FileHasTag(IFileInfo file, TagInfo tag)
         {
-            throw new System.NotImplementedException();
+            return tag.ContainsFile(file.FullName);
         }
 
         public Stream OpenReadOnlyStream(IFileInfo file)
@@ -79,7 +101,19 @@ namespace commander
 
         public string ReadAllText(string fullName)
         {
-            throw new System.NotImplementedException();
+            using (var fs = new FileStream(IsoFileInfo.FullName, FileMode.Open, FileAccess.Read))
+            {
+                IsoReader reader = new IsoReader();
+                reader.Parse(fs);
+                var ret = DirectoryRecord.GetAllRecords(reader.WorkPvd.RootDir);
+                var fr = ret.First(x => x.IsFile && x.FullPath.ToLower() == fullName.ToLower());
+
+
+                var dat = fr.GetFileData(fs, reader.WorkPvd);
+                MemoryStream ms = new MemoryStream(dat);
+                var rdr = new StreamReader(ms);
+                return rdr.ReadToEnd();
+            }
         }
 
         public string ReadAllText(IFileInfo file)

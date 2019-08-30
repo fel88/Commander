@@ -7,39 +7,42 @@ namespace commander
     {
         public string Name;
         public bool IsHidden;
-        private List<string> files = new List<string>();        
+        private List<IFileInfo> files = new List<IFileInfo>();
         private HashSet<string> hash = new HashSet<string>();
-        public IEnumerable<string> Files
+        public IEnumerable<IFileInfo> Files
         {
             get
-            {                
+            {
                 return files.ToArray();
             }
         }
         public bool ContainsFile(string fn)
-        {   
+        {
             return hash.Contains(fn.ToLower());
         }
         public bool ContainsFile(IFileInfo fn)
         {
-            return fn.Filesystem.FileHasTag(fn, this);            
+            return fn.Filesystem.FileHasTag(fn, this);
         }
-        public void AddFile(string fn)
+        public void AddFile(IFileInfo fn)
         {
             if (!ContainsFile(fn))
-            {                
+            {
                 files.Add(fn);
-                hash.Add(fn.ToLower());
-                Stuff.IsDirty = true;
+                hash.Add(fn.FullName.ToLower());
+                if (!(fn is IsoFileWrapper))
+                {
+                    Stuff.IsDirty = true;
+                }
             }
         }
 
         public void DeleteFile(string fullName)
         {
-            var fl = fullName.ToLower();            
+            var fl = fullName.ToLower();
             for (int i = 0; i < files.Count; i++)
             {
-                if (files[i].ToLower() == fl)
+                if (files[i].FullName.ToLower() == fl)
                 {
                     files.RemoveAt(i);
                     hash.Remove(fl);

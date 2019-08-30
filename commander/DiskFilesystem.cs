@@ -27,6 +27,11 @@ namespace commander
             File.Delete(file.FullName);
         }
 
+        public bool FileExist(string path)
+        {
+            return File.Exists(path);
+        }
+
         public bool FileHasTag(IFileInfo file, TagInfo tag)
         {
             return tag.ContainsFile(file.FullName);

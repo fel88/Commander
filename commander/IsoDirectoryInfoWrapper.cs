@@ -28,11 +28,14 @@ namespace commander
         string _name;
         public IsoReader Reader;
 
-        public string FullName => Path.Combine(MountInfo.Path, _name);
+        //public string FullName => Path.Combine(MountInfo.Path, _name);
+        public string FullName => Path.Combine(Parent.FullName, _name);
+
 
         public string Name => _name;
 
-        public DateTime LastWriteTime => MountInfo.IsoPath.LastWriteTime;
+        //public DateTime LastWriteTime => MountInfo.IsoPath.LastWriteTime;
+        public DateTime LastWriteTime => record.DateTime;
 
         public IDirectoryInfo Parent { get; set; }
 

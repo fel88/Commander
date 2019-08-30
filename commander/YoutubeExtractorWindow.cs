@@ -68,7 +68,7 @@ namespace commander
             sfd.FileName = RemoveIllegalPathCharacters(video.Title) + video.VideoExtension;
             if (sfd.ShowDialog() == DialogResult.OK)
             {
-                progressBar1.Visible = true;
+                toolStripProgressBar1.Visible = true;
                 Thread th = new Thread(() =>
                 {
                     var videoDownloader = new VideoDownloader(video,
@@ -95,7 +95,7 @@ namespace commander
         }
         private void VideoDownloader_DownloadProgressChanged(object sender, ProgressEventArgs e)
         {
-            progressBar1.Value = (int)e.ProgressPercentage;
+            toolStripProgressBar1.Value = (int)e.ProgressPercentage;
         }
     }
 }

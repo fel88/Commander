@@ -1,4 +1,5 @@
 ﻿using DjvuNet;
+using IsoLib;
 using IsoLib.DiscUtils;
 using PluginLib;
 using System;
@@ -71,6 +72,32 @@ namespace commander
             return Icons[d];
         }
 
+        public static void UnmountAll()
+        {
+            var arr = Stuff.MountInfos.ToArray();
+            foreach (var item in arr)
+            {
+                Unmount(item);
+            }
+        }
+
+        public static void Unmount(MountInfo m)
+        {
+            MountInfos.Remove(m);
+            
+            //unmount all tags
+            var fls = m.MountTarget.GetFiles();
+            var temp = Stuff.IsDirty;
+            foreach (var item in fls)
+            {
+                var tags = Stuff.GetTagsOfFile(item.FullName);
+                foreach (var titem in tags)
+                {
+                    titem.DeleteFile(item.FullName);
+                }
+            }
+            Stuff.IsDirty = temp;
+        }
 
         public static string[] ParseHtmlItems(string lns, string key1, string key2)
         {
@@ -117,7 +144,7 @@ namespace commander
             IsDirty = true;
         }
 
-        public static IFilesystem DefaultFileSystem = new DiskFilesystem();        
+        public static IFilesystem DefaultFileSystem = new DiskFilesystem();
         public static List<MountInfo> MountInfos = new List<MountInfo>();
         public static ImageList list = null;
         public static List<IndexInfo> Indexes = new List<IndexInfo>();
@@ -263,6 +290,42 @@ namespace commander
 
             return dirs;
         }
+
+        internal static void MountIso(MountInfo mountInfo)
+        {
+            Stuff.MountInfos.Add(mountInfo);
+            //extract .indx/meta.xml
+            var f = mountInfo;
+            if (f.Reader == null)
+            {
+                IsoReader reader = new IsoReader();
+                reader.Parse(f.IsoPath.FullName);
+                f.Reader = reader;
+            }
+            var r = new IsoDirectoryInfoWrapper(f, f.Reader.WorkPvd.RootDir);
+            //r.Parent = null;
+            r.Filesystem = new IsoFilesystem() { IsoFileInfo = f.IsoPath };
+            if (r.Filesystem.FileExist(".indx\\meta.xml"))
+            {
+                var txt = r.Filesystem.ReadAllText(".indx\\meta.xml");
+                var doc = XDocument.Parse(txt);
+                foreach (var item in doc.Descendants("tag"))
+                {
+                    var nm = item.Attribute("name").Value;                    
+                    var tagg = Stuff.AddTag(new TagInfo() { Name = nm });
+                    foreach (var fitem in item.Descendants("file"))
+                    {
+                        var pt = fitem.Value;
+                        var path = Path.Combine(mountInfo.MountTarget.FullName, pt);
+                        var fls = Stuff.GetAllFiles(mountInfo.MountTarget);
+                        var fr = fls.First(z => z.FullName.ToLower() == path.ToLower());
+                        tagg.AddFile(fr);
+                        //tagg.AddFile((r.Filesystem as IsoFilesystem).GetFile(path));
+                    }
+                }
+            }
+        }
+
         public static string CalcMD5(string filename)
         {
             using (var md5 = MD5.Create())
@@ -536,7 +599,7 @@ namespace commander
                     foreach (var aitem in arr1)
                     {
                         var ff = fileentries.First(z => z.Id == aitem);
-                        tag.AddFile(ff.FullName);
+                        tag.AddFile(new FileInfoWrapper(ff.FullName));
                     }
                 }
             }
@@ -593,7 +656,12 @@ namespace commander
             {
                 foreach (var fitem in item.Files)
                 {
-                    var fin = new FileInfo(fitem);
+                    var fin = fitem;
+                    if (fin is IsoFileWrapper)
+                    {
+                        continue;
+                    }
+
                     if (dirdic1.ContainsKey(fin.DirectoryName)) continue;
                     var dd = new DirectoryEntry() { Id = dirind++, Path = fin.DirectoryName };
                     dirdic1.Add(fin.DirectoryName, dd);
@@ -614,7 +682,11 @@ namespace commander
             {
                 foreach (var fitem in item.Files)
                 {
-                    var fin = new FileInfo(fitem);
+                    var fin = fitem;
+                    if (fin is IsoFileWrapper)
+                    {
+                        continue;
+                    }
                     if (filesentrs.Add(fin.FullName))
                     {
                         var den = dirdic1[fin.DirectoryName];
@@ -647,11 +719,19 @@ namespace commander
             sb.AppendLine("<tags>");
             foreach (var item in Stuff.Tags)
             {
+                if (item.Files.All(z => z is IsoFileWrapper))
+                {
+                    continue;
+                }
                 sb.AppendLine($"<tag name=\"{item.Name}\" flags=\"{(item.IsHidden ? "hidden" : "")}\" >");
                 sb.Append($"<file id=\"");
                 foreach (var fitem in item.Files)
                 {
-                    var fen = fldic1[fitem];
+                    if (fitem is IsoFileWrapper)
+                    {
+                        continue;
+                    }
+                    var fen = fldic1[fitem.FullName];
                     sb.Append($"{fen.Id};");
                 }
                 sb.AppendLine($"\"/>");
@@ -821,7 +901,7 @@ namespace commander
             }
             tags = tags.Distinct().ToList();
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine("<?xml version=\"1.0\"/>");
+            sb.AppendLine("<?xml version=\"1.0\"?>");
             sb.AppendLine("<root>");
             sb.AppendLine("<tags>");
             foreach (var item in tags)

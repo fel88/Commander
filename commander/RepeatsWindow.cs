@@ -26,7 +26,7 @@ namespace commander
                 Stuff.GetAllFiles(d, files);
             }
             files.AddRange(dup.Files);
-            files = files.Where(z => z.Exist).ToList();
+            files = files.Where(z => z.Exist && z.Length > 0).ToList();
 
 
             var grp1 = files.GroupBy(z => z.Length).Where(z => z.Count() > 1).ToArray();

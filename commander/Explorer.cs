@@ -24,7 +24,10 @@ namespace commander
             fileListControl2.UpdateList(new DirectoryInfoWrapper(drvs[0].Name), "");
             fileListControl2.TabOwnerString = "right";
             fileListControl1.MountIsoAction = mouseIsoAction;
+            fileListControl2.MountIsoAction = mouseIsoAction;
             fileListControl1.IsoExtractAction = isoExtractAction;
+            fileListControl2.IsoExtractAction = isoExtractAction;
+
             Shown += Explorer_Shown;
 
             fileListControl1.DeleteFileAction += FileListControl1_DeleteFileAction;
@@ -187,17 +190,40 @@ namespace commander
             }
         }
 
-        private void mouseIsoAction(FileListControl sender, IFileInfo obj)
+        private void mouseIsoAction(FileListControl sender, IFileInfo obj, IDirectoryInfo target)
         {
             var t = fileListControl1;
-            if (t == sender)
+            if (target == null)
             {
-                t = fileListControl2;
+
+                if (t == sender)
+                {
+                    t = fileListControl2;
+                }
+                target = t.CurrentDirectory;
             }
-            if (Stuff.Question("Mount: " + obj.FullName + " to " + t.CurrentDirectory.FullName + "?") == DialogResult.Yes)
+            if (Stuff.Question("Mount: " + obj.FullName + " to " + target.FullName + "?") == DialogResult.Yes)
             {
-                Stuff.MountInfos.Add(new MountInfo() { IsoPath = obj, Path = t.CurrentDirectory.FullName });
-                t.UpdateList(t.CurrentDirectory.FullName);
+                var minf = new MountInfo();
+                minf.IsoPath = obj;
+                minf.Path = target.FullName;
+                minf.IsMounted = true;
+                if (minf.Reader == null)
+                {
+                    IsoReader reader = new IsoReader();
+                    reader.Parse(minf.IsoPath.FullName);
+                    minf.Reader = reader;
+                }
+                var r = new IsoDirectoryInfoWrapper(minf, minf.Reader.WorkPvd.RootDir);
+                r.Parent = new DirectoryInfoWrapper(minf.Path);
+                minf.MountTarget = r;
+                r.Filesystem = new IsoFilesystem() { IsoFileInfo = minf.IsoPath };
+
+                Stuff.MountIso(minf);
+                if (target == null)
+                {
+                    t.UpdateList(target.FullName);
+                }
             }
         }
 
@@ -380,11 +406,11 @@ namespace commander
                 {
                     if (fileListControl1.SelectedFile != null && fileListControl2.CurrentTag != null)
                     {
-                        var fn = fileListControl1.SelectedFile.FullName;
+                        var fn = fileListControl1.SelectedFile;
                         if (!fileListControl2.CurrentTag.ContainsFile(fn))
                         {
                             fileListControl2.CurrentTag.AddFile(fn);
-                            MessageBox.Show(Path.GetFileName(fn) + " tagged as " + fileListControl2.CurrentTag.Name);
+                            MessageBox.Show(Path.GetFileName(fn.FullName) + " tagged as " + fileListControl2.CurrentTag.Name);
                             fileListControl2.UpdateTagsList();
                         }
                     }

@@ -41,13 +41,13 @@ namespace commander
         {
             if (listView1.SelectedItems.Count == 0) return;
             var m = listView1.SelectedItems[0].Tag as MountInfo;
-            Stuff.MountInfos.Remove(m);
+            Stuff.Unmount(m);
             UpdateList();
         }
 
         private void UnmountAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Stuff.MountInfos.Clear();
+            Stuff.UnmountAll();
             UpdateList();
         }
     }

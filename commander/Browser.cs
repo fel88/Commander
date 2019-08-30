@@ -20,7 +20,8 @@ namespace commander
         public Browser()
         {
             InitializeComponent();
-            webBrowser1.ScriptErrorsSuppressed = true;
+            webBrowser1.ScriptErrorsSuppressed = true;           
+            
             Stuff.SetDoubleBuffered(listView1);
             foreach (var item in Stuff.Libraries)
             {
@@ -28,12 +29,15 @@ namespace commander
             }
         }
 
-
+        
+        public string UserAgent { get; set; } = "User-Agent: Mozilla/5.0";
+        
         private void TextBox1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
-                webBrowser1.Navigate(textBox1.Text);
+
+                webBrowser1.Navigate(textBox1.Text, null, null, UserAgent);
             }
         }
 

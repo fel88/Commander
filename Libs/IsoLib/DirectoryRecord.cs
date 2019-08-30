@@ -72,7 +72,7 @@ namespace IsoLib
         public DirectoryRecord Parent;
         public uint DataLength;
         public uint LBA;
-
+        public DateTime DateTime;
         public byte LengthName;
         public byte Flags;
 
@@ -90,13 +90,20 @@ namespace IsoLib
         public bool Parse(FileStream fs, PVD pvd)
         {
             var len = fs.ReadByte();
+
             if (len == 0) return false;
+            var extlen = fs.ReadByte();
+            fs.Seek(-1, SeekOrigin.Current);
             byte[] ll = new byte[len];
             ll[0] = (byte)len;
             fs.Read(ll, 1, len - 1);
 
             LBA = BitConverter.ToUInt32(ll, 2);
             DataLength = BitConverter.ToUInt32(ll, 10);
+            DateTime = IsoLib.DiscUtils.IsoUtilities.ToUTCDateTimeFromDirectoryTime(ll, 18);
+            //DateTime = new DateTime(1900 + ll[18], ll[19], ll[20], ll[21], ll[22], ll[23]);
+
+
             LengthName = ll[32];
             Flags = ll[25];
             var nm = ll.Skip(33).Take(LengthName).ToArray();
