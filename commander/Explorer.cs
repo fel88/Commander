@@ -93,7 +93,7 @@ namespace commander
                    splitContainer1.Panel2.Controls.Add(gpreviewer);
                    gpreviewer.SetImage(x);
                }
-               if (new string[] { ".mpg", ".flv", ".wmv", ".mp4", ".avi", ".mkv" }.Contains(x.Extension.ToLower()))
+               if (new string[] { ".mpg", ".flv", ".wmv", ".mp4", ".avi", ".mkv", ".webm" }.Contains(x.Extension.ToLower()))
                {
                    splitContainer1.Panel2.Controls.Add(vpreviewer);
                    vpreviewer.RunVideo(x.FullName);
@@ -640,6 +640,7 @@ namespace commander
             }
         }
     }
+
 }
 
 

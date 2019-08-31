@@ -247,8 +247,9 @@ namespace commander
                     if (rd.ShowDialog() == DialogResult.OK)
                     {
                         File.Move(SelectedFile.FullName, Path.Combine(SelectedFile.Directory.FullName, rd.Value));
+                        UpdateList(CurrentDirectory.FullName);
                     }
-                    UpdateList(CurrentDirectory.FullName);
+                   
                 }
                 else if (SelectedDirectory != null)
                 {
@@ -257,8 +258,8 @@ namespace commander
                     if (rd.ShowDialog() == DialogResult.OK)
                     {
                         Directory.Move(SelectedDirectory.FullName, Path.Combine(SelectedDirectory.Parent.FullName, rd.Value));
-                    }
-                    UpdateList(CurrentDirectory.FullName);
+                        UpdateList(CurrentDirectory.FullName);
+                    }                   
                 }
             }
         }
@@ -1658,30 +1659,9 @@ namespace commander
                 stg.Path = sfd.FileName;
                 stg.Dirs.Add(seld);
                 stg.VolumeId = seld.Name;
-                stg.ProgressReport = (f) =>
-                 {
-                     statusStrip1.Invoke((Action)(() =>
-                     {
-                         toolStripProgressBar1.Value = (int)Math.Round(f * 100);
-                     }));
-
-                 };
-                stg.AfterPackFinished = () =>
-                {
-                    Stuff.Info("Pack to iso complete!");
-                    statusStrip1.Invoke((Action)(() =>
-                    {
-                        toolStripProgressBar1.Visible = false;
-                    }));
-                };
-                stg.BeforePackStart = () =>
-                 {
-                     statusStrip1.Invoke((Action)(() =>
-                     {
-                         toolStripProgressBar1.Value = 0;
-                         toolStripProgressBar1.Visible = true;
-                     }));
-                 };
+                
+       
+                
                 Stuff.PackToIso(stg);
 
 
@@ -2040,26 +2020,7 @@ namespace commander
                 stg.Path = sfd.FileName;
                 stg.IncludeMeta = true;
                 stg.Root = SelectedDirectory;
-                stg.ProgressReport = (x) =>
-                {
-                    statusStrip1.Invoke((Action)(() =>
-                    {
-                        toolStripProgressBar1.Value = (int)Math.Round(x * 100);
-                    }));
-                };
-                stg.BeforePackStart = () =>
-                {
-                    statusStrip1.Invoke((Action)(() =>
-                    {
-                        toolStripProgressBar1.Value = 0;
-                        toolStripProgressBar1.Visible = true;
-                    }));
-                };
-                stg.AfterPackFinished = () =>
-                {
-                    Stuff.Info("Pack complete!"); statusStrip1.Invoke((Action)(() =>
-{ toolStripProgressBar1.Visible = false; }));
-                };
+                
                 Stuff.PackToIso(stg);
             }
         }

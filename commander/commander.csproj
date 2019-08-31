@@ -124,6 +124,7 @@
     <Compile Include="Explorer.Designer.cs">
       <DependentUpon>Explorer.cs</DependentUpon>
     </Compile>
+    <Compile Include="FileRoutines.cs" />
     <Compile Include="FilesystemLibrary.cs" />
     <Compile Include="DjvuReader.cs">
       <SubType>UserControl</SubType>
@@ -147,6 +148,12 @@
       <DependentUpon>IndexesManagerWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="IsoFilesystem.cs" />
+    <Compile Include="IsoProgressDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="IsoProgressDialog.Designer.cs">
+      <DependentUpon>IsoProgressDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="PdfPreviewer.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -372,6 +379,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="IndexesManagerWindow.resx">
       <DependentUpon>IndexesManagerWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="IsoProgressDialog.resx">
+      <DependentUpon>IsoProgressDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PdfPreviewer.resx">
       <DependentUpon>PdfPreviewer.cs</DependentUpon>

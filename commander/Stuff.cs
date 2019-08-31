@@ -24,9 +24,9 @@ namespace commander
         public static Dictionary<string, Tuple<Bitmap, int>> ExeIcons = new Dictionary<string, Tuple<Bitmap, int>>();
         public static Tuple<Bitmap, int> GetBitmapOfFile(string fn)
         {
-            
+
             var d = Path.GetExtension(fn).ToLower();
-            
+
             if (d == ".exe" || d == ".ico")
             {
                 if (!ExeIcons.ContainsKey(fn))
@@ -38,7 +38,7 @@ namespace commander
                     {
                         try
                         {
-                            var bb = Bitmap.FromHicon(ico.Handle);                            
+                            var bb = Bitmap.FromHicon(ico.Handle);
                             bb.MakeTransparent();
                             //var bb = ico;
                             Stuff.list.Images.Add(bb);
@@ -63,7 +63,7 @@ namespace commander
                     try
                     {
                         var bb = Bitmap.FromHicon(ico.Handle);
-                         bb.MakeTransparent();
+                        bb.MakeTransparent();
                         //var bb = ico;
                         Stuff.list.Images.Add(bb);
                         Icons.Add(d, new Tuple<Bitmap, int>(bb, Stuff.list.Images.Count - 1));
@@ -639,8 +639,17 @@ namespace commander
             }
         }
 
+        public static bool IsTagExist(string name)
+        {
+            //todo: compare synonyms too
+            return Tags.Any(z => z.Name.ToLower() == name.ToLower());
+        }
         internal static void RenameTag(TagInfo selectedTag, string value)
         {
+            if (IsTagExist(value))
+            {
+                throw new CommanderException("duplication of tag names: " + value);
+            }
             selectedTag.Name = value;
             Stuff.IsDirty = true;
             TagsListChanged?.Invoke();
@@ -896,113 +905,16 @@ namespace commander
             fs.Write(nn, 0, nn.Length);
             fs.Write(bb, 0, bb.Length);
         }
-        private static string GenerateMetaXml(IFileInfo[] fls, IDirectoryInfo root)
-        {
-            //var fls = Stuff.GetAllFiles(dir);
-            List<TagInfo> tags = new List<TagInfo>();
-            foreach (var item in fls)
-            {
-                var ww = Stuff.Tags.Where(z => z.ContainsFile(item));
-                tags.AddRange(ww);
-            }
-            tags = tags.Distinct().ToList();
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("<?xml version=\"1.0\"?>");
-            sb.AppendLine("<root>");
-            sb.AppendLine("<tags>");
-            foreach (var item in tags)
-            {
-                sb.AppendLine($"<tag name=\"{item.Name}\">");
-                var aa = fls.Where(z => item.ContainsFile(z)).ToArray();
-                foreach (var aitem in aa)
-                {
-                    sb.AppendLine($"<file><![CDATA[{aitem.FullName.Replace(root.FullName, "").Trim(new char[] { '\\' })}]]></file>");
-                }
-                sb.AppendLine($"</tag>");
-            }
-            sb.AppendLine("</tags>");
-            sb.AppendLine("</root>");
-
-            return sb.ToString();
-
-        }
 
 
 
-        public static void PopulateFromFolder(CDBuilder builder, IDirectoryInfo di, string basePath)
-        {
-            foreach (IFileInfo file in di.GetFiles())
-            {
-                if (file is VirtualFileInfo)
-                {
-                    var vfi = file as VirtualFileInfo;
-                    builder.AddFile(file.FullName.Substring(basePath.Length), vfi.FileInfo.FullName);
-                }
-                else
-                {
-                    builder.AddFile(file.FullName.Substring(basePath.Length), file.FullName);
-                }
-            }
-
-            foreach (IDirectoryInfo dir in di.GetDirectories())
-            {
-                PopulateFromFolder(builder, dir, basePath);
-            }
-        }
 
         internal static void PackToIso(PackToIsoSettings stg)
         {
 
-            CDBuilder builder = new CDBuilder();
-            builder.ProgresReport = stg.ProgressReport;
-            List<IFileInfo> files = new List<IFileInfo>();
-            foreach (var item in stg.Dirs)
-            {
-                Stuff.GetAllFiles(item, files);
-            }
-            files.AddRange(stg.Files);
-
-            if (stg.IncludeMeta)
-            {
-                var mm = GenerateMetaXml(files.ToArray(), stg.Root);
-                builder.AddDirectory(".indx");
-                builder.AddFile(".indx\\meta.xml", Encoding.UTF8.GetBytes(mm));
-            }
-            builder.VolumeIdentifier = stg.VolumeId;
-            Thread th = new Thread(() =>
-            {
-                if (stg.BeforePackStart != null)
-                {
-                    stg.BeforePackStart();
-                }
-                foreach (var item in stg.Dirs)
-                {
-                    PopulateFromFolder(builder, item, item.FullName);
-                }
-
-                foreach (var item in stg.Files)
-                {
-                    if (item is VirtualFileInfo)
-                    {
-                        var vfi = item as VirtualFileInfo;
-                        builder.AddFile(item.FullName, vfi.FileInfo.FullName);
-                    }
-                    else
-                    {
-                        builder.AddFile(item.FullName, item.FullName);
-                    }
-                }
-               
-                builder.Build(stg.Path);
-
-                if (stg.AfterPackFinished != null)
-                {
-                    stg.AfterPackFinished();
-                }
-
-            });
-            th.IsBackground = true;
-            th.Start();
+            IsoProgressDialog iso = new IsoProgressDialog();
+            iso.Run(stg);
+            iso.ShowDialog();
 
             return;
             /*var fls = Stuff.GetAllFiles(dir);
@@ -1085,9 +997,14 @@ namespace commander
         public string Path;
         public Action BeforePackStart;
         public Action AfterPackFinished;
-        public Action<float> ProgressReport;
+        public Action<long, long> ProgressReport;
         public string VolumeId = "Volume";
         public IDirectoryInfo Root;
         public bool IncludeMeta = false;
+    }
+
+    public class CommanderException : Exception
+    {
+        public CommanderException(string msg) : base(msg) { }
     }
 }

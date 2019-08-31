@@ -53,13 +53,24 @@ namespace IsoLib.DiscUtils
         {
             using (Stream src = Build())
             {
+
                 byte[] buffer = new byte[64 * 1024];
                 int numRead = src.Read(buffer, 0, buffer.Length);
+                long total = 0;
+                ProgresReport(0, src.Length);
+                total += numRead;
                 while (numRead != 0)
                 {
+                    if (ProgresReport != null)
+                    {
+
+                        ProgresReport(total, src.Length);
+                    }
                     output.Write(buffer, 0, numRead);
                     numRead = src.Read(buffer, 0, buffer.Length);
+                    total += numRead;
                 }
+                ProgresReport(src.Length, src.Length);
             }
         }
 
@@ -292,7 +303,7 @@ namespace IsoLib.DiscUtils
             }
         }
 
-        public Action<float> ProgresReport;
+        public Action<long, long> ProgresReport;
 
         internal List<BuilderExtent> FixExtents(out long totalLength)
         {
@@ -338,20 +349,10 @@ namespace IsoLib.DiscUtils
 
             // ####################################################################
             // # 1. Fix file locations
-            // ####################################################################
-            if (ProgresReport != null)
-            {
-                ProgresReport(0);
-            }
-            // Find end of the file data, fixing the files in place as we go
-            int total = _files.Count + _dirs.Count * 2;
-            int cnt = 0;
+            // ####################################################################            
+            // Find end of the file data, fixing the files in place as we go            
             foreach (BuildFileInfo fi in _files)
             {
-                if (ProgresReport != null)
-                {
-                    ProgresReport(cnt / (float)total);
-                }
                 primaryLocationTable.Add(fi, (uint)(focus / IsoUtilities.SectorSize));
                 supplementaryLocationTable.Add(fi, (uint)(focus / IsoUtilities.SectorSize));
                 FileExtent extent = new FileExtent(fi, focus);
@@ -377,10 +378,6 @@ namespace IsoLib.DiscUtils
             long startOfFirstDirData = focus;
             foreach (BuildDirectoryInfo di in _dirs)
             {
-                if (ProgresReport != null)
-                {
-                    ProgresReport(cnt / (float)total);
-                }
                 primaryLocationTable.Add(di, (uint)(focus / IsoUtilities.SectorSize));
                 DirectoryExtent extent = new DirectoryExtent(di, primaryLocationTable, Encoding.ASCII, focus);
                 fixedRegions.Add(extent);
@@ -391,19 +388,12 @@ namespace IsoLib.DiscUtils
             long startOfSecondDirData = focus;
             foreach (BuildDirectoryInfo di in _dirs)
             {
-                if (ProgresReport != null)
-                {
-                    ProgresReport(cnt / (float)total);
-                }
                 supplementaryLocationTable.Add(di, (uint)(focus / IsoUtilities.SectorSize));
                 DirectoryExtent extent = new DirectoryExtent(di, supplementaryLocationTable, suppEncoding, focus);
                 fixedRegions.Add(extent);
                 focus += Utilities.RoundUp(extent.Length, IsoUtilities.SectorSize);
             }
-            if (ProgresReport != null)
-            {
-                ProgresReport(1);
-            }
+            
             // ####################################################################
             // # 3. Fix path tables
             // ####################################################################

@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace commander
@@ -23,12 +17,36 @@ namespace commander
             set { textBox1.Text = value; }
         }
 
+        public Func<string, Tuple<bool,string>> Validation;
         private void textBox1_KeyDown(object sender, KeyEventArgs e)
-        {
+        {            
             if (e.KeyCode == Keys.Enter)
             {
-                DialogResult = DialogResult.OK;
-                Close();
+                if (Validation != null)
+                {
+                    var res = Validation(textBox1.Text);
+                    if (res.Item1)
+                    {
+                        DialogResult = DialogResult.OK;
+                        Close();
+                    }
+                    else
+                    {
+                        if (!string.IsNullOrEmpty(res.Item2))
+                        {
+                            Stuff.Error(res.Item2);
+                        }
+                        else
+                        {
+                            Stuff.Error("Invalid name.");
+                        }
+                    }
+                }
+                else
+                {
+                    DialogResult = DialogResult.OK;
+                    Close();
+                }
             }
             if (e.KeyCode == Keys.Escape)
             {

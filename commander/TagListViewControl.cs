@@ -522,14 +522,20 @@ namespace commander
             if (SelectedTag == null) return;
 
             RenameDialog rd = new RenameDialog();
+            rd.Validation = (x) =>
+            {
+                if (Stuff.IsTagExist(x))
+                {
+                    return new Tuple<bool, string>(false, "Same tag name already exist!");
+                }
+                return new Tuple<bool, string>(true, null);
+            };
             rd.Value = SelectedTag.Name;
             if (rd.ShowDialog() == DialogResult.OK)
             {
                 Stuff.RenameTag(SelectedTag, rd.Value);
+                UpdateList(null);
             }
-            UpdateList(null);
-
-
         }
     }
 }
