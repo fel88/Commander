@@ -139,7 +139,7 @@ namespace commander
                 var fileInfo = listView1.Items[i].Tag as IFileInfo;
                 if (fileInfo == null) continue;
 
-                if(fileInfo.Filesystem.FileExist(fileInfo.FullName))
+                if (fileInfo.Filesystem.FileExist(fileInfo.FullName))
                 //if (File.Exists(fileInfo.FullName))
                 {
                     tp = Stuff.GetBitmapOfFile(fileInfo.FullName);
@@ -249,7 +249,7 @@ namespace commander
                         File.Move(SelectedFile.FullName, Path.Combine(SelectedFile.Directory.FullName, rd.Value));
                         UpdateList(CurrentDirectory.FullName);
                     }
-                   
+
                 }
                 else if (SelectedDirectory != null)
                 {
@@ -259,7 +259,7 @@ namespace commander
                     {
                         Directory.Move(SelectedDirectory.FullName, Path.Combine(SelectedDirectory.Parent.FullName, rd.Value));
                         UpdateList(CurrentDirectory.FullName);
-                    }                   
+                    }
                 }
             }
         }
@@ -1659,9 +1659,9 @@ namespace commander
                 stg.Path = sfd.FileName;
                 stg.Dirs.Add(seld);
                 stg.VolumeId = seld.Name;
-                
-       
-                
+
+
+
                 Stuff.PackToIso(stg);
 
 
@@ -1691,7 +1691,7 @@ namespace commander
             var fr = Stuff.MountInfos.FirstOrDefault(z => z.FullPath == SelectedDirectory.FullName);
             if (fr == null) return;
 
-            Stuff.Unmount(fr);            
+            Stuff.Unmount(fr);
             UpdateList(CurrentDirectory.FullName);
 
         }
@@ -2020,7 +2020,7 @@ namespace commander
                 stg.Path = sfd.FileName;
                 stg.IncludeMeta = true;
                 stg.Root = SelectedDirectory;
-                
+
                 Stuff.PackToIso(stg);
             }
         }
@@ -2145,7 +2145,7 @@ namespace commander
 
         private void MountToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
         {
-           
+
         }
 
         private void Aa_Click(object sender, EventArgs e)
@@ -2181,7 +2181,7 @@ namespace commander
 
         private void IsoToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
         {
-            var mi = mountToolStripMenuItem ;
+            var mi = mountToolStripMenuItem;
             mi.DropDownItems.Clear();
             var a1 = new ToolStripMenuItem("here") { Tag = CurrentDirectory };
             a1.Click += A1_Click;
@@ -2197,6 +2197,14 @@ namespace commander
                 mi.DropDownItems.Add(aa);
 
             }
+        }
+
+        private void AsImageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SelectedFile == null) return;
+            var txt = SelectedFile.Filesystem.BitmapFromFile(SelectedFile);
+            Clipboard.SetImage(txt);
+            Stuff.Info(SelectedFile.Name + " image saved in clipboard.");
         }
     }
     public enum ViewModeEnum

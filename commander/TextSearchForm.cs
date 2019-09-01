@@ -25,7 +25,28 @@ namespace commander
             textBox8.AutoCompleteCustomSource = acsc;
             previewPbox.SizeMode = PictureBoxSizeMode.Zoom;
             previewPbox.Dock = DockStyle.Fill;
+            pictureBox1.Click += PictureBox1_Click;
+            pictureBox1.PreviewKeyDown += PictureBox1_PreviewKeyDown;
         }
+
+        private void PictureBox1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            if (e.Modifiers == Keys.Control && e.KeyCode == Keys.V)
+            {
+                var img = Clipboard.GetImage();
+                if (img != null)
+                {
+                    pictureBox1.Image = img;
+                }
+            }
+        }
+
+        private void PictureBox1_Click(object sender, EventArgs e)
+        {
+            pictureBox1.Focus();
+        }
+
+
 
         PictureBox previewPbox = new PictureBox();
 
@@ -193,6 +214,7 @@ namespace commander
                             fileProcessed();
                             if (!IsExtFilterPass(textBox3.Text, item.Extension)) continue;
                             if (!IsMd5FilterPass(textBox6.Text, item)) continue;
+                            if (!IsImageFilter(item)) continue;
                             if (tagStorageSearchMode)
                             {
 
@@ -261,7 +283,23 @@ namespace commander
             return (md5 == text);
 
         }
+        private bool IsImageFilter(IFileInfo item)
+        {
+            if (!checkBox3.Checked) return true;
+            var h = ImagesDeduplicationWindow.GetImageHash(item.FullName);
+            return Diff(h, imgHashInt) < 50;
 
+        }
+
+        public int Diff(int[] ar1, int[] ar2)
+        {
+            int d = 0;
+            for (int i = 0; i < ar1.Length; i++)
+            {
+                d += Math.Abs(ar1[i] - ar2[i]);
+            }
+            return d;
+        }
         public void rec1(DirectoryInfo d, Action fileProcessed)
         {
 
@@ -300,6 +338,8 @@ namespace commander
         }
 
         Thread searchThread = null;
+        string imgHash = null;
+        int[] imgHashInt = null;
         private void button1_Click(object sender, EventArgs e)
         {
 
@@ -370,6 +410,11 @@ namespace commander
              listView2.Items.Clear();
              searchHash.Clear();
 
+             if (checkBox3.Checked)
+             {
+                 imgHashInt = ImagesDeduplicationWindow.GetImageHash(pictureBox1.Image);
+                 imgHash = ImagesDeduplicationWindow.ToHash(imgHashInt);
+             }
              foreach (var d in dd)
              {
                  loop(d, () =>

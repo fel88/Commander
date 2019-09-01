@@ -30,29 +30,45 @@ namespace commander
             }
             return sb.ToString();
         }
-        public static int[] GetImageHash(string path1)
+
+        public static Dictionary<string, int[]> Cache = new Dictionary<string, int[]>();
+        public static int[] GetImageHash(string path1, int step = 40)
+        {
+            lock (Cache)
+            {
+                if (Cache.ContainsKey(path1))
+                {
+                    return Cache[path1];
+                }
+                using (var bmp = Bitmap.FromFile(path1))
+                {
+                    Cache.Add(path1, GetImageHash(bmp, step));
+                }
+                return Cache[path1];
+            }            
+        }
+        public static int[] GetImageHash(Image bmp, int step = 40)
         {
 
-            int step = 40;
             int levels = 255 / step;
             int[,] hist = new int[levels + 1, 3];
             int size = 0;
-            using (var bmp = Bitmap.FromFile(path1))
+
+
+            DirectBitmap dbm = new DirectBitmap(bmp as Bitmap);
+            size = bmp.Width * bmp.Height;
+            for (int i = 0; i < dbm.Width; i++)
             {
-                DirectBitmap dbm = new DirectBitmap(bmp as Bitmap);
-                size = bmp.Width * bmp.Height;
-                for (int i = 0; i < dbm.Width; i++)
+                for (int j = 0; j < dbm.Height; j++)
                 {
-                    for (int j = 0; j < dbm.Height; j++)
-                    {
-                        var px = dbm.GetPixel(i, j);
-                        hist[(px.R / step), 0]++;
-                        hist[(px.G / step), 1]++;
-                        hist[(px.B / step), 2]++;
-                    }
+                    var px = dbm.GetPixel(i, j);
+                    hist[(px.R / step), 0]++;
+                    hist[(px.G / step), 1]++;
+                    hist[(px.B / step), 2]++;
                 }
-                dbm.Dispose();
             }
+            dbm.Dispose();
+
             List<int> ret = new List<int>();
             for (int i = 0; i < 3; i++)
             {
@@ -66,7 +82,6 @@ namespace commander
             return ret.ToArray();
 
         }
-
         public static int Dist(int[] d1, int[] d2)
         {
             int ret = 0;

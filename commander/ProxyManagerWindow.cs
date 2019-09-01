@@ -156,13 +156,13 @@ namespace commander
 
         private void ToolStripButton3_Click(object sender, EventArgs e)
         {
-            Thread th = new Thread(SimpleHttpProxyServer.Run);
+            /*Thread th = new Thread(SimpleHttpProxyServer.Run);
             th.IsBackground = true;
             th.Start();
 
 
 
-            return;
+            return;*/
 
             if (server == null)
             {
