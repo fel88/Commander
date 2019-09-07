@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Security;
@@ -20,7 +21,7 @@ namespace commander
             InitializeComponent();
             Stuff.SetDoubleBuffered(listView1);
             Shown += UrlBookmarksWindow_Shown;
-            
+
             UpdateList();
             pictureBox1.Image = DrawInfoIcon();
             pictureBox1.MouseHover += PictureBox1_MouseHover;
@@ -63,7 +64,7 @@ namespace commander
                 var bm = listView1.SelectedItems[0].Tag as UrlBookmark;
                 RenameDialog rd = new RenameDialog();
                 rd.Value = bm.Info;
-                if (rd.ShowDialog() == DialogResult.OK) 
+                if (rd.ShowDialog() == DialogResult.OK)
                 {
                     bm.Info = rd.Value;
                     listView1.SelectedItems[0].SubItems[1].Text = bm.Info;
@@ -137,7 +138,7 @@ namespace commander
             listView1.Items.Clear();
             foreach (var item in Stuff.UrlBookmarks)
             {
-                
+
                 bool pass = false;
                 if (item.OriginalUrl.ToLower().Contains(watermark1.Text.ToLower())) pass = true;
                 if (!string.IsNullOrEmpty(item.Info) && item.Info.ToLower().Contains(watermark1.Text.ToLower())) pass = true;
@@ -188,53 +189,42 @@ namespace commander
             if (listView1.SelectedItems[0].Tag is UrlBookmark)
             {
                 var r = listView1.SelectedItems[0].Tag as UrlBookmark;
-                using (WebClient wc = new WebClient())
+
+                try
                 {
-                    try
+                    HttpWebRequest req = HttpWebRequest.Create(r.Uri.ToString()) as HttpWebRequest;
+
+                    var resp = req.GetResponse() as HttpWebResponse;
+                    var strm = resp.GetResponseStream();
+                    var enc = Encoding.GetEncoding(resp.CharacterSet);
+                    var stream = new StreamReader(strm, enc);
+                    var str = stream.ReadToEnd();
+
+                    //   var str = wc.DownloadString(r.Uri.ToString());
+
+                    var list = Stuff.ParseHtmlItems(str, "<title", "/title>");
+                    var list2 = Stuff.ParseHtmlItems(str, "<meta", "/>");
+                    if (list.Any())
                     {
-                        var str = wc.DownloadString(r.Uri.ToString());
 
-                        var list = Stuff.ParseHtmlItems(str, "<title", "/title>");
-                        var list2 = Stuff.ParseHtmlItems(str, "<meta", "/>");
-                        if (list.Any())
-                        {
-
-                            var targetEnc = Encoding.Default;
-                            if (str.ToLower().Contains("charset=utf-8") || (str.ToLower().Contains("charset=\"utf-8")))
-                            {
-                                targetEnc = Encoding.UTF8;
-                            }
-                            var encl = list2.FirstOrDefault(z => z.Contains("charset"));
-                            if (encl != null)
-                            {
-                                var aa = encl.Split(new char[] { '\"', '/' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
-
-                                if (Encoding.GetEncodings().Any(z => z.Name == aa.Last().ToLower()))
-                                {
-                                    targetEnc = Encoding.GetEncoding(aa.Last());
-                                }
-                            }
-                            //CP1251UTF - 8
-
-
-                            var strr = list[0];
-                            var s1 = strr.IndexOf('>');
-                            strr = strr.Substring(s1 + 1);
-                            s1 = strr.IndexOf('<');
-                            strr = strr.Substring(0, s1);
-                            strr = targetEnc.GetString(Encoding.Default.GetBytes(strr));
-                            Clipboard.SetText(strr);
-                            r.Info = strr;
-                            listView1.SelectedItems[0].SubItems[1].Text = r.Info;
-                            Stuff.IsDirty = true;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Stuff.Error(ex.Message);
+                        var strr = list[0];
+                        var s1 = strr.IndexOf('>');
+                        strr = strr.Substring(s1 + 1);
+                        s1 = strr.IndexOf('<');
+                        strr = strr.Substring(0, s1);
+                        //strr = targetEnc.GetString(Encoding.Default.GetBytes(strr));
+                        Clipboard.SetText(strr);
+                        r.Info = strr;
+                        listView1.SelectedItems[0].SubItems[1].Text = r.Info;
+                        Stuff.IsDirty = true;
                     }
                 }
+                catch (Exception ex)
+                {
+                    Stuff.Error(ex.Message);
+                }
             }
+
         }
 
         private void AddDirectoryToolStripMenuItem_Click(object sender, EventArgs e)

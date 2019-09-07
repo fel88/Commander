@@ -14,6 +14,7 @@ using System.Xml.Linq;
 using PluginLib;
 using System.Threading;
 using IsoLib;
+using System.Management;
 
 namespace commander
 {
@@ -1097,11 +1098,85 @@ namespace commander
             UpdateDrivesList();
             comboBox1.DropDownWidth = DropDownWidth(comboBox1);
         }
+        public class HardDrive
+        {
+            public string Model;
+            public string Type;
+            public string SerialNo;
+            public string InterfaceType { get; set; }
+            public string Caption { get; set; }
+        }
 
         private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             var citem = comboBox1.SelectedItem as ComboBoxItem;
             var di = citem.Tag as DriveInfo;
+            List<HardDrive> hdCollection = new List<HardDrive>();
+
+            //Win32_LogicalDiskToPartition
+            ManagementObjectSearcher searcher = new
+   ManagementObjectSearcher("SELECT * FROM Win32_DiskDrive");
+
+            foreach (ManagementObject wmi_HD in searcher.Get())
+            {
+                HardDrive hd = new HardDrive();
+                /*hd.Caption = wmi_HD["Name"].ToString();
+                hd.Caption = wmi_HD["Caption"].ToString();
+                hd.SerialNo = wmi_HD.GetPropertyValue("SerialNumber").ToString();//get the serailNumber of diskdrive
+                continue;*/
+
+                hd.Model = wmi_HD["Model"].ToString();
+                hd.Type = wmi_HD["InterfaceType"].ToString();
+                hd.InterfaceType = wmi_HD["InterfaceType"].ToString();
+                hd.Caption = wmi_HD["Caption"].ToString();
+                hd.Caption = wmi_HD["Name"].ToString();
+                hd.SerialNo = wmi_HD.GetPropertyValue("SerialNumber").ToString();//get the serailNumber of diskdrive
+
+                hdCollection.Add(hd);
+            }
+            searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_DiskPartition");
+            List<object> strs = new List<object>();
+            foreach (var queryObj in searcher.Get())
+            {
+                Console.WriteLine("-----------------------------------");
+                Console.WriteLine("Win32_DiskPartition instance");
+                var aa = new { Name = (string)queryObj["Name"], Index = (uint)queryObj["Index"], DiskIndex = (uint)queryObj["DiskIndex"], BootPartition = (bool)queryObj["BootPartition"] };
+                strs.Add(aa);
+
+            }
+            /*searcher = new
+   ManagementObjectSearcher("SELECT * FROM Win32_PhysicalMedia");
+
+            int i = 0;
+            foreach (ManagementObject wmi_HD in searcher.Get())
+            {
+                // get the hard drive from collection
+                // using index                
+                HardDrive hd = (HardDrive)hdCollection[i];
+
+                // get the hardware serial no.
+                if (wmi_HD["SerialNumber"] == null)
+                    hd.SerialNo = "None";
+                else
+                    hd.SerialNo = wmi_HD["SerialNumber"].ToString();
+
+                ++i;
+            }*/
+
+            /*var hFile = NativeMethods.CreateFile(
+      string.Format("{0}\\Vol:", di.Name),
+      NativeMethods.GENERIC_READ, 0, (IntPtr)0, NativeMethods.OPEN_EXISTING, 0, (IntPtr)0);*/
+
+            /*byte[] data = new byte[512];
+            int returned;
+            int result = NativeMethods.DeviceIoControl(
+                         hFile, IOCTL_DISK_GET_STORAGEID, IntPtr.Zero, 0,
+                         data, data.Length, out returned, IntPtr.Zero);
+            if (result != 0)
+            {
+                m_storageID = STORAGE_IDENTIFICATION.FromBytes(data);
+            }
+            */
             if (!di.IsReady) { Stuff.Error("Device is not ready!"); return; }
             textBox1.Text = di.Name;
             UpdateList(textBox1.Text);

@@ -113,7 +113,7 @@
             this.listView1.GridLines = true;
             this.listView1.Location = new System.Drawing.Point(3, 193);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(309, 121);
+            this.listView1.Size = new System.Drawing.Size(310, 121);
             this.listView1.TabIndex = 2;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -157,7 +157,7 @@
             this.listView2.GridLines = true;
             this.listView2.Location = new System.Drawing.Point(3, 320);
             this.listView2.Name = "listView2";
-            this.listView2.Size = new System.Drawing.Size(309, 47);
+            this.listView2.Size = new System.Drawing.Size(310, 47);
             this.listView2.TabIndex = 6;
             this.listView2.UseCompatibleStateImageBehavior = false;
             this.listView2.View = System.Windows.Forms.View.Details;
@@ -185,10 +185,10 @@
             // 
             this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox1.Location = new System.Drawing.Point(318, 193);
+            this.pictureBox1.Location = new System.Drawing.Point(319, 193);
             this.pictureBox1.Name = "pictureBox1";
             this.tableLayoutPanel1.SetRowSpan(this.pictureBox1, 3);
-            this.pictureBox1.Size = new System.Drawing.Size(309, 228);
+            this.pictureBox1.Size = new System.Drawing.Size(310, 228);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 7;
             this.pictureBox1.TabStop = false;
@@ -219,7 +219,7 @@
             this.toolStripProgressBar1});
             this.statusStrip1.Location = new System.Drawing.Point(0, 424);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(630, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(632, 22);
             this.statusStrip1.TabIndex = 12;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -257,7 +257,7 @@
             this.listView3.GridLines = true;
             this.listView3.Location = new System.Drawing.Point(3, 373);
             this.listView3.Name = "listView3";
-            this.listView3.Size = new System.Drawing.Size(309, 48);
+            this.listView3.Size = new System.Drawing.Size(310, 48);
             this.listView3.TabIndex = 14;
             this.listView3.UseCompatibleStateImageBehavior = false;
             this.listView3.View = System.Windows.Forms.View.Details;
@@ -315,7 +315,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 54.34783F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 22.82609F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 22.82609F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(630, 424);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(632, 424);
             this.tableLayoutPanel1.TabIndex = 15;
             // 
             // panel1
@@ -337,16 +337,14 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(3, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(624, 104);
+            this.panel1.Size = new System.Drawing.Size(626, 104);
             this.panel1.TabIndex = 16;
             // 
             // textBox3
             // 
-            this.textBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBox3.Location = new System.Drawing.Point(368, 11);
             this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(64, 20);
+            this.textBox3.Size = new System.Drawing.Size(66, 20);
             this.textBox3.TabIndex = 14;
             this.textBox3.Text = "10";
             this.textBox3.TextChanged += new System.EventHandler(this.TextBox3_TextChanged);
@@ -490,11 +488,9 @@
             // 
             // textBox2
             // 
-            this.textBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBox2.Location = new System.Drawing.Point(368, 33);
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(64, 20);
+            this.textBox2.Size = new System.Drawing.Size(66, 20);
             this.textBox2.TabIndex = 11;
             this.textBox2.Text = "1000";
             this.textBox2.TextChanged += new System.EventHandler(this.TextBox2_TextChanged);
@@ -509,7 +505,7 @@
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.Location = new System.Drawing.Point(3, 113);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(624, 74);
+            this.groupBox1.Size = new System.Drawing.Size(626, 74);
             this.groupBox1.TabIndex = 17;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Similarity filter settings";
@@ -559,7 +555,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(630, 446);
+            this.ClientSize = new System.Drawing.Size(632, 446);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.statusStrip1);
             this.Name = "VkExtractorForm";
