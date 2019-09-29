@@ -60,6 +60,7 @@
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.renameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyPathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cartridgeEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -142,14 +143,14 @@
             // youtubeToolStripMenuItem1
             // 
             this.youtubeToolStripMenuItem1.Name = "youtubeToolStripMenuItem1";
-            this.youtubeToolStripMenuItem1.Size = new System.Drawing.Size(118, 22);
+            this.youtubeToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.youtubeToolStripMenuItem1.Text = "youtube";
             this.youtubeToolStripMenuItem1.Click += new System.EventHandler(this.YoutubeToolStripMenuItem1_Click);
             // 
             // vkToolStripMenuItem
             // 
             this.vkToolStripMenuItem.Name = "vkToolStripMenuItem";
-            this.vkToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.vkToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.vkToolStripMenuItem.Text = "vk";
             this.vkToolStripMenuItem.Click += new System.EventHandler(this.vkToolStripMenuItem_Click);
             // 
@@ -157,7 +158,8 @@
             // 
             this.containersToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.isoEditorToolStripMenuItem,
-            this.mountListToolStripMenuItem});
+            this.mountListToolStripMenuItem,
+            this.cartridgeEditorToolStripMenuItem});
             this.containersToolStripMenuItem.Name = "containersToolStripMenuItem";
             this.containersToolStripMenuItem.Size = new System.Drawing.Size(76, 20);
             this.containersToolStripMenuItem.Text = "Containers";
@@ -165,14 +167,14 @@
             // isoEditorToolStripMenuItem
             // 
             this.isoEditorToolStripMenuItem.Name = "isoEditorToolStripMenuItem";
-            this.isoEditorToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.isoEditorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.isoEditorToolStripMenuItem.Text = "iso editor";
             this.isoEditorToolStripMenuItem.Click += new System.EventHandler(this.IsoEditorToolStripMenuItem_Click);
             // 
             // mountListToolStripMenuItem
             // 
             this.mountListToolStripMenuItem.Name = "mountListToolStripMenuItem";
-            this.mountListToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.mountListToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.mountListToolStripMenuItem.Text = "mount list";
             this.mountListToolStripMenuItem.Click += new System.EventHandler(this.MountListToolStripMenuItem_Click);
             // 
@@ -262,14 +264,14 @@
             // indexesListToolStripMenuItem
             // 
             this.indexesListToolStripMenuItem.Name = "indexesListToolStripMenuItem";
-            this.indexesListToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.indexesListToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
             this.indexesListToolStripMenuItem.Text = "full-text manager";
             this.indexesListToolStripMenuItem.Click += new System.EventHandler(this.IndexesListToolStripMenuItem_Click);
             // 
             // partialIndexMountListToolStripMenuItem
             // 
             this.partialIndexMountListToolStripMenuItem.Name = "partialIndexMountListToolStripMenuItem";
-            this.partialIndexMountListToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.partialIndexMountListToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
             this.partialIndexMountListToolStripMenuItem.Text = "distributed index";
             this.partialIndexMountListToolStripMenuItem.Click += new System.EventHandler(this.PartialIndexMountListToolStripMenuItem_Click);
             // 
@@ -311,6 +313,13 @@
             this.copyPathToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
             this.copyPathToolStripMenuItem.Text = "copy path";
             this.copyPathToolStripMenuItem.Click += new System.EventHandler(this.CopyPathToolStripMenuItem_Click);
+            // 
+            // cartridgeEditorToolStripMenuItem
+            // 
+            this.cartridgeEditorToolStripMenuItem.Name = "cartridgeEditorToolStripMenuItem";
+            this.cartridgeEditorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.cartridgeEditorToolStripMenuItem.Text = "cartridge editor";
+            this.cartridgeEditorToolStripMenuItem.Click += new System.EventHandler(this.CartridgeEditorToolStripMenuItem_Click);
             // 
             // mdi
             // 
@@ -366,5 +375,6 @@
         private System.Windows.Forms.ToolStripMenuItem browserToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem urlBookmarksToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem partialIndexMountListToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem cartridgeEditorToolStripMenuItem;
     }
 }

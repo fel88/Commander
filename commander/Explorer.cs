@@ -93,7 +93,7 @@ namespace commander
                    splitContainer1.Panel2.Controls.Add(gpreviewer);
                    gpreviewer.SetImage(x);
                }
-               if (new string[] { ".mpg", ".flv", ".wmv", ".mp4", ".avi", ".mkv", ".webm" }.Contains(x.Extension.ToLower()))
+               if (new string[] { ".mpg", ".flv", ".wmv", ".mp4", ".avi", ".mkv", ".webm", ".mp3" }.Contains(x.Extension.ToLower()))
                {
                    splitContainer1.Panel2.Controls.Add(vpreviewer);
                    vpreviewer.RunVideo(x.FullName);
@@ -638,6 +638,19 @@ namespace commander
                 img.Save(Path.Combine(flc.CurrentDirectory.FullName, rdl.Value));
 
             }
+        }
+
+        private void ScannerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ScannerWindow s = new ScannerWindow();
+            var fc = fileListControl1;
+            if (fileListControl2.ContainsFocus)
+            {
+                fc = fileListControl2;
+            }
+            s.Init(fc.CurrentDirectory);
+            s.MdiParent = MdiParent;
+            s.Show();
         }
     }
 

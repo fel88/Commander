@@ -35,7 +35,7 @@ namespace commander
             listView3.Items.Clear();
             foreach (var item in cache.Cache)
             {
-                listView3.Items.Add(new ListViewItem(new string[] { item.Key}) { Tag = item.Key });
+                listView3.Items.Add(new ListViewItem(new string[] { item.Key }) { Tag = item.Key });
             }
             SimpleHttpProxyServer.Cache = cache;
 
@@ -104,40 +104,17 @@ namespace commander
         }
 
 
-
+   
         private void ToolStripButton1_Click(object sender, EventArgs e)
         {
-            RegistryKey registry = Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", true);
-
-            //disable proxy           
-            //  registry.SetValue("ProxyServer", 0);
-            registry.SetValue
-                          ("ProxyServer", "127.0.0.1:8888");
-
-            //remove tik 
-
-            registry.SetValue("ProxyEnable", 1);
-
-            //Proxy Status
-
-
-
+            ProxyHelper.EnableProxy();
         }
 
         private void ToolStripButton2_Click(object sender, EventArgs e)
         {
-            RegistryKey registry = Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", true);
-
-            //disable proxy           
-            //registry.SetValue("ProxyServer", 1);
-
-            //remove tik 
-
-            registry.SetValue("ProxyEnable", 0);
-
-
-
+            ProxyHelper.DisableProxy();
         }
+
         public static IPAddress GetDefaultGateway()
         {
             return NetworkInterface
@@ -156,13 +133,7 @@ namespace commander
 
         private void ToolStripButton3_Click(object sender, EventArgs e)
         {
-            /*Thread th = new Thread(SimpleHttpProxyServer.Run);
-            th.IsBackground = true;
-            th.Start();
-
-
-
-            return;*/
+            
 
             if (server == null)
             {
@@ -178,6 +149,7 @@ namespace commander
             //start simple offline server. on the specific port and show all local sites to view
         }
 
+     
         private void Button1_Click_1(object sender, EventArgs e)
         {
             TcpClient cl = new TcpClient();
@@ -250,6 +222,23 @@ namespace commander
             ProcessStartInfo psi = new ProcessStartInfo();
             psi.FileName = str;
             Process.Start(psi);
+        }
+
+        private void EnableToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            ProxyHelper.EnableProxy();
+        }
+
+        private void DfisableToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ProxyHelper.DisableProxy();
+        }
+
+        private void ToolStripButton1_Click_1(object sender, EventArgs e)
+        {
+            Thread th = new Thread(SimpleHttpProxyServer.Run);
+            th.IsBackground = true;
+            th.Start();            
         }
     }
 }

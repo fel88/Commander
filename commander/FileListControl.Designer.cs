@@ -53,6 +53,8 @@
             this.imagesDeduplicationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toClipboardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.asTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.asImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.folderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.txtFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -84,11 +86,13 @@
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.panel1 = new System.Windows.Forms.Panel();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.checkBox3 = new System.Windows.Forms.CheckBox();
+            this.button1 = new System.Windows.Forms.Button();
             this.watermark1 = new commander.Watermark();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
-            this.label2 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -96,7 +100,6 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.removeTabToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.asImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -216,7 +219,8 @@
             this.openInTextEditorToolStripMenuItem,
             this.indexToolStripMenuItem,
             this.imagesDeduplicationsToolStripMenuItem,
-            this.toClipboardToolStripMenuItem});
+            this.toClipboardToolStripMenuItem,
+            this.toolStripMenuItem1});
             this.operationsToolStripMenuItem.Name = "operationsToolStripMenuItem";
             this.operationsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.operationsToolStripMenuItem.Text = "operations";
@@ -296,9 +300,23 @@
             // asTextToolStripMenuItem
             // 
             this.asTextToolStripMenuItem.Name = "asTextToolStripMenuItem";
-            this.asTextToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.asTextToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
             this.asTextToolStripMenuItem.Text = "as text";
             this.asTextToolStripMenuItem.Click += new System.EventHandler(this.AsTextToolStripMenuItem_Click);
+            // 
+            // asImageToolStripMenuItem
+            // 
+            this.asImageToolStripMenuItem.Name = "asImageToolStripMenuItem";
+            this.asImageToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
+            this.asImageToolStripMenuItem.Text = "as image";
+            this.asImageToolStripMenuItem.Click += new System.EventHandler(this.AsImageToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(193, 22);
+            this.toolStripMenuItem1.Text = "scanner";
+            this.toolStripMenuItem1.Click += new System.EventHandler(this.ToolStripMenuItem1_Click);
             // 
             // newToolStripMenuItem
             // 
@@ -531,10 +549,12 @@
             // panel1
             // 
             this.panel1.Controls.Add(this.comboBox2);
+            this.panel1.Controls.Add(this.label2);
+            this.panel1.Controls.Add(this.checkBox3);
+            this.panel1.Controls.Add(this.button1);
             this.panel1.Controls.Add(this.watermark1);
             this.panel1.Controls.Add(this.checkBox2);
             this.panel1.Controls.Add(this.toolStrip1);
-            this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.comboBox1);
             this.panel1.Controls.Add(this.checkBox1);
             this.panel1.Controls.Add(this.label1);
@@ -562,6 +582,41 @@
             this.comboBox2.TabIndex = 9;
             this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.ComboBox2_SelectedIndexChanged);
             // 
+            // label2
+            // 
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(392, 31);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(37, 13);
+            this.label2.TabIndex = 10;
+            this.label2.Text = "Mode:";
+            // 
+            // checkBox3
+            // 
+            this.checkBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.checkBox3.AutoSize = true;
+            this.checkBox3.Checked = true;
+            this.checkBox3.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox3.Location = new System.Drawing.Point(321, 30);
+            this.checkBox3.Name = "checkBox3";
+            this.checkBox3.Size = new System.Drawing.Size(77, 17);
+            this.checkBox3.TabIndex = 15;
+            this.checkBox3.Text = "filewatcher";
+            this.checkBox3.UseVisualStyleBackColor = true;
+            this.checkBox3.CheckedChanged += new System.EventHandler(this.CheckBox3_CheckedChanged);
+            // 
+            // button1
+            // 
+            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button1.Location = new System.Drawing.Point(493, 3);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(28, 23);
+            this.button1.TabIndex = 14;
+            this.button1.Text = "up";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.Button1_Click);
+            // 
             // watermark1
             // 
             this.watermark1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -570,7 +625,7 @@
             this.watermark1.Hint = "Enter to filter";
             this.watermark1.Location = new System.Drawing.Point(48, 27);
             this.watermark1.Name = "watermark1";
-            this.watermark1.Size = new System.Drawing.Size(186, 20);
+            this.watermark1.Size = new System.Drawing.Size(130, 20);
             this.watermark1.TabIndex = 13;
             this.watermark1.TextChanged += new System.EventHandler(this.Watermark1_TextChanged);
             // 
@@ -578,7 +633,7 @@
             // 
             this.checkBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(305, 29);
+            this.checkBox2.Location = new System.Drawing.Point(240, 30);
             this.checkBox2.Name = "checkBox2";
             this.checkBox2.Size = new System.Drawing.Size(83, 17);
             this.checkBox2.TabIndex = 12;
@@ -607,16 +662,6 @@
             this.toolStripButton1.Text = "+tab";
             this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
-            // label2
-            // 
-            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(392, 30);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(37, 13);
-            this.label2.TabIndex = 10;
-            this.label2.Text = "Mode:";
-            // 
             // comboBox1
             // 
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -632,7 +677,7 @@
             // 
             this.checkBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(240, 30);
+            this.checkBox1.Location = new System.Drawing.Point(184, 30);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(59, 17);
             this.checkBox1.TabIndex = 7;
@@ -656,7 +701,7 @@
             this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.textBox1.Location = new System.Drawing.Point(47, 5);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(471, 20);
+            this.textBox1.Size = new System.Drawing.Size(444, 20);
             this.textBox1.TabIndex = 0;
             this.textBox1.TextChanged += new System.EventHandler(this.TextBox1_TextChanged);
             this.textBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox1_KeyDown);
@@ -684,13 +729,6 @@
             this.removeTabToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
             this.removeTabToolStripMenuItem.Text = "Remove tab";
             this.removeTabToolStripMenuItem.Click += new System.EventHandler(this.removeTabToolStripMenuItem_Click);
-            // 
-            // asImageToolStripMenuItem
-            // 
-            this.asImageToolStripMenuItem.Name = "asImageToolStripMenuItem";
-            this.asImageToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.asImageToolStripMenuItem.Text = "as image";
-            this.asImageToolStripMenuItem.Click += new System.EventHandler(this.AsImageToolStripMenuItem_Click);
             // 
             // FileListControl
             // 
@@ -783,5 +821,8 @@
         private System.Windows.Forms.ToolStripMenuItem asTextToolStripMenuItem;
         private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
         private System.Windows.Forms.ToolStripMenuItem asImageToolStripMenuItem;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.CheckBox checkBox3;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
     }
 }

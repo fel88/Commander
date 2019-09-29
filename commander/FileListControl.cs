@@ -84,7 +84,8 @@ namespace commander
                 contextMenuStrip2.Items.Add(v);
             }
             phelper.Append(this, listView1);
-
+            tagControl.Visible = false;
+            panel3.Controls.Add(tagControl);
         }
 
         private void Stuff_HelperVisibleChanged(HelperEnum arg1)
@@ -1464,22 +1465,40 @@ namespace commander
         void SetTagMode()
         {
             Mode = ViewModeEnum.Tags;
-            panel3.Controls.Clear();
-            panel3.Controls.Add(tagControl);
+            for (int i = 0; i < panel3.Controls.Count; i++)
+            {
+                panel3.Controls[i].Visible = false;
+            }
+            tagControl.Visible = true;
+
+            //panel3.Controls.Clear();
+            //panel3.Controls.Add(tagControl);
         }
         void SetFilesystemMode()
         {
             Mode = ViewModeEnum.Filesystem;
-            panel3.Controls.Clear();
-            panel3.Controls.Add(filesControl);
+            for (int i = 0; i < panel3.Controls.Count; i++)
+            {
+                panel3.Controls[i].Visible = false;
+            }
+            filesControl.Visible = true;
+            //panel3.Controls.Clear();
+            //panel3.Controls.Add(filesControl);
         }
 
         void SetLibrariesMode()
         {
             Mode = ViewModeEnum.Libraries;
-            panel3.Controls.Clear();
-            panel3.Controls.Add(filesControl);
+
+            for (int i = 0; i < panel3.Controls.Count; i++)
+            {
+                panel3.Controls[i].Visible = false;
+            }
+            filesControl.Visible = true;
+            //panel3.Controls.Clear();
+            //panel3.Controls.Add(filesControl);
         }
+
         public ViewModeEnum Mode = ViewModeEnum.Filesystem;
         private void ComboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -2280,6 +2299,57 @@ namespace commander
             var txt = SelectedFile.Filesystem.BitmapFromFile(SelectedFile);
             Clipboard.SetImage(txt);
             Stuff.Info(SelectedFile.Name + " image saved in clipboard.");
+        }
+
+        private void Button1_Click(object sender, EventArgs e)
+        {
+            if (CurrentDirectory == null || CurrentDirectory.Root.FullName == CurrentDirectory.FullName || CurrentDirectory.Parent == null) return;
+            UpdateList(CurrentDirectory.Parent, Filter);
+        }
+
+        private void CheckBox3_CheckedChanged(object sender, EventArgs e)
+        {
+            watcher.EnableRaisingEvents = checkBox3.Checked;
+        }
+
+        private void ToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+                var tag = listView1.SelectedItems[0].Tag;
+                if (listView1.SelectedItems.Count == 1 && (tag is DirectoryInfoWrapper || tag is FilesystemLibrary))
+                {
+                    IDirectoryInfo d = null;
+                    if (tag is FilesystemLibrary)
+                    {
+                        var l = tag as FilesystemLibrary;
+                        d = l.BaseDirectory;
+                    }
+                    else
+                    {
+                        d = (listView1.SelectedItems[0].Tag as DirectoryInfoWrapper);
+                    }
+
+
+
+                    ScannerWindow rep = new ScannerWindow();
+                    rep.MdiParent = mdi.MainForm;
+                    rep.Init(d);
+                    rep.Show();
+
+                }
+                              
+            }
+            else if (CurrentDirectory != null && CurrentDirectory is DirectoryInfoWrapper)
+            {
+                var d = CurrentDirectory;                
+
+                ScannerWindow rep = new ScannerWindow();
+                rep.MdiParent = mdi.MainForm;
+                rep.Init(d);
+                rep.Show();
+
+            }
         }
     }
     public enum ViewModeEnum

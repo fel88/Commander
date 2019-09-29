@@ -269,6 +269,21 @@ namespace commander
             }
             return files;
         }
+
+        internal static long GetDirectorySize(IDirectoryInfo d)
+        {
+            long ret = 0;
+            foreach (var item in d.GetDirectories())
+            {
+                ret += GetDirectorySize(item);
+            }
+            foreach (var item in d.GetFiles())
+            {
+                ret += item.Length;
+            }
+            return ret;
+        }
+
         public static List<IDirectoryInfo> GetAllDirs(IDirectoryInfo dir, List<IDirectoryInfo> dirs = null)
         {
             if (dirs == null)

@@ -75,6 +75,12 @@
     <Compile Include="Browser.Designer.cs">
       <DependentUpon>Browser.cs</DependentUpon>
     </Compile>
+    <Compile Include="CartridgeEditorWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CartridgeEditorWindow.Designer.cs">
+      <DependentUpon>CartridgeEditorWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="ChangePasswordDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -164,6 +170,7 @@
       <DependentUpon>PdfPreviewer.cs</DependentUpon>
     </Compile>
     <Compile Include="PreviewHelper.cs" />
+    <Compile Include="ProxyHelper.cs" />
     <Compile Include="QuickTagsUserControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -175,6 +182,12 @@
     </Compile>
     <Compile Include="QuickTagsWindow.Designer.cs">
       <DependentUpon>QuickTagsWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ScannerWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ScannerWindow.Designer.cs">
+      <DependentUpon>ScannerWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="SearchFilterControl.cs">
       <SubType>UserControl</SubType>
@@ -353,6 +366,9 @@
     <EmbeddedResource Include="Browser.resx">
       <DependentUpon>Browser.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="CartridgeEditorWindow.resx">
+      <DependentUpon>CartridgeEditorWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ChangePasswordDialog.resx">
       <DependentUpon>ChangePasswordDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -394,6 +410,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="QuickTagsWindow.resx">
       <DependentUpon>QuickTagsWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ScannerWindow.resx">
+      <DependentUpon>ScannerWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SearchFilterControl.resx">
       <DependentUpon>SearchFilterControl.cs</DependentUpon>

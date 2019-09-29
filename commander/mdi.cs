@@ -481,6 +481,13 @@ namespace commander
         {
 
         }
+
+        private void CartridgeEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CartridgeEditorWindow mlw = new CartridgeEditorWindow();
+            mlw.MdiParent = this;
+            mlw.Show();
+        }
     }
 
     public class ConnectionInfo
