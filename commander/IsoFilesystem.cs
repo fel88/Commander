@@ -1,5 +1,6 @@
 ﻿using IsoLib;
 using isoViewer;
+using PluginLib;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -60,7 +61,7 @@ namespace commander
             }
         }
 
-        public bool FileHasTag(IFileInfo file, TagInfo tag)
+        public bool FileHasTag(IFileInfo file, ITagInfo tag)
         {
             return tag.ContainsFile(file.FullName);
         }

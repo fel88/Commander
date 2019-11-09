@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace commander
+namespace PluginLib
 {
     public interface IDirectoryInfo
     {

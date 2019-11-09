@@ -36,6 +36,7 @@ namespace GamesPack1
             var ps = new PuzzleSelector();
             if (ps.ShowDialog() == DialogResult.OK)
             {
+                Images = ps.Images;
                 LoadPuzzle(ps.FileName);
                 ResetPuzzle();
                 loaded = true;
@@ -152,6 +153,7 @@ namespace GamesPack1
         }
         void LoadPuzzle(string path)
         {
+            Text = path;
             Bitmap = Bitmap.FromFile(path) as Bitmap;
             //resize
 
@@ -676,16 +678,24 @@ namespace GamesPack1
 
         private void ToolStripButton5_Click(object sender, EventArgs e)
         {
-            if (!GamePack1Plugin.Container.Libraries.Any()) return;
+            if (Images == null || !Images.Any()) return;
 
-            foreach (var item in GamePack1Plugin.Container.Libraries)
+            var c = Images[r.Next(Images.Count())];
+            LoadPuzzle(c);
+            ResetPuzzle();
+            loaded = true;
+        }
+
+        public string[] Images;
+        private void ToolStripButton6_Click(object sender, EventArgs e)
+        {
+            var ps = new PuzzleSelector();
+            if (ps.ShowDialog() == DialogResult.OK)
             {
-                var cands = item.EnumerateFiles().Where(z => z.EndsWith(".jpg") || z.EndsWith(".png")).ToArray();
-                var c = cands[r.Next(cands.Count())];
-                LoadPuzzle(c);
+                Images = ps.Images;
+                LoadPuzzle(ps.FileName);
                 ResetPuzzle();
                 loaded = true;
-
             }
         }
     }

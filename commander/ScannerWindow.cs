@@ -1,10 +1,12 @@
-﻿using System;
+﻿using PluginLib;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -122,7 +124,7 @@ namespace commander
         bool ready = false;
 
         ScannerItemInfo hovered = null;
-        int radInc = 15;
+        int radInc = 20;
         int radb = 50;
         private void Timer1_Tick(object sender, EventArgs e)
         {
@@ -152,7 +154,7 @@ namespace commander
                         hovered = item;
                     }
                 }
-                gr.DrawString((Root as ScannerDirInfo).Dir.FullName, new Font("Arial", 12), Brushes.Black, 5, 5);
+                gr.DrawString((Root as ScannerDirInfo).GetDirFullName(), new Font("Arial", 12), Brushes.Black, 5, 5);
                 if (hovered != null)
                 {
 
@@ -163,8 +165,8 @@ namespace commander
 
                 gr.TranslateTransform(bmp.Width / 2, bmp.Height / 2);
 
-                
-                if(Root == hovered)
+
+                if (Root == hovered)
                 {
                     gr.FillEllipse(Brushes.Green, -radb, -radb, 2 * radb, 2 * radb);
                 }
@@ -189,7 +191,7 @@ namespace commander
             pictureBox1.Image = bmp;
         }
 
-        List<IFileInfo> files = new List<IFileInfo>();
+        //List<IFileInfo> files = new List<IFileInfo>();
 
         void ReportProgress(int i, int max)
         {
@@ -205,77 +207,91 @@ namespace commander
         public List<ScannerItemInfo> Items = new List<ScannerItemInfo>();
         public ScannerItemInfo Root = null;
 
-
+        Thread th;
         internal void Init(IDirectoryInfo d)
         {
-            
+            if (th != null) return;
+            GC.Collect();
+            toolStripProgressBar1.Visible = true;
+            toolStripProgressBar1.Value = 0;
+            timer2.Enabled = false;
             ready = false;
             Items.Clear();
             Root = null;
-            files.Clear();
-            Thread th = new Thread(() =>
-            {
-                var dirs = Stuff.GetAllDirs(d);
+            //files.Clear();
+            th = new Thread(() =>
+           {
+               var dirs = Stuff.GetAllDirs(d);
 
-                Queue<ScannerItemInfo> q = new Queue<ScannerItemInfo>();
-                int cnt = 0;
-                Root = new ScannerDirInfo() { Dir = d };
-                q.Enqueue(Root);
-                Items.Add(Root);
-                while (q.Any())
-                {
-                    ReportProgress(cnt, dirs.Count);
-                    var _dd = q.Dequeue();
-                    if (_dd is ScannerFileInfo) continue;
-                    
-                    var dd = _dd as ScannerDirInfo;
+               Queue<ScannerItemInfo> q = new Queue<ScannerItemInfo>();
+               int cnt = 0;
+               Root = new ScannerDirInfo(null, d);
+               q.Enqueue(Root);
+               Items.Add(Root);
+               while (q.Any())
+               {
+                   ReportProgress(cnt, dirs.Count);
+                   var _dd = q.Dequeue();
+                   if (_dd is ScannerFileInfo) continue;
+
+                   var dd = _dd as ScannerDirInfo;
                    /* var sz = Stuff.GetDirectorySize(dd.Dir);
                     if (sz < 1024 * 1024)
                     {
                         dd.HiddenItemsSize = sz;
                         continue;
                     }*/
-                    cnt++;
-                    try
-                    {
-                        foreach (var item in dd.Dir.GetFiles())
-                        {
-                            if (item.Length > 10 * 1024 * 1024)
-                            {
-                                // dd.HiddenItemsSize += item.Length;
-                                //continue;
-                            }
-                            dd.Items.Add(new ScannerFileInfo() { File = item, Size = item.Length });
-                            Items.Add(dd.Items.Last());
-                            files.Add(item);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
+                   cnt++;
+                   try
+                   {
+                       foreach (var item in dd.Dir.GetFiles())
+                       {
+                           if (item.Length > 10 * 1024 * 1024)
+                           {
+                               // dd.HiddenItemsSize += item.Length;
+                               //continue;
+                           }
+                           dd.Items.Add(new ScannerFileInfo(dd, item));
+                           Items.Add(dd.Items.Last());
+                           //     files.Add(item);
+                       }
 
-                    }
-                    try
-                    {
 
-                        foreach (var item in dd.Dir.GetDirectories())
-                        {
+                   }
+                   catch (Exception ex)
+                   {
 
-                            var t = new ScannerDirInfo() { Dir = item };
-                            Items.Add(t);
-                            dd.Items.Add(t);
-                            q.Enqueue(t);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
+                   }
+                   try
+                   {
+                       foreach (var item in dd.Dir.GetDirectories())
+                       {
+                           var t = new ScannerDirInfo(dd, item);
+                           Items.Add(t);
+                           dd.Items.Add(t);
+                           q.Enqueue(t);
+                       }
+                   }
+                   catch (Exception ex)
+                   {
 
-                    }
-                }
+                   }
+                   if (dd.Parent != null)
+                   {
+                       dd.Dir = null;
+                   }
+               }
+               ReportProgress(cnt, cnt);
+               Root.CalcSize();
+               ready = true;
+               statusStrip1.Invoke((Action)(() =>
+               {
+                   timer2.Enabled = true;
+                   timer2.Interval = 2000;
+               }));
 
-                Root.CalcSize();
-                ready = true;
-
-            });
+               th = null;
+           });
             th.IsBackground = true;
             th.Start();
 
@@ -286,7 +302,7 @@ namespace commander
             if (temp != null && temp is ScannerDirInfo)
             {
                 var d = temp as ScannerDirInfo;
-                Process.Start(d.Dir.FullName);
+                Process.Start(d.GetDirFullName());
             }
         }
 
@@ -313,52 +329,62 @@ namespace commander
             if (!(hovered is ScannerDirInfo)) return;
 
             var d = hovered as ScannerDirInfo;
+            var dd = new DirectoryInfo(d.GetDirFullName());
             if (hovered == Root)
             {
-                Init(d.Dir.Parent);
+                Init(new DirectoryInfoWrapper(dd.Parent));
             }
             else
             {
-                Init(d.Dir);
+                Init(new DirectoryInfoWrapper(dd));
             }
         }
-    }
 
-
-    public class ScannerItemInfo
-    {
-        public float R1;
-        public float R2;
-        public float StartAng;
-        public float EndAng;
-        public long Size;
-        public long HiddenItemsSize;
-        public List<ScannerItemInfo> Items = new List<ScannerItemInfo>();
-
-        public virtual string Name { get; }
-
-        public void CalcSize()
+        private void ToolStripButton3_Click(object sender, EventArgs e)
         {
-            if (Items.Count == 0) return;
-            Size = HiddenItemsSize;
-            foreach (var item in Items)
+            radInc += 5;
+        }
+
+        private void ToolStripButton4_Click(object sender, EventArgs e)
+        {
+            radInc -= 5;
+        }
+
+        private void Timer2_Tick(object sender, EventArgs e)
+        {
+            toolStripProgressBar1.Visible = false;
+            timer2.Enabled = false;
+        }
+
+        private void ScannerWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (th != null)
             {
-                item.CalcSize();
-                Size += item.Size;
+                try
+                {
+                    th.Abort();
+                }
+                catch (Exception ex)
+                {
+
+                }
             }
         }
-    }
-    public class ScannerDirInfo : ScannerItemInfo
-    {
-        public IDirectoryInfo Dir;
-        public override string Name => Dir.Name;
 
+        private void FollowToolStripMenuItem_Click(object sender, EventArgs e)
+        {
 
+        }
 
-    }
-    public class ScannerFileInfo : ScannerItemInfo
-    {
-        public override string Name => File.Name;
-        public IFileInfo File;
+        private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void RefreshToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var dd = new DirectoryInfo((Root as ScannerDirInfo).GetDirFullName());
+            Init(new DirectoryInfoWrapper(dd));
+        }
     }
 }

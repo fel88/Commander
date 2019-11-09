@@ -9,5 +9,8 @@ namespace PluginLib
         void OpenWindow(Control cc);
 
         ILibrary[] Libraries { get; }
+        ITagInfo[] Tags { get; }
+
+        bool ShowHiddenTags { get; }
     }
 }

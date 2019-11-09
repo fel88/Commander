@@ -1,13 +1,14 @@
-﻿using System;
+﻿using PluginLib;
+using System;
 using System.Collections.Generic;
 
 namespace commander
 {
-    public class TagInfo
+    public class TagInfo : ITagInfo
     {
-        public string Name;
+        public string Name { get; set; }
         public List<string> Synonyms = new List<string>();
-        public bool IsHidden;
+        public bool IsHidden { get; set; }
         private List<IFileInfo> files = new List<IFileInfo>();
         private HashSet<string> hash = new HashSet<string>();
         public List<TagInfo> Tags = new List<TagInfo>();
@@ -57,4 +58,5 @@ namespace commander
 
 
     }
+
 }

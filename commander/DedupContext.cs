@@ -1,4 +1,6 @@
-﻿namespace commander
+﻿using PluginLib;
+
+namespace commander
 {
     public class DedupContext
     {

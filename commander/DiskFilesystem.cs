@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using PluginLib;
+using System.Drawing;
 using System.IO;
 
 namespace commander
@@ -32,7 +33,7 @@ namespace commander
             return File.Exists(path);
         }
 
-        public bool FileHasTag(IFileInfo file, TagInfo tag)
+        public bool FileHasTag(IFileInfo file, ITagInfo tag)
         {
             return tag.ContainsFile(file.FullName);
         }

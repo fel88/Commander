@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace commander
+namespace PluginLib
 {
     public interface IFileInfo
     {

@@ -1,4 +1,4 @@
-﻿namespace commander
+﻿namespace PluginLib
 {
     public class ComboBoxItem
     {
@@ -9,5 +9,5 @@
             return Name;
         }
     }
-}
 
+}

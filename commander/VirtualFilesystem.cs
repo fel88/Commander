@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using PluginLib;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -69,7 +70,7 @@ namespace commander
             return File.ReadAllText(fr.FileInfo.FullName);
         }
 
-        public bool FileHasTag(IFileInfo file, TagInfo tag)
+        public bool FileHasTag(IFileInfo file, ITagInfo tag)
         {
             var vf = file as VirtualFileInfo;
             return tag.ContainsFile(vf.FileInfo.FullName);

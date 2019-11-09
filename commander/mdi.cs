@@ -228,6 +228,10 @@ namespace commander
 
         public ILibrary[] Libraries => Stuff.Libraries.ToArray();
 
+        public ITagInfo[] Tags => Stuff.Tags.ToArray();
+
+        public bool ShowHiddenTags => Stuff.ShowHidden;
+
         public void OpenWindow(Form frm)
         {
             frm.MdiParent = this;

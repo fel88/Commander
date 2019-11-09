@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.IO;
 
-namespace commander
+namespace PluginLib
 {
     public interface IFilesystem
     {
@@ -13,7 +13,7 @@ namespace commander
         string ReadAllText(IFileInfo file);
         Image BitmapFromFile(IFileInfo fullName);
 
-        bool FileHasTag(IFileInfo file, TagInfo tag);
+        bool FileHasTag(IFileInfo file, ITagInfo tag);
 
         void DeleteFile(string fullName);
         void DeleteFile(IFileInfo file);

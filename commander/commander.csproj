@@ -87,7 +87,6 @@
     <Compile Include="ChangePasswordDialog.Designer.cs">
       <DependentUpon>ChangePasswordDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="ComboBoxItem.cs" />
     <Compile Include="CopyDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -142,7 +141,6 @@
     </Compile>
     <Compile Include="HotkeyShortcutInfo.cs" />
     <Compile Include="IFileListControl.cs" />
-    <Compile Include="IFilesystem.cs" />
     <Compile Include="ImagesDeduplicationWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -183,6 +181,7 @@
     <Compile Include="QuickTagsWindow.Designer.cs">
       <DependentUpon>QuickTagsWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="ScannerItemInfo.cs" />
     <Compile Include="ScannerWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -233,8 +232,6 @@
     <Compile Include="HexEditor.Designer.cs">
       <DependentUpon>HexEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="IDirectoryInfo.cs" />
-    <Compile Include="IFileInfo.cs" />
     <Compile Include="ImageViewer.cs">
       <SubType>Form</SubType>
     </Compile>
