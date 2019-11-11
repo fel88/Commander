@@ -87,6 +87,12 @@
     <Compile Include="ChangePasswordDialog.Designer.cs">
       <DependentUpon>ChangePasswordDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\MetaInfo\KeywordsMetaInfoControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\MetaInfo\KeywordsMetaInfoControl.Designer.cs">
+      <DependentUpon>KeywordsMetaInfoControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="CopyDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -130,6 +136,12 @@
     </Compile>
     <Compile Include="Explorer.Designer.cs">
       <DependentUpon>Explorer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FileMetaInfoEditorDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FileMetaInfoEditorDialog.Designer.cs">
+      <DependentUpon>FileMetaInfoEditorDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="FileRoutines.cs" />
     <Compile Include="FilesystemLibrary.cs" />
@@ -209,6 +221,12 @@
     </Compile>
     <Compile Include="TagPanelHelper.Designer.cs">
       <DependentUpon>TagPanelHelper.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TagPropertyDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TagPropertyDialog.Designer.cs">
+      <DependentUpon>TagPropertyDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="UrlBookmark.cs" />
     <Compile Include="UrlBookmarksWindow.cs">
@@ -378,6 +396,9 @@
     <EmbeddedResource Include="ConsoleOutputWindow.resx">
       <DependentUpon>ConsoleOutputWindow.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Controls\MetaInfo\KeywordsMetaInfoControl.resx">
+      <DependentUpon>KeywordsMetaInfoControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="CopyDialog.resx">
       <DependentUpon>CopyDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -395,6 +416,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="DjvuReader.resx">
       <DependentUpon>DjvuReader.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FileMetaInfoEditorDialog.resx">
+      <DependentUpon>FileMetaInfoEditorDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ImagesDeduplicationWindow.resx">
       <DependentUpon>ImagesDeduplicationWindow.cs</DependentUpon>
@@ -425,6 +449,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="TagPanelHelper.resx">
       <DependentUpon>TagPanelHelper.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TagPropertyDialog.resx">
+      <DependentUpon>TagPropertyDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UrlBookmarksWindow.resx">
       <DependentUpon>UrlBookmarksWindow.cs</DependentUpon>

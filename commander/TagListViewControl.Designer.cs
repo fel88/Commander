@@ -37,16 +37,19 @@
             this.setHiddenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.trueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.falseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.operationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.indexToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.ocrToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.deduplicationToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.memToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.packToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toIsoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyPathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.memToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.deduplicationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.followToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tagPanelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.indexToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ocrToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.propertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addSynonymToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -84,22 +87,20 @@
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addTagToolStripMenuItem,
             this.setHiddenToolStripMenuItem,
+            this.operationsToolStripMenuItem,
             this.deleteToolStripMenuItem,
             this.packToolStripMenuItem,
             this.copyPathToolStripMenuItem,
-            this.memToolStripMenuItem,
-            this.deduplicationToolStripMenuItem,
             this.followToolStripMenuItem,
             this.tagPanelToolStripMenuItem,
-            this.indexToolStripMenuItem,
-            this.ocrToolStripMenuItem});
+            this.propertiesToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 268);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(131, 202);
             // 
             // addTagToolStripMenuItem
             // 
             this.addTagToolStripMenuItem.Name = "addTagToolStripMenuItem";
-            this.addTagToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.addTagToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.addTagToolStripMenuItem.Text = "add tag";
             this.addTagToolStripMenuItem.Click += new System.EventHandler(this.AddTagToolStripMenuItem_Click);
             // 
@@ -109,7 +110,7 @@
             this.trueToolStripMenuItem,
             this.falseToolStripMenuItem});
             this.setHiddenToolStripMenuItem.Name = "setHiddenToolStripMenuItem";
-            this.setHiddenToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.setHiddenToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.setHiddenToolStripMenuItem.Text = "set hide";
             // 
             // trueToolStripMenuItem
@@ -126,10 +127,50 @@
             this.falseToolStripMenuItem.Text = "false";
             this.falseToolStripMenuItem.Click += new System.EventHandler(this.FalseToolStripMenuItem_Click);
             // 
+            // operationsToolStripMenuItem
+            // 
+            this.operationsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.indexToolStripMenuItem1,
+            this.ocrToolStripMenuItem1,
+            this.deduplicationToolStripMenuItem1,
+            this.memToolStripMenuItem1,
+            this.addSynonymToolStripMenuItem});
+            this.operationsToolStripMenuItem.Name = "operationsToolStripMenuItem";
+            this.operationsToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.operationsToolStripMenuItem.Text = "operations";
+            // 
+            // indexToolStripMenuItem1
+            // 
+            this.indexToolStripMenuItem1.Name = "indexToolStripMenuItem1";
+            this.indexToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.indexToolStripMenuItem1.Text = "index";
+            this.indexToolStripMenuItem1.Click += new System.EventHandler(this.IndexToolStripMenuItem1_Click);
+            // 
+            // ocrToolStripMenuItem1
+            // 
+            this.ocrToolStripMenuItem1.Name = "ocrToolStripMenuItem1";
+            this.ocrToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.ocrToolStripMenuItem1.Text = "ocr";
+            this.ocrToolStripMenuItem1.Click += new System.EventHandler(this.OcrToolStripMenuItem1_Click);
+            // 
+            // deduplicationToolStripMenuItem1
+            // 
+            this.deduplicationToolStripMenuItem1.Name = "deduplicationToolStripMenuItem1";
+            this.deduplicationToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.deduplicationToolStripMenuItem1.Text = "deduplication";
+            this.deduplicationToolStripMenuItem1.Click += new System.EventHandler(this.DeduplicationToolStripMenuItem1_Click);
+            // 
+            // memToolStripMenuItem1
+            // 
+            this.memToolStripMenuItem1.Name = "memToolStripMenuItem1";
+            this.memToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.memToolStripMenuItem1.Text = "mem";
+            this.memToolStripMenuItem1.Click += new System.EventHandler(this.MemToolStripMenuItem1_Click);
+            // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.deleteToolStripMenuItem.Text = "delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.DeleteToolStripMenuItem_Click);
             // 
@@ -138,7 +179,7 @@
             this.packToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toIsoToolStripMenuItem});
             this.packToolStripMenuItem.Name = "packToolStripMenuItem";
-            this.packToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.packToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.packToolStripMenuItem.Text = "pack";
             // 
             // toIsoToolStripMenuItem
@@ -151,51 +192,37 @@
             // copyPathToolStripMenuItem
             // 
             this.copyPathToolStripMenuItem.Name = "copyPathToolStripMenuItem";
-            this.copyPathToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.copyPathToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.copyPathToolStripMenuItem.Text = "copy path";
             this.copyPathToolStripMenuItem.Click += new System.EventHandler(this.copyPathToolStripMenuItem_Click);
-            // 
-            // memToolStripMenuItem
-            // 
-            this.memToolStripMenuItem.Name = "memToolStripMenuItem";
-            this.memToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.memToolStripMenuItem.Text = "mem";
-            this.memToolStripMenuItem.Click += new System.EventHandler(this.MemToolStripMenuItem_Click);
-            // 
-            // deduplicationToolStripMenuItem
-            // 
-            this.deduplicationToolStripMenuItem.Name = "deduplicationToolStripMenuItem";
-            this.deduplicationToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.deduplicationToolStripMenuItem.Text = "deduplication";
-            this.deduplicationToolStripMenuItem.Click += new System.EventHandler(this.DeduplicationToolStripMenuItem_Click);
             // 
             // followToolStripMenuItem
             // 
             this.followToolStripMenuItem.Name = "followToolStripMenuItem";
-            this.followToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.followToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.followToolStripMenuItem.Text = "follow";
             this.followToolStripMenuItem.Click += new System.EventHandler(this.FollowToolStripMenuItem_Click);
             // 
             // tagPanelToolStripMenuItem
             // 
             this.tagPanelToolStripMenuItem.Name = "tagPanelToolStripMenuItem";
-            this.tagPanelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.tagPanelToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.tagPanelToolStripMenuItem.Text = "tag panel";
             this.tagPanelToolStripMenuItem.Click += new System.EventHandler(this.TagPanelToolStripMenuItem_Click);
             // 
-            // indexToolStripMenuItem
+            // propertiesToolStripMenuItem
             // 
-            this.indexToolStripMenuItem.Name = "indexToolStripMenuItem";
-            this.indexToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.indexToolStripMenuItem.Text = "index";
-            this.indexToolStripMenuItem.Click += new System.EventHandler(this.IndexToolStripMenuItem_Click);
+            this.propertiesToolStripMenuItem.Name = "propertiesToolStripMenuItem";
+            this.propertiesToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.propertiesToolStripMenuItem.Text = "properties";
+            this.propertiesToolStripMenuItem.Click += new System.EventHandler(this.PropertiesToolStripMenuItem_Click);
             // 
-            // ocrToolStripMenuItem
+            // addSynonymToolStripMenuItem
             // 
-            this.ocrToolStripMenuItem.Name = "ocrToolStripMenuItem";
-            this.ocrToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.ocrToolStripMenuItem.Text = "ocr";
-            this.ocrToolStripMenuItem.Click += new System.EventHandler(this.OcrToolStripMenuItem_Click);
+            this.addSynonymToolStripMenuItem.Name = "addSynonymToolStripMenuItem";
+            this.addSynonymToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.addSynonymToolStripMenuItem.Text = "add synonym";
+            this.addSynonymToolStripMenuItem.Click += new System.EventHandler(this.AddSynonymToolStripMenuItem_Click);
             // 
             // TagListViewControl
             // 
@@ -223,11 +250,14 @@
         private System.Windows.Forms.ToolStripMenuItem packToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toIsoToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyPathToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem memToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem deduplicationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem followToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tagPanelToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem indexToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem ocrToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem operationsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ocrToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem indexToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem deduplicationToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem memToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem propertiesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addSynonymToolStripMenuItem;
     }
 }

@@ -518,7 +518,7 @@ namespace commander
                     }
                 }
 
-                if (checkBox1.Checked && !IsFilterPass(directoryInfo.Name, fltrs)) continue;
+                if (DirFilterEnable && !IsFilterPass(directoryInfo.Name, fltrs)) continue;
                 if (!IsExtDirFilterPass(directoryInfo)) continue;
                 listView1.Items.Add(new ListViewItem(new string[] { directoryInfo.Name, "", "", directoryInfo.LastWriteTime.ToString() })
                 {
@@ -1796,7 +1796,7 @@ namespace commander
             {
                 LibraryPropertiesDialog p = new LibraryPropertiesDialog();
                 p.Init(SelectedLibraries[0]);
-                p.ShowDialog();                
+                p.ShowDialog();
                 return;
             }
             if (SelectedFile == null && SelectedDirectory == null) { return; }
@@ -2345,11 +2345,11 @@ namespace commander
                     rep.Show();
 
                 }
-                              
+
             }
             else if (CurrentDirectory != null && CurrentDirectory is DirectoryInfoWrapper)
             {
-                var d = CurrentDirectory;                
+                var d = CurrentDirectory;
 
                 ScannerWindow rep = new ScannerWindow();
                 rep.MdiParent = mdi.MainForm;
@@ -2358,6 +2358,8 @@ namespace commander
 
             }
         }
+
+      
     }
     public enum ViewModeEnum
     {

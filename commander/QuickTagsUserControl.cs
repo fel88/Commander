@@ -1,5 +1,6 @@
 ﻿using PluginLib;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
@@ -14,7 +15,7 @@ namespace commander
             Stuff.TagsListChanged += Stuff_TagsListChanged;
             Stuff.SetDoubleBuffered(checkedListBox1);
             checkedListBox1.ItemCheck += CheckedListBox1_ItemCheck;
-            UpdateCheckList();            
+            UpdateCheckList();
         }
 
         public void Init()
@@ -24,15 +25,24 @@ namespace commander
         void UpdateCheckList()
         {
             checkedListBox1.Items.Clear();
-            var arr = watermark1.Text.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(z=>z.ToLower()).ToArray();
-            foreach (var item in Stuff.Tags.OrderBy(z => z.Name))
+            var arr = watermark1.Text.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(z => z.ToLower()).ToArray();
+            List<TagInfoCover> covers = new List<TagInfoCover>();
+            foreach (var item in Stuff.Tags)
             {
-                if (item.IsHidden && !Stuff.ShowHidden) continue;
+                covers.Add(new TagInfoCover() { IsMain = true, TagInfo = item, Name = item.Name });
+                foreach (var sitem in item.Synonyms)
+                {
+                    covers.Add(new TagInfoCover() { TagInfo = item, Name = sitem });
+                }
+            }
+            foreach (var item in covers.OrderBy(z => z.Name))
+            {
+                if (item.TagInfo.IsHidden && !Stuff.ShowHidden) continue;
                 if (arr.Any())
                 {
                     if (!arr.Any(z => item.Name.ToLower().Contains(z))) continue;
                 }
-                checkedListBox1.Items.Add(new ComboBoxItem() { Tag = item, Name = item.Name });
+                checkedListBox1.Items.Add(new ComboBoxItem() { Tag = item.TagInfo, Name = item.Name });
 
             }
         }
@@ -62,7 +72,7 @@ namespace commander
         IFileInfo currentFile;
 
         public void Init(IFileListControl flc, IFileInfo file)
-        {            
+        {
             FileControl = flc;
             if (file != null)
             {
@@ -111,7 +121,7 @@ namespace commander
             allow = false;
             Text = "Tags of: " + f.Name;
             var tt = Stuff.Tags.Where(z => z.ContainsFile(f.FullName));
-            
+
             for (int i = 0; i < checkedListBox1.Items.Count; i++)
             {
                 var item = checkedListBox1.Items[i] as ComboBoxItem;
@@ -130,10 +140,10 @@ namespace commander
         private void Flc_SelectedFileChanged(IFileInfo obj)
         {
             currentFile = obj;
-            
+
             UpdateTags(obj);
-            
-          
+
+
         }
 
         public IFileListControl FileControl;

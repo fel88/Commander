@@ -492,6 +492,11 @@ namespace commander
             mlw.MdiParent = this;
             mlw.Show();
         }
+
+        private void MetaInfoRecordsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 
     public class ConnectionInfo

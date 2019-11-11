@@ -79,6 +79,17 @@ namespace commander
             return Icons[d];
         }
 
+        public static FileMetaInfo GetMetaInfoOfFile(IFileInfo fileInfo)
+        {
+            
+            foreach (var item in Stuff.MetaInfos)
+            {
+                if (item.File.FullName.ToLower() != fileInfo.FullName.ToLower()) continue;
+                return item;
+            }
+            return null;
+        }
+
         public static void UnmountAll()
         {
             var arr = Stuff.MountInfos.ToArray();
@@ -541,6 +552,30 @@ namespace commander
             }
             #endregion
 
+
+            #region meta
+
+            var metas = s.Descendants("meta").FirstOrDefault();
+            if (metas != null)
+            {
+                foreach (var item in metas.Descendants("file"))
+                {
+                    var fid = int.Parse(item.Attribute("fileId").Value);
+                    var f = fileentries.First(z => z.Id == fid);
+                    Stuff.MetaInfos.Add(new FileMetaInfo() { File = new FileInfoWrapper(new FileInfo(f.FullName))});
+                    var minf = Stuff.MetaInfos.Last();
+
+                    foreach (var kitem in item.Descendants())
+                    {
+                        if (kitem.Name == "keywordsMetaInfo")
+                        {
+                            minf.Infos.Add(new KeywordsMetaInfo() { Parent = minf, Keywords = kitem.Value });
+                        }
+                    }
+
+                }
+            }
+            #endregion
             foreach (var descendant in s.Descendants("tab"))
             {
                 var hint = descendant.Attribute("hint").Value;
@@ -614,6 +649,13 @@ namespace commander
                 if (descendant.Attribute("flags") != null) { flags = descendant.Attribute("flags").Value; }
 
                 var tag = new TagInfo() { Name = name, IsHidden = flags.Contains("hidden") };
+
+                var snms = descendant.Descendants("synonym");
+                foreach (var item in snms)
+                {
+                    tag.Synonyms.Add(item.Value.Trim());
+                }
+
                 Stuff.Tags.Add(tag);
                 foreach (var item in descendant.Descendants("file"))
                 {
@@ -675,14 +717,25 @@ namespace commander
         }
 
 
-        public static bool IsTagExist(string name)
+        public static bool IsTagExist(string name, TagInfo except = null)
         {
-            //todo: compare synonyms too
-            return Tags.Any(z => z.Name.ToLower() == name.ToLower());
+            string low = name.ToLower();
+            TagInfo[] elist = new TagInfo[] { };
+            if (except != null)
+            {
+                elist = new[] { except };
+            }
+            return Tags.Except(elist).Any(z => z.Name.ToLower() == low || z.Synonyms.Any(t => t.ToLower() == low));
         }
+        public static bool IsTagCoverExist(string name, string except = null)
+        {
+            string low = name.ToLower();
+            return Tags.Any(z => z.Name.ToLower() == low || z.Synonyms.Except(new[] { except }).Any(t => t.ToLower() == low));
+        }
+
         internal static void RenameTag(TagInfo selectedTag, string value)
         {
-            if (IsTagExist(value))
+            if (IsTagExist(value, selectedTag))
             {
                 throw new CommanderException("duplication of tag names: " + value);
             }
@@ -690,7 +743,18 @@ namespace commander
             Stuff.IsDirty = true;
             TagsListChanged?.Invoke();
         }
-
+        internal static void RenameTag(TagInfoCover selectedTag, string value)
+        {
+            if (IsTagCoverExist(value, selectedTag.Name))
+            {
+                throw new CommanderException("duplication of tag synonyms names: " + value);
+            }
+            selectedTag.TagInfo.Synonyms.Remove(selectedTag.Name);
+            selectedTag.TagInfo.Synonyms.Add(value);
+            selectedTag.Name = value;
+            Stuff.IsDirty = true;
+            TagsListChanged?.Invoke();
+        }
         public static void SaveSettings()
         {
             StringBuilder sb = new StringBuilder();
@@ -753,6 +817,26 @@ namespace commander
             sb.AppendLine("</entries>");
             #endregion
 
+            #region meta 
+            sb.AppendLine("<meta>");
+            foreach (var item in MetaInfos)
+            {
+                var fr = flentrs.First(z => z.FullName.ToLower() == item.File.FullName.ToLower());
+                sb.AppendLine($"<file fileId=\"{fr.Id}\">");
+                foreach (var zitem in item.Infos)
+                {
+                    if(zitem is KeywordsMetaInfo kmi)
+                    {
+                        sb.Append("<keywordsMetaInfo>");
+                        sb.Append(kmi.Keywords);
+                        sb.Append("</keywordsMetaInfo>");
+                    }
+                }
+                sb.AppendLine("</file>");
+            }
+            sb.AppendLine("</meta>");
+            #endregion
+
             sb.AppendLine("<tabs>");
 
             foreach (var item in Stuff.Tabs)
@@ -775,6 +859,14 @@ namespace commander
                     continue;
                 }
                 sb.AppendLine($"<tag name=\"{item.Name}\" flags=\"{(item.IsHidden ? "hidden" : "")}\" >");
+                sb.AppendLine("<synonyms>");
+                foreach (var sitem in item.Synonyms)
+                {
+                    sb.Append("<synonym>");
+                    sb.Append(sitem);
+                    sb.Append("</synonym>");
+                }
+                sb.AppendLine("</synonyms>");
                 sb.Append($"<file id=\"");
                 foreach (var fitem in item.Files)
                 {
@@ -885,6 +977,8 @@ namespace commander
 
         public static List<ILibrary> Libraries = new List<ILibrary>();
         public static List<TagInfo> Tags = new List<TagInfo>();
+        public static List<FileMetaInfo> MetaInfos = new List<FileMetaInfo>();
+
         public static void SetShowHidden(bool val)
         {
             ShowHidden = val;
@@ -1070,5 +1164,28 @@ namespace commander
     public class CommanderException : Exception
     {
         public CommanderException(string msg) : base(msg) { }
+    }
+
+    public class MetaInfo
+    {
+        public FileMetaInfo Parent;
+    }
+
+    public class FileMetaInfo
+    {
+        public IFileInfo File;
+        public List<MetaInfo> Infos = new List<MetaInfo>();
+    }
+
+    public class KeywordsMetaInfo : MetaInfo
+    {
+        public string Keywords;
+    }
+
+
+    public class MovieMetaInfo : MetaInfo
+    {
+        //todo: move to plugin
+
     }
 }

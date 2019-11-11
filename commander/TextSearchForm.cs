@@ -237,6 +237,9 @@ namespace commander
                             //if (!item.Extension.Contains(textBox3.Text)) continue;
                             if (!item.Name.ToLower().Contains(textBox4.Text.ToLower())) continue;
 
+
+                            if (!item.Name.ToLower().Contains(textBox4.Text.ToLower())) continue;
+
                             bool add = false;
                             if (!string.IsNullOrEmpty(textBox2.Text))
                             {
@@ -251,6 +254,24 @@ namespace commander
                             {
                                 add = true;
                             }
+
+
+                            #region meta check
+                            if (!string.IsNullOrEmpty(textBox9.Text))
+                            {
+                                var mt = Stuff.GetMetaInfoOfFile(item);
+                                if (mt == null) continue;
+                                if (mt.Infos.Any(z => z is KeywordsMetaInfo))
+                                {
+                                    var k = mt.Infos.First(z => z is KeywordsMetaInfo) as KeywordsMetaInfo;
+                                    if (!k.Keywords.ToLower().Contains(textBox9.Text.ToLower()))
+                                    {
+                                        continue;
+                                    }
+                                }
+                                else { continue; }
+                            }
+                            #endregion
 
                             if (add)
                             {
@@ -627,6 +648,11 @@ namespace commander
             if (exceptTagFilters.Contains(fr)) return;
             exceptTagFilters.Add(fr);
             UpdateTagFiltersText();
+        }
+
+        private void TextBox2_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 

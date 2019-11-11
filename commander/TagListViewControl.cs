@@ -99,7 +99,22 @@ namespace commander
                 return null;
             }
         }
+        public TagInfoCover SelectedTagCover
+        {
+            get
+            {
+                if (listView1.SelectedItems.Count > 0)
+                {
+                    var si = listView1.SelectedItems[0].Tag;
+                    if (si is TagInfoCover)
+                    {
+                        return si as TagInfoCover;
+                    }
+                }
 
+                return null;
+            }
+        }
         public TagInfo CurrentTag = null;
         public void UpdateList(TagInfo tag)
         {
@@ -112,11 +127,29 @@ namespace commander
                 var filter = parent.Filter;
                 var fltrs = filter.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(z => z.ToLower()).ToArray();
 
-                foreach (var item in Stuff.Tags.OrderBy(z => z.Name))
+
+                List<TagInfoCover> covers = new List<TagInfoCover>();
+                foreach (var item in Stuff.Tags)
                 {
-                    if (!Stuff.ShowHidden && item.IsHidden) continue;
+                    covers.Add(new TagInfoCover() { Name = item.Name, TagInfo = item, IsMain = true });
+                    foreach (var sitem in item.Synonyms)
+                    {
+                        covers.Add(new TagInfoCover() { Name = sitem, TagInfo = item });
+                    }
+                }
+                foreach (var item in covers.OrderBy(z => z.Name))
+                {
+                    if (!Stuff.ShowHidden && item.TagInfo.IsHidden) continue;
                     if (!IsFilterPass(item.Name, fltrs)) continue;
-                    listView1.Items.Add(new ListViewItem(new string[] { item.Name, item.Files.Count() + "" }) { Tag = item });
+                    if (item.IsMain)
+                    {
+                        listView1.Items.Add(new ListViewItem(new string[] { item.Name, item.TagInfo.Files.Count() + "" }) { Tag = item.TagInfo });
+                    }
+                    else
+                    {
+                        listView1.Items.Add(new ListViewItem(new string[] { item.Name + $" ({item.TagInfo.Name})", item.TagInfo.Files.Count() + "" }) { Tag = item });
+                    }
+
                 }
             }
             else
@@ -171,7 +204,7 @@ namespace commander
                         listView1.Items.Add(
                             new ListViewItem(new string[]
                             {
-                                Path.GetFileName(                                    finfo.FullName)
+                                Path.GetFileName(finfo.FullName)
                             })
                             {
                                 BackColor = Color.LightPink,
@@ -236,6 +269,11 @@ namespace commander
                     UpdateList(tag as TagInfo);
                 }
                 else
+                     if (tag is TagInfoCover tic)
+                {
+                    UpdateList(tic.TagInfo);
+                }
+                else
                 if (listView1.SelectedItems[0].Tag == tagRootObject)
                 {
                     UpdateList(null);
@@ -296,13 +334,21 @@ namespace commander
             if (listView1.SelectedItems.Count > 0)
             {
                 var tag = listView1.SelectedItems[0].Tag;
-                if (tag is TagInfo)
+                if (tag is TagInfo t)
                 {
-                    var t = tag as TagInfo;
                     if (Stuff.Question("Are you sure to delete " + t.Name + " tag and all files?") == DialogResult.Yes)
                     {
                         Stuff.DeleteTag(t);
 
+                        UpdateList(null);
+                    }
+                }
+                else if (tag is TagInfoCover tci)
+                {
+                    if (Stuff.Question($"Are you sure to delete synonym {tci.Name} of tag {tci.TagInfo.Name}?") == DialogResult.Yes)
+                    {
+                        tci.TagInfo.Synonyms.Remove(tci.Name);
+                        Stuff.IsDirty = true;
                         UpdateList(null);
                     }
                 }
@@ -411,29 +457,101 @@ namespace commander
 
         private void MemToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (listView1.SelectedItems.Count == 0) return;
-            List<IFileInfo> files = new List<IFileInfo>();
-            long total = 0;
-            for (int i = 0; i < listView1.SelectedItems.Count; i++)
-            {
-                var tag1 = listView1.SelectedItems[i].Tag;
-                if (tag1 is TagInfo)
-                {
-                    var list = (tag1 as TagInfo).Files.Select(z => z);
-                    files.AddRange(list);
-                }
-                if (tag1 is IFileInfo)
-                {
-                    files.Add(tag1 as IFileInfo);
-                }
-            }
 
-            var ff = files.GroupBy(z => z.FullName).ToArray();
-            total += ff.Select(z => z.First()).Sum(z => z.Length);
-            Stuff.Info("Total size: " + Stuff.GetUserFriendlyFileSize(total));
         }
 
         private void DeduplicationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        public Action<IFileInfo> FollowAction;
+
+        public event Action<IFileInfo> SelectedFileChanged;
+
+        private void FollowToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (FollowAction == null) return;
+            if (SelectedFile == null) return;
+            FollowAction(SelectedFile);
+        }
+
+        private void TagPanelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SelectedFile == null) return;
+            QuickTagsWindow q = new QuickTagsWindow();
+
+            q.Init(this, SelectedFile);
+            q.MdiParent = mdi.MainForm;
+            q.TopLevel = false;
+            q.Show();
+        }
+
+        private void IndexToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        public void Rename()
+        {
+            if (SelectedTagCover != null)
+            {
+                RenameDialog rd = new RenameDialog();
+                rd.Validation = (x) =>
+                {
+                    if (Stuff.IsTagCoverExist(x, SelectedTagCover.Name))
+                    {
+                        return new Tuple<bool, string>(false, "Same tag name already exist!");
+                    }
+                    return new Tuple<bool, string>(true, null);
+                };
+                rd.Value = SelectedTagCover.Name;
+                if (rd.ShowDialog() == DialogResult.OK)
+                {
+                    Stuff.RenameTag(SelectedTagCover, rd.Value);
+                    UpdateList(null);
+                }
+                return;
+            }
+            {
+                if (SelectedTag == null) return;
+
+                RenameDialog rd = new RenameDialog();
+                rd.Validation = (x) =>
+                {
+                    if (Stuff.IsTagExist(x, SelectedTag))
+                    {
+                        return new Tuple<bool, string>(false, "Same tag name already exist!");
+                    }
+                    return new Tuple<bool, string>(true, null);
+                };
+                rd.Value = SelectedTag.Name;
+                if (rd.ShowDialog() == DialogResult.OK)
+                {
+                    Stuff.RenameTag(SelectedTag, rd.Value);
+                    UpdateList(null);
+                }
+            }
+        }
+
+        private void OcrToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void OcrToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (SelectedFile == null) return;
+            Stuff.OCRFile(SelectedFile);
+        }
+
+        private void IndexToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (SelectedFile == null) return;
+            Stuff.IndexFile(SelectedFile);
+        }
+
+        private void DeduplicationToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             if (listView1.SelectedItems.Count > 0)
             {
@@ -490,59 +608,81 @@ namespace commander
             }
         }
 
-        public Action<IFileInfo> FollowAction;
-
-        public event Action<IFileInfo> SelectedFileChanged;
-
-        private void FollowToolStripMenuItem_Click(object sender, EventArgs e)
+        private void MemToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            if (FollowAction == null) return;
-            if (SelectedFile == null) return;
-            FollowAction(SelectedFile);
-        }
-
-        private void TagPanelToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (SelectedFile == null) return;
-            QuickTagsWindow q = new QuickTagsWindow();
-
-            q.Init(this, SelectedFile);
-            q.MdiParent = mdi.MainForm;
-            q.TopLevel = false;
-            q.Show();
-        }
-
-        private void IndexToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (SelectedFile == null) return;
-            Stuff.IndexFile(SelectedFile);
-        }
-
-        public void Rename()
-        {
-            if (SelectedTag == null) return;
-
-            RenameDialog rd = new RenameDialog();
-            rd.Validation = (x) =>
+            if (listView1.SelectedItems.Count == 0) return;
+            List<IFileInfo> files = new List<IFileInfo>();
+            long total = 0;
+            for (int i = 0; i < listView1.SelectedItems.Count; i++)
             {
-                if (Stuff.IsTagExist(x))
+                var tag1 = listView1.SelectedItems[i].Tag;
+                if (tag1 is TagInfo)
                 {
-                    return new Tuple<bool, string>(false, "Same tag name already exist!");
+                    var list = (tag1 as TagInfo).Files.Select(z => z);
+                    files.AddRange(list);
                 }
-                return new Tuple<bool, string>(true, null);
-            };
-            rd.Value = SelectedTag.Name;
-            if (rd.ShowDialog() == DialogResult.OK)
+                if (tag1 is IFileInfo)
+                {
+                    files.Add(tag1 as IFileInfo);
+                }
+            }
+
+            var ff = files.GroupBy(z => z.FullName).ToArray();
+            total += ff.Select(z => z.First()).Sum(z => z.Length);
+            Stuff.Info("Total size: " + Stuff.GetUserFriendlyFileSize(total));
+        }
+
+        private void PropertiesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
             {
-                Stuff.RenameTag(SelectedTag, rd.Value);
-                UpdateList(null);
+                var tag = listView1.SelectedItems[0].Tag;
+                if (tag is IFileInfo fi)
+                {
+                    FileMetaInfoEditorDialog d = new FileMetaInfoEditorDialog();
+                    d.Init(fi);
+                    d.ShowDialog();
+                }
+                if (tag is TagInfo ti)
+                {
+                    TagPropertyDialog d = new TagPropertyDialog();
+                    d.Init(ti);
+                    d.ShowDialog();
+                    if (d.Changed)
+                    {
+                        UpdateList(CurrentTag);
+                    }
+                }
+                if (tag is TagInfoCover tic)
+                {
+                    TagPropertyDialog d = new TagPropertyDialog();
+                    d.Init(tic.TagInfo);
+                    d.ShowDialog();
+                    if (d.Changed)
+                    {
+                        UpdateList(CurrentTag);
+                    }
+                }
             }
         }
 
-        private void OcrToolStripMenuItem_Click(object sender, EventArgs e)
+        private void AddSynonymToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (SelectedFile == null) return;
-            Stuff.OCRFile(SelectedFile);
+            if (listView1.SelectedItems.Count == 0) return;
+            var tag = listView1.SelectedItems[0].Tag;
+            if (tag is TagInfo)
+            {
+                (tag as TagInfo).Synonyms.Add((tag as TagInfo).Name + ": synonym01");
+                Stuff.IsDirty = true;
+                UpdateList(null);
+            }
         }
+    }
+
+    public class TagInfoCover
+    {
+        public TagInfo TagInfo;
+        public string Name;
+        public bool IsMain;
     }
 }
