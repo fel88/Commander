@@ -1,11 +1,27 @@
 # Commander
 Yet another file commander.
 
-Containers, tags, extractors and navigation.
+Containers, tags, extractors and navigation. (**Project progress: 40%**)
 
-**Project progress: 40%**
+**Some features:**
+1. Organize your files into tag groups for quick access
+2. Preview your files (images, videos, music, pdf, djvu, gifs)
+3. Monitor disk space consumption with scanner
+4. Url bookmarks with search
+5. Quick access to your favorite applications
+6. Tabs for quick access to favorite directories
+7. Backup your tag groups with iso-image
+8. Files deduplication
+9. Plugins
+10. Games (via plugin) 
 
+Video preview:<br/>
 <img width="90%" src="imgs/1.png"/>
+<br/>Scanner:<br/>
+<img width="50%" src="imgs/2.png"/>
+<br/>
+Jigsaw puzzle game:<br/>
+<img width="70%" src="imgs/3.png"/>
 
 # References:
 * https://github.com/flagbug/YoutubeExtractor (MIT/GPLv2)
