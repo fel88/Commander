@@ -1,6 +1,7 @@
 ﻿using DjvuNet;
 using IsoLib;
 using IsoLib.DiscUtils;
+using PdfiumViewer;
 using PluginLib;
 using System;
 using System.Collections.Generic;
@@ -654,6 +655,26 @@ namespace commander
             }
         }
 
+        internal static void OCRFile(IFileInfo selectedFile)
+        {
+            StringBuilder sbb = new StringBuilder();
+
+            if (selectedFile.Extension.ToLower().EndsWith("pdf"))
+            {
+                using (var pdoc = PdfDocument.Load(selectedFile.FullName))
+                {
+                    var sz = pdoc.PageSizes[0];
+
+
+                    var img = pdoc.Render(0, 300, 300, PdfRenderFlags.CorrectFromDpi);
+                    //var img = pdoc.Render(0, sz.Width, sz.Height, 96, 96, false);
+                    Clipboard.SetImage(img);
+                    Warning("not implemented yet");
+                }
+            }
+        }
+
+
         public static bool IsTagExist(string name)
         {
             //todo: compare synonyms too
@@ -953,11 +974,39 @@ namespace commander
 
         public static void IndexFile(IFileInfo selectedFile)
         {
+            StringBuilder sbb = new StringBuilder();
+
+            if (selectedFile.Extension.ToLower().EndsWith("pdf"))
+            {
+                using (var pdoc = PdfDocument.Load(selectedFile.FullName))
+                {
+                    for (int i = 0; i < pdoc.PageCount; i++)
+                    {
+                        var txt = pdoc.GetPdfText(i);
+                        sbb.Append(txt);
+                    }
+                    if (sbb.Length == 0)
+                    {
+                        if (Stuff.Question("Pdf document is not recognized. Perform OCR?") == DialogResult.Yes)
+                        {
+                            var img = pdoc.Render(0, 96, 96, PdfRenderFlags.None);
+                            Clipboard.SetImage(img);
+                            Warning("Not implemented yet.");
+
+                        }
+                    }
+                    else
+                    {
+                        Stuff.AddIndex(new IndexInfo() { Path = selectedFile.FullName, Text = sbb.ToString() });
+                        Stuff.Info("Indexing compete: " + sbb.ToString().Length + " symbols.");
+                    }
+                }
+                return;
+            }
             if (!selectedFile.Extension.ToLower().EndsWith("djvu")) return;
 
             DjvuDocument doc = new DjvuDocument(selectedFile.FullName);
             var cnt = doc.Pages.Count();
-            StringBuilder sbb = new StringBuilder();
             for (int i = 0; i < cnt; i++)
             {
                 var txt = doc.Pages[i].GetTextForLocation(new System.Drawing.Rectangle(0, 0, doc.Pages[i].Width, doc.Pages[i].Height));

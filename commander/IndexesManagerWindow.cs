@@ -36,5 +36,13 @@ namespace commander
                 AppendItem(item);
             }
         }
+
+        private void ToClipboardToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+            var ii = listView1.SelectedItems[0].Tag as IndexInfo;
+            Clipboard.SetText(ii.Text);            
+                    
+        }
     }
 }

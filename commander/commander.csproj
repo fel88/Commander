@@ -160,6 +160,12 @@
     <Compile Include="IsoProgressDialog.Designer.cs">
       <DependentUpon>IsoProgressDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="LibraryPropertiesDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LibraryPropertiesDialog.Designer.cs">
+      <DependentUpon>LibraryPropertiesDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="NativeMethods.cs" />
     <Compile Include="PdfPreviewer.cs">
       <SubType>UserControl</SubType>
@@ -398,6 +404,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="IsoProgressDialog.resx">
       <DependentUpon>IsoProgressDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LibraryPropertiesDialog.resx">
+      <DependentUpon>LibraryPropertiesDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PdfPreviewer.resx">
       <DependentUpon>PdfPreviewer.cs</DependentUpon>

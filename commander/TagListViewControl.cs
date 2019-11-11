@@ -538,5 +538,11 @@ namespace commander
                 UpdateList(null);
             }
         }
+
+        private void OcrToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SelectedFile == null) return;
+            Stuff.OCRFile(SelectedFile);
+        }
     }
 }

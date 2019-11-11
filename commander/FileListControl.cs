@@ -1792,6 +1792,13 @@ namespace commander
 
         private void PropertiesToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (SelectedLibraries.Any())
+            {
+                LibraryPropertiesDialog p = new LibraryPropertiesDialog();
+                p.Init(SelectedLibraries[0]);
+                p.ShowDialog();                
+                return;
+            }
             if (SelectedFile == null && SelectedDirectory == null) { return; }
             if (SelectedFile != null)
             {

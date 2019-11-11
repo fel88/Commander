@@ -46,6 +46,7 @@
             this.followToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tagPanelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.indexToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ocrToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -90,9 +91,10 @@
             this.deduplicationToolStripMenuItem,
             this.followToolStripMenuItem,
             this.tagPanelToolStripMenuItem,
-            this.indexToolStripMenuItem});
+            this.indexToolStripMenuItem,
+            this.ocrToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 246);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 268);
             // 
             // addTagToolStripMenuItem
             // 
@@ -188,6 +190,13 @@
             this.indexToolStripMenuItem.Text = "index";
             this.indexToolStripMenuItem.Click += new System.EventHandler(this.IndexToolStripMenuItem_Click);
             // 
+            // ocrToolStripMenuItem
+            // 
+            this.ocrToolStripMenuItem.Name = "ocrToolStripMenuItem";
+            this.ocrToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.ocrToolStripMenuItem.Text = "ocr";
+            this.ocrToolStripMenuItem.Click += new System.EventHandler(this.OcrToolStripMenuItem_Click);
+            // 
             // TagListViewControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -219,5 +228,6 @@
         private System.Windows.Forms.ToolStripMenuItem followToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tagPanelToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem indexToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ocrToolStripMenuItem;
     }
 }
