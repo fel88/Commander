@@ -21,7 +21,35 @@ namespace commander
             listView1.MouseMove += ListView1_MouseMove;
 
             phelper.Append(this, listView1);
+
+            tuc = new TagPanelHelper() { };
+
+                       
+            Stuff.SetDoubleBuffered(tuc);
+
+            tuc.Init(this, null);
+
+            SizeChanged += TagListViewControl_SizeChanged;
+            listView1.Controls.Add(tuc);
+            Stuff.HelperVisibleChanged += Stuff_HelperVisibleChanged;
         }
+
+        private void Stuff_HelperVisibleChanged(HelperEnum arg1)
+        {
+            switch (arg1)
+            {
+                case HelperEnum.TagsHelper:
+                    tuc.Visible = Stuff.TagsHelperVisible;
+                    break;
+                
+            }
+        }
+        private void TagListViewControl_SizeChanged(object sender, EventArgs e)
+        {
+            tuc.UpdatePosition();
+        }
+
+        TagPanelHelper tuc;
 
         public void ParentClosing()
         {
@@ -66,6 +94,7 @@ namespace commander
         {
             parent = fc;
             listView1.KeyDown += ListView1_KeyDown;
+            tuc.Init();
         }
 
         private void ListView1_KeyDown(object sender, KeyEventArgs e)

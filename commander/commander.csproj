@@ -186,6 +186,12 @@
       <DependentUpon>PdfPreviewer.cs</DependentUpon>
     </Compile>
     <Compile Include="PreviewHelper.cs" />
+    <Compile Include="ProgressBarOperationDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ProgressBarOperationDialog.Designer.cs">
+      <DependentUpon>ProgressBarOperationDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="ProxyHelper.cs" />
     <Compile Include="QuickTagsUserControl.cs">
       <SubType>UserControl</SubType>
@@ -435,6 +441,9 @@
     <EmbeddedResource Include="PdfPreviewer.resx">
       <DependentUpon>PdfPreviewer.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ProgressBarOperationDialog.resx">
+      <DependentUpon>ProgressBarOperationDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="QuickTagsUserControl.resx">
       <DependentUpon>QuickTagsUserControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -543,7 +552,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="todo.notpublish.txt" />
     <Content Include="todo.txt" />
   </ItemGroup>
   <ItemGroup>

@@ -309,7 +309,7 @@ namespace commander
         {
             if (!checkBox3.Checked) return true;
             var h = ImagesDeduplicationWindow.GetImageHash(item.FullName);
-            return Diff(h, imgHashInt) < 50;
+            return Diff(h, imgHashInt) < 800;
 
         }
 
@@ -360,7 +360,7 @@ namespace commander
         }
 
         Thread searchThread = null;
-        string imgHash = null;
+        //string imgHash = null;
         int[] imgHashInt = null;
         private void button1_Click(object sender, EventArgs e)
         {
@@ -434,8 +434,10 @@ namespace commander
 
              if (checkBox3.Checked)
              {
-                 imgHashInt = ImagesDeduplicationWindow.GetImageHash(pictureBox1.Image);
-                 imgHash = ImagesDeduplicationWindow.ToHash(imgHashInt);
+                 var b = pictureBox1.Image as Bitmap;
+                 b.SetResolution(96, 96);
+                 imgHashInt = ImagesDeduplicationWindow.GetImageHash2D(b);
+                 //imgHash = ImagesDeduplicationWindow.ToHash(imgHashInt);
              }
              foreach (var d in dd)
              {

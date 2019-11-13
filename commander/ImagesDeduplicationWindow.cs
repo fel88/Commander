@@ -33,6 +33,43 @@ namespace commander
         }
 
         public static Dictionary<string, int[]> Cache = new Dictionary<string, int[]>();
+
+        public static int[] GetImageHash2D(Bitmap bmp, int step = 10)
+        {
+            var db = new DirectBitmap(bmp);
+            int cww = 10;
+            int chh = 10;
+            int[,] ret = new int[cww, chh];
+
+            var sx = bmp.Width / (cww - 1);
+            var sy = bmp.Height / (chh - 1);
+
+            for (int i = 0; i < bmp.Width; i++)
+            {
+                for (int j = 0; j < bmp.Height; j++)
+                {
+                    var px = db.GetPixel(i, j);
+                    var s = (px.R + px.G + px.B) / 3;
+                    ret[i / sx, j / sy] += s;
+
+                }
+            }
+
+            int total = (bmp.Width * bmp.Height) / 100;
+            int[] ret2 = new int[10 * 10];
+            int ind = 0;
+            for (int i = 0; i < cww; i++)
+            {
+                for (int j = 0; j < chh; j++)
+                {
+                    ret[i, j] /= total;
+                    ret2[ind++] = ret[i, j];
+                }
+            }
+            db.Dispose();
+            return ret2;
+        }
+
         public static int[] GetImageHash(string path1, int step = 40)
         {
             lock (Cache)
@@ -41,14 +78,15 @@ namespace commander
                 {
                     return Cache[path1];
                 }
-                using (var bmp = Bitmap.FromFile(path1))
+                using (var bmp = Bitmap.FromFile(path1) as Bitmap)
                 {
-                    Cache.Add(path1, GetImageHash(bmp, step));
+                    bmp.SetResolution(96, 96);
+                    Cache.Add(path1, GetImageHash2D(bmp, step));
                 }
                 return Cache[path1];
-            }            
+            }
         }
-        public static int[] GetImageHash(Image bmp, int step = 40)
+        public static int[] GetImageHash(Bitmap bmp, int step = 40)
         {
 
             int levels = 255 / step;
@@ -56,7 +94,7 @@ namespace commander
             int size = 0;
 
 
-            DirectBitmap dbm = new DirectBitmap(bmp as Bitmap);
+            DirectBitmap dbm = new DirectBitmap(bmp);
             size = bmp.Width * bmp.Height;
             for (int i = 0; i < dbm.Width; i++)
             {
@@ -92,19 +130,67 @@ namespace commander
             }
             return ret;
         }
-        public static IFileInfo[][] FindDuplicates(DedupContext dup)
+        public static IFileInfo[][] FindDuplicates(DedupContext dup, Action<int, int, string> reportProgress = null)
         {
-            List<IFileInfo> files = new List<IFileInfo>();
-            foreach (var d in dup.Dirs)
+            var files = dup.GetAllFiles();
+
+            List<List<IFileInfo>> groups = new List<List<IFileInfo>>();
+            Dictionary<string, int[]> hashes = new Dictionary<string, int[]>();
+            int cnt = 0;
+            foreach (var item in files)
             {
-                Stuff.GetAllFiles(d, files);
+                if (reportProgress != null)
+                {
+                    reportProgress(cnt, files.Length * 2, "calc hash of " + item.Name);
+                }
+                try
+                {
+                    hashes.Add(item.FullName, GetImageHash(item.FullName));
+                }
+                catch (Exception ex)
+                {
+
+                }
+                cnt++;
             }
-            files.AddRange(dup.Files);
-            files = files.Where(z => z.Exist).ToList();
+            int treshold = 800;
 
+            foreach (var item in files)
+            {
+                if (reportProgress != null)
+                {
+                    reportProgress(cnt, files.Length * 2, "grouping " + item.Name);
+                }
+                cnt++;
+                if (!hashes.ContainsKey(item.FullName)) continue;
+                var h = hashes[item.FullName];
+                List<IFileInfo> grp = null;
+                int best = treshold;
+                foreach (var gitem in groups)
+                {
+                    foreach (var hitem in gitem)
+                    {
+                        if (Dist(h, hashes[hitem.FullName]) < best)
+                        {
+                            best = Dist(h, hashes[hitem.FullName]);
+                            grp = gitem;
+                        }
+                    }
+                }
+                if (grp == null)
+                {
+                    groups.Add(new List<IFileInfo>());
+                    groups.Last().Add(item);
+                }
+                else
+                {
+                    grp.Add(item);
+                }
+            }
 
-            var grp1 = files.GroupBy(z => ToHash(GetImageHash(z.FullName))).Where(z => z.Count() > 1).ToArray();
-            return grp1.Select(z => z.ToArray()).ToArray();
+            //var grp1 = files.GroupBy(z => ToHash(GetImageHash(z.FullName))).Where(z => z.Count() > 1).ToArray();
+            //return grp1.Select(z => z.ToArray()).ToArray();
+            return groups.Where(z => z.Count > 1).Select(z => z.ToArray()).ToArray();
         }
 
         public DedupContext Context;

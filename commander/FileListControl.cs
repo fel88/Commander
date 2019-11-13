@@ -1938,7 +1938,21 @@ namespace commander
                         d = listView1.SelectedItems[0].Tag as IDirectoryInfo;
                     }
                     DedupContext ctx = new DedupContext(new[] { d }, new IFileInfo[] { });
-                    var groups = RepeatsWindow.FindDuplicates(ctx);
+
+                    ProgressBarOperationDialog pd = new ProgressBarOperationDialog();
+                    IFileInfo[][] groups = null;
+                    pd.Init(() =>
+                    {
+                        groups = RepeatsWindow.FindDuplicates(ctx, (p, max, title) => pd.SetProgress(title, p, max));
+                        pd.Complete();
+                    });
+                    pd.ShowDialog();
+                    if (pd.DialogResult == DialogResult.Abort)
+                    {
+                        return;
+                    }
+
+                    //var groups = RepeatsWindow.FindDuplicates(ctx);
                     if (groups.Count() == 0)
                     {
                         Stuff.Info("No duplicates found.");
@@ -2220,7 +2234,20 @@ namespace commander
                 dirs.AddRange(sell.Select(z => z.BaseDirectory));
 
                 DedupContext ctx = new DedupContext(dirs.ToArray(), self.ToArray());
-                var groups = ImagesDeduplicationWindow.FindDuplicates(ctx);
+
+
+                ProgressBarOperationDialog pd = new ProgressBarOperationDialog();
+                IFileInfo[][] groups = null;
+                pd.Init(() =>
+                {
+                    groups = ImagesDeduplicationWindow.FindDuplicates(ctx, (p, max, title) => pd.SetProgress(title, p, max));
+                    pd.Complete();
+                });
+                pd.ShowDialog();
+                if (pd.DialogResult == DialogResult.Abort)
+                {
+                    return;
+                }
                 if (groups.Count() == 0)
                 {
                     Stuff.Info("No duplicates found.");
@@ -2359,7 +2386,7 @@ namespace commander
             }
         }
 
-      
+
     }
     public enum ViewModeEnum
     {

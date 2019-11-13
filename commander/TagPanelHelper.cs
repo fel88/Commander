@@ -16,7 +16,7 @@ namespace commander
             quickTagsUserControl1.Init();
         }
 
-        internal void Init(FileListControl fileListControl, IFileInfo p)
+        internal void Init(IFileListControl fileListControl, IFileInfo p)
         {
             quickTagsUserControl1.Init(fileListControl, p);
             

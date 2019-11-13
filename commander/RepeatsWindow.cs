@@ -19,21 +19,24 @@ namespace commander
             Stuff.SetDoubleBuffered(listView1);
         }
 
-        public static IFileInfo[][] FindDuplicates(DedupContext dup)
+        public static IFileInfo[][] FindDuplicates(DedupContext dup, Action<int, int, string> reportProgress = null)
         {
             List<IFileInfo> files = new List<IFileInfo>();
+            reportProgress?.Invoke(0, 100, "building list..");
             foreach (var d in dup.Dirs)
             {
                 Stuff.GetAllFiles(d, files);
             }
             files.AddRange(dup.Files);
+            reportProgress?.Invoke(25, 100, "filtering");
             files = files.Where(z => z.Exist && z.Length > 0).ToList();
-
+            reportProgress?.Invoke(50, 100, "grouping 1");
 
             var grp1 = files.GroupBy(z => z.Length).Where(z => z.Count() > 1).ToArray();
             List<IFileInfo[]> groups = new List<IFileInfo[]>();
             foreach (var item in grp1)
             {
+                reportProgress?.Invoke(75, 100, "grouping 2");
                 var arr0 = item.GroupBy(z => Stuff.CalcPartMD5(z.FullName, 1024 * 1024)).ToArray();
                 var cnt0 = arr0.Count(z => z.Count() > 1);
                 if (cnt0 == 0) continue;

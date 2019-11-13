@@ -1,4 +1,6 @@
 ﻿using PluginLib;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace commander
 {
@@ -14,6 +16,18 @@ namespace commander
         {
             this.Dirs = directoryInfo;
             this.Files = fileInfo;
+        }
+
+        public IFileInfo[] GetAllFiles()
+        {
+            List<IFileInfo> files = new List<IFileInfo>();
+            foreach (var d in Dirs)
+            {
+                Stuff.GetAllFiles(d, files);
+            }
+            files.AddRange(Files);
+            files = files.Where(z => z.Exist).ToList();
+            return files.ToArray();
         }
     }
 }
