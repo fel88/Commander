@@ -497,7 +497,10 @@ namespace commander
         {
             return Stuff.Tags.Where(z => (!z.IsHidden || Stuff.ShowHidden) && z.ContainsFile(fullName)).ToArray();
         }
-
+        public static TagInfo[] GetAllTagsOfFile(string fullName)
+        {
+            return Stuff.Tags.Where(z => z.ContainsFile(fullName)).ToArray();
+        }
         public static bool IsDirty { get; set; } = false;
         public static List<string> RecentPathes = new List<string>();
         public static List<TabInfo> Tabs = new List<TabInfo>();

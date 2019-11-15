@@ -1,5 +1,5 @@
 ﻿using Microsoft.Win32;
-using ProxyLib;
+//using ProxyLib;
 using System;
 using System.ComponentModel;
 using System.Data;
@@ -27,7 +27,7 @@ namespace commander
             listView3.HideSelection = false;
             listView2.HideSelection = false;
 
-            if (File.Exists("cache.xml"))
+            /*if (File.Exists("cache.xml"))
             {
                 cache.Restore("cache.xml");
             }
@@ -36,11 +36,11 @@ namespace commander
             foreach (var item in cache.Cache)
             {
                 listView3.Items.Add(new ListViewItem(new string[] { item.Key }) { Tag = item.Key });
-            }
-            SimpleHttpProxyServer.Cache = cache;
+            }*/
+            //SimpleHttpProxyServer.Cache = cache;
 
         }
-        SimpleProxyCache cache = new SimpleProxyCache();
+        //SimpleProxyCache cache = new SimpleProxyCache();
         private void UpdateOfflineList()
         {
             listView2.Items.Clear();
@@ -75,7 +75,7 @@ namespace commander
 
         private void Timer1_Tick(object sender, EventArgs e)
         {
-            toolStripLabel2.Text = "cache items: " + cache.Cache.Count;
+            //toolStripLabel2.Text = "cache items: " + cache.Cache.Count;
             toolStripLabel2.ForeColor = Color.Green;
             foreach (var item in listView1.Items)
             {
@@ -194,25 +194,25 @@ namespace commander
 
         private void RestoreCacheToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (File.Exists("cache.xml"))
+           /* if (File.Exists("cache.xml"))
             {
                 cache.Restore("cache.xml");
-            }
+            }*/
         }
 
         private void SaveCacheToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            cache.Store("cache.xml");
+            //cache.Store("cache.xml");
         }
 
         private void EnableToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SimpleHttpProxyServer.UseCache = enableToolStripMenuItem.Checked;
+            //SimpleHttpProxyServer.UseCache = enableToolStripMenuItem.Checked;
         }
 
         private void DisableToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SimpleHttpProxyServer.AllowStoreInCache = disableToolStripMenuItem.Checked;
+          // SimpleHttpProxyServer.AllowStoreInCache = disableToolStripMenuItem.Checked;
         }
 
         private void ListView3_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -236,9 +236,9 @@ namespace commander
 
         private void ToolStripButton1_Click_1(object sender, EventArgs e)
         {
-            Thread th = new Thread(SimpleHttpProxyServer.Run);
+            /*Thread th = new Thread(SimpleHttpProxyServer.Run);
             th.IsBackground = true;
-            th.Start();            
+            th.Start();  */          
         }
     }
 }

@@ -8,7 +8,8 @@ namespace commander
     {
         public LibraryPropertiesDialog()
         {
-            InitializeComponent();            
+            InitializeComponent();
+            comboBox1.SelectedIndex = 0;
         }
 
         public void Init(ILibrary library)

@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace commander.Controls.MetaInfo
 {
-    public partial class KeywordsMetaInfoControl : UserControl
+    public partial class KeywordsMetaInfoControl : UserControl, IMetaInfoEditorControl
     {
         public KeywordsMetaInfoControl()
         {
@@ -17,9 +17,16 @@ namespace commander.Controls.MetaInfo
             textBox1.Text = Info.Keywords;
         }
 
+        public event Action ValueChanged;
         private void TextBox1_TextChanged(object sender, EventArgs e)
         {
             Info.Keywords = textBox1.Text;            
+            ValueChanged?.Invoke();
         }
+    }
+
+    public interface IMetaInfoEditorControl
+    {
+        event Action ValueChanged;
     }
 }

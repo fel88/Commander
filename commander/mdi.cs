@@ -21,7 +21,7 @@ namespace commander
         {
             InitializeComponent();
             MainForm = this;
-            LoadPlugins();
+            LoadPlugins();            
 
             MdiChildActivate += Mdi_MdiChildActivate;
             Stuff.LoadSettings();
@@ -433,8 +433,8 @@ namespace commander
         
         private void ProxyServerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
-            ProxyManagerWindow pm = new ProxyManagerWindow();
+            TitaniumProxyManager pm = new TitaniumProxyManager();
+            //ProxyManagerWindow pm = new ProxyManagerWindow();
             pm.MdiParent = this;
             
             pm.Show();
@@ -495,7 +495,9 @@ namespace commander
 
         private void MetaInfoRecordsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            MetaInfoManager mim = new MetaInfoManager();
+            mim.MdiParent = this;
+            mim.Show();
         }
     }
 

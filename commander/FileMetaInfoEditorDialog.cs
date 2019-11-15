@@ -43,12 +43,12 @@ namespace commander
             }
         }
 
-        public string GetName(MetaInfo tp)
+        public static string GetName(MetaInfo tp)
         {
             if (tp is KeywordsMetaInfo) return "keywords";
             throw new NotImplementedException();
         }
-        public Control GetControl(MetaInfo tp)
+        public static Control GetControl(MetaInfo tp)
         {
             if (tp is KeywordsMetaInfo)
             {
@@ -79,7 +79,14 @@ namespace commander
             if (listView1.SelectedItems.Count == 0) return;
             var m = listView1.SelectedItems[0].Tag as MetaInfo;
             groupBox1.Controls.Clear();
-            groupBox1.Controls.Add(GetControl(m));
+            var c = GetControl(m);
+            (c as IMetaInfoEditorControl).ValueChanged += FileMetaInfoEditorDialog_ValueChanged;
+            groupBox1.Controls.Add(c);
+        }
+
+        private void FileMetaInfoEditorDialog_ValueChanged()
+        {
+            Stuff.IsDirty = true;
         }
 
         private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)

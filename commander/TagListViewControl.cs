@@ -24,7 +24,7 @@ namespace commander
 
             tuc = new TagPanelHelper() { };
 
-                       
+
             Stuff.SetDoubleBuffered(tuc);
 
             tuc.Init(this, null);
@@ -41,7 +41,7 @@ namespace commander
                 case HelperEnum.TagsHelper:
                     tuc.Visible = Stuff.TagsHelperVisible;
                     break;
-                
+
             }
         }
         private void TagListViewControl_SizeChanged(object sender, EventArgs e)
@@ -207,6 +207,14 @@ namespace commander
                 {
                     try
                     {
+                        if (!Stuff.ShowHidden)
+                        {
+                            var tags = Stuff.GetAllTagsOfFile(finfo.FullName);
+                            if (tags.Any(z => z.IsHidden))
+                            {
+                                continue;
+                            }
+                        }
                         var f = finfo;
                         //var tp = FileListControl.GetBitmapOfFile(f.FullName);
                         //bmp.MakeTransparent();
@@ -473,27 +481,22 @@ namespace commander
 
         private void copyPathToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (listView1.SelectedItems.Count > 0)
+            if (listView1.SelectedItems.Count == 0) return;
+
+            var tag = listView1.SelectedItems[0].Tag;
+            if (tag is IFileInfo)
             {
-                var tag = listView1.SelectedItems[0].Tag;
-                if (tag is IFileInfo)
-                {
-                    var f = tag as IFileInfo;
-                    Clipboard.SetText(f.FullName);
-                }
+                var f = tag as IFileInfo;
+                Clipboard.SetText(f.FullName);
             }
-        }
-
-        private void MemToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void DeduplicationToolStripMenuItem_Click(object sender, EventArgs e)
-        {
+            if (tag is Tuple<IFileInfo, Exception> tuple)
+            {
+                Clipboard.SetText(tuple.Item1.FullName);
+            }
 
         }
 
+    
         public Action<IFileInfo> FollowAction;
 
         public event Action<IFileInfo> SelectedFileChanged;
@@ -582,60 +585,82 @@ namespace commander
 
         private void DeduplicationToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            if (listView1.SelectedItems.Count > 0)
-            {
-                var tag = listView1.SelectedItems[0].Tag;
-                if (tag is TagInfo)
-                {
-                    var dd = listView1.SelectedItems[0].Tag as TagInfo;
-                    var files = dd.Files.Select(z => z);
+            if (listView1.SelectedItems.Count == 0) return;
 
-                    DedupContext ctx = new DedupContext(new IDirectoryInfo[] { }, files.OfType<IFileInfo>().ToArray());
-                    var groups = RepeatsWindow.FindDuplicates(ctx);
-                    if (groups.Count() == 0)
-                    {
-                        Stuff.Info("No duplicates found.");
-                    }
-                    else
-                    {
-                        RepeatsWindow rp = new RepeatsWindow();
-                        rp.MdiParent = mdi.MainForm;
-                        rp.SetGroups(ctx, groups.ToArray());
-                        rp.Show();
-                    }
+            var tag = listView1.SelectedItems[0].Tag;
+            if (tag is TagInfo)
+            {
+                var dd = listView1.SelectedItems[0].Tag as TagInfo;
+                var files = dd.Files.Select(z => z);
+
+                DedupContext ctx = new DedupContext(new IDirectoryInfo[] { }, files.OfType<IFileInfo>().ToArray());
+                ProgressBarOperationDialog pd = new ProgressBarOperationDialog();
+                IFileInfo[][] groups = null;
+                pd.Init(() =>
+                {
+                    groups = RepeatsWindow.FindDuplicates(ctx, (p, max, title) => pd.SetProgress(title, p, max));
+                    pd.Complete();
+                });
+                pd.ShowDialog();
+                if (pd.DialogResult == DialogResult.Abort)
+                {
+                    return;
+                }
+                if (groups.Count() == 0)
+                {
+                    Stuff.Info("No duplicates found.");
                 }
                 else
                 {
-                    List<IFileInfo> ff = new List<IFileInfo>();
-                    List<IDirectoryInfo> dd = new List<IDirectoryInfo>();
-                    for (int i = 0; i < listView1.SelectedItems.Count; i++)
+                    RepeatsWindow rp = new RepeatsWindow();
+                    rp.MdiParent = mdi.MainForm;
+                    rp.SetGroups(ctx, groups.ToArray());
+                    rp.Show();
+                }
+            }
+            else
+            {
+                List<IFileInfo> ff = new List<IFileInfo>();
+                List<IDirectoryInfo> dd = new List<IDirectoryInfo>();
+                for (int i = 0; i < listView1.SelectedItems.Count; i++)
+                {
+                    var tag0 = listView1.SelectedItems[i].Tag;
+                    if (tag0 is IFileInfo)
                     {
-                        var tag0 = listView1.SelectedItems[i].Tag;
-                        if (tag0 is IFileInfo)
-                        {
-                            ff.Add(tag0 as IFileInfo);
-                        }
-                        if (tag0 is IDirectoryInfo)
-                        {
-                            dd.Add(tag0 as IDirectoryInfo);
-                        }
+                        ff.Add(tag0 as IFileInfo);
                     }
-                    DedupContext ctx = new DedupContext(dd.ToArray(), ff.ToArray());
-                    var groups = RepeatsWindow.FindDuplicates(ctx);
-                    if (groups.Count() == 0)
+                    if (tag0 is IDirectoryInfo)
                     {
-                        Stuff.Info("No duplicates found.");
+                        dd.Add(tag0 as IDirectoryInfo);
                     }
-                    else
-                    {
-                        RepeatsWindow rp = new RepeatsWindow();
-                        rp.MdiParent = mdi.MainForm;
-                        rp.SetGroups(ctx, groups.ToArray());
-                        rp.Show();
-                    }
+                }
+                DedupContext ctx = new DedupContext(dd.ToArray(), ff.ToArray());
+                ProgressBarOperationDialog pd = new ProgressBarOperationDialog();
+                IFileInfo[][] groups = null;
+                pd.Init(() =>
+                {
+                    groups = RepeatsWindow.FindDuplicates(ctx, (p, max, title) => pd.SetProgress(title, p, max));
+                    pd.Complete();
+                });
+                pd.ShowDialog();
+                if (pd.DialogResult == DialogResult.Abort)
+                {
+                    return;
+                }
+                if (groups.Count() == 0)
+                {
+                    Stuff.Info("No duplicates found.");
+                }
+                else
+                {
+                    RepeatsWindow rp = new RepeatsWindow();
+                    rp.MdiParent = mdi.MainForm;
+                    rp.SetGroups(ctx, groups.ToArray());
+                    rp.Show();
                 }
             }
         }
+
 
         private void MemToolStripMenuItem1_Click(object sender, EventArgs e)
         {
@@ -663,36 +688,36 @@ namespace commander
 
         private void PropertiesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (listView1.SelectedItems.Count > 0)
+            if (listView1.SelectedItems.Count == 0) return;
+
+            var tag = listView1.SelectedItems[0].Tag;
+            if (tag is IFileInfo fi)
             {
-                var tag = listView1.SelectedItems[0].Tag;
-                if (tag is IFileInfo fi)
+                FileMetaInfoEditorDialog d = new FileMetaInfoEditorDialog();
+                d.Init(fi);
+                d.ShowDialog();
+            }
+            if (tag is TagInfo ti)
+            {
+                TagPropertyDialog d = new TagPropertyDialog();
+                d.Init(ti);
+                d.ShowDialog();
+                if (d.Changed)
                 {
-                    FileMetaInfoEditorDialog d = new FileMetaInfoEditorDialog();
-                    d.Init(fi);
-                    d.ShowDialog();
-                }
-                if (tag is TagInfo ti)
-                {
-                    TagPropertyDialog d = new TagPropertyDialog();
-                    d.Init(ti);
-                    d.ShowDialog();
-                    if (d.Changed)
-                    {
-                        UpdateList(CurrentTag);
-                    }
-                }
-                if (tag is TagInfoCover tic)
-                {
-                    TagPropertyDialog d = new TagPropertyDialog();
-                    d.Init(tic.TagInfo);
-                    d.ShowDialog();
-                    if (d.Changed)
-                    {
-                        UpdateList(CurrentTag);
-                    }
+                    UpdateList(CurrentTag);
                 }
             }
+            if (tag is TagInfoCover tic)
+            {
+                TagPropertyDialog d = new TagPropertyDialog();
+                d.Init(tic.TagInfo);
+                d.ShowDialog();
+                if (d.Changed)
+                {
+                    UpdateList(CurrentTag);
+                }
+            }
+
         }
 
         private void AddSynonymToolStripMenuItem_Click(object sender, EventArgs e)
@@ -704,6 +729,88 @@ namespace commander
                 (tag as TagInfo).Synonyms.Add((tag as TagInfo).Name + ": synonym01");
                 Stuff.IsDirty = true;
                 UpdateList(null);
+            }
+        }
+
+        private void ImgDedupToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+
+            var tag = listView1.SelectedItems[0].Tag;
+            if (tag is TagInfo)
+            {
+                var dd = listView1.SelectedItems[0].Tag as TagInfo;
+                var files = dd.Files.Select(z => z);
+
+                DedupContext ctx = new DedupContext(new IDirectoryInfo[] { }, files.OfType<IFileInfo>().ToArray());
+
+                ProgressBarOperationDialog pd = new ProgressBarOperationDialog();
+                IFileInfo[][] groups = null;
+                pd.Init(() =>
+                {
+                    groups = ImagesDeduplicationWindow.FindDuplicates(ctx, (p, max, title) => pd.SetProgress(title, p, max));
+                    pd.Complete();
+                });
+                pd.ShowDialog();
+                if (pd.DialogResult == DialogResult.Abort)
+                {
+                    return;
+                }
+
+
+                if (groups.Count() == 0)
+                {
+                    Stuff.Info("No duplicates found.");
+                }
+                else
+                {
+                    ImagesDeduplicationWindow rp = new ImagesDeduplicationWindow();
+                    rp.MdiParent = mdi.MainForm;
+                    rp.SetGroups(ctx, groups.ToArray());
+                    rp.Show();
+                }
+            }
+            else
+            {
+                List<IFileInfo> ff = new List<IFileInfo>();
+                List<IDirectoryInfo> dd = new List<IDirectoryInfo>();
+                for (int i = 0; i < listView1.SelectedItems.Count; i++)
+                {
+                    var tag0 = listView1.SelectedItems[i].Tag;
+                    if (tag0 is IFileInfo)
+                    {
+                        ff.Add(tag0 as IFileInfo);
+                    }
+                    if (tag0 is IDirectoryInfo)
+                    {
+                        dd.Add(tag0 as IDirectoryInfo);
+                    }
+                }
+                DedupContext ctx = new DedupContext(dd.ToArray(), ff.ToArray());
+                ProgressBarOperationDialog pd = new ProgressBarOperationDialog();
+                IFileInfo[][] groups = null;
+                pd.Init(() =>
+                {
+                    groups = ImagesDeduplicationWindow.FindDuplicates(ctx, (p, max, title) => pd.SetProgress(title, p, max));
+                    pd.Complete();
+                });
+                pd.ShowDialog();
+                if (pd.DialogResult == DialogResult.Abort)
+                {
+                    return;
+                }
+                if (groups.Count() == 0)
+                {
+                    Stuff.Info("No duplicates found.");
+                }
+                else
+                {
+                    ImagesDeduplicationWindow rp = new ImagesDeduplicationWindow();
+                    rp.MdiParent = mdi.MainForm;
+                    rp.SetGroups(ctx, groups.ToArray());
+                    rp.Show();
+                }
+
             }
         }
     }
