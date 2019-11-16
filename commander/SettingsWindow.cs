@@ -139,6 +139,15 @@ namespace commander
             Stuff.TagsHelperVisible = checkBox3.Checked;
             Stuff.OnHelperVisibleChanged(HelperEnum.TagsHelper);
         }
+
+        private void Button2_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "xml|*.xml";
+            if (ofd.ShowDialog() != DialogResult.Yes) return;
+            //show what sections we need to import: bookmarks/tabs/metainfo.. etc
+            throw new NotImplementedException();
+        }
     }
 
     public enum HelperEnum

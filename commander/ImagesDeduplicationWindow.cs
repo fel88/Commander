@@ -246,6 +246,8 @@ namespace commander
                 pictureBox1.Image = Bitmap.FromFile(ff.FullName);
                 var bmp = pictureBox1.Image;
                 lbl.Text = Stuff.GetUserFriendlyFileSize(ff.Length) + " " + bmp.Width + "x" + bmp.Height;
+                var tgs = Stuff.GetTagsOfFile(ff.FullName);
+                lbl.Text += " tags: " + tgs.Aggregate("", (x, y) => x + y.Name + "; ");
             }
         }
 
@@ -259,6 +261,40 @@ namespace commander
                     f.Filesystem.DeleteFile(f);
                 }
             }
+        }
+
+        private void DeleteAllButThisToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //delete all and merge tags
+            if (listView2.SelectedItems.Count == 0) return;
+            var fli = listView2.SelectedItems[0].Tag as IFileInfo;
+            if (Stuff.Question("Are you sure to delete all files in this group except " + fli.Name + ", and merge all tags into it?") != DialogResult.Yes) return;
+                        
+            List<TagInfo> tags = new List<TagInfo>();
+            for (int i = 0; i < listView2.Items.Count; i++)
+            {
+                var fl = listView2.Items[i].Tag as IFileInfo;
+                if (fl == fli) continue;
+                var tgs = Stuff.GetAllTagsOfFile(fl.FullName);
+                tags.AddRange(tgs);
+                fl.Filesystem.DeleteFile(fl);
+            }
+            tags = tags.Distinct().ToList();
+            foreach (var item in tags)
+            {
+                if (item.ContainsFile(fli)) continue;
+                item.AddFile(fli);
+            }
+        }
+
+        private void Button1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Button2_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

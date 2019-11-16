@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using BrightIdeasSoftware;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -20,7 +21,7 @@ namespace commander
 
             ProxyTestController.Message = (x) =>
             {
-                                
+
             };
         }
         private static readonly ProxyTestController controller = new ProxyTestController();
@@ -48,6 +49,8 @@ namespace commander
         private void Button3_Click(object sender, EventArgs e)
         {
             StreamWrapper.StaticRequests.Clear();
+            BuildIndex();
+            GC.Collect();
         }
         public void Restore(string fn)
         {
@@ -66,7 +69,7 @@ namespace commander
                 var bb2 = Encoding.UTF32.GetString(dat1);
 
                 var bb1 = Encoding.UTF8.GetString(Convert.FromBase64String(key));
-              
+
                 StreamWrapper.StaticRequests.Add(new FakeRequest()
                 {
                     Host = host,
@@ -81,14 +84,34 @@ namespace commander
         private void Button4_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Multiselect = true;
             if (ofd.ShowDialog() != DialogResult.OK) return;
-            Restore(ofd.FileName);
+            for (int i = 0; i < ofd.FileNames.Count(); i++)
+            {
+                Restore(ofd.FileNames[i]);
+            }
+
             BuildIndex();
+            GC.Collect();
         }
         public class WebIndexItem
         {
             public WebIndexItem Parent;
             public string Name { get; set; }
+            public long Size { get; set; }
+
+            public void CaclSize()
+            {
+                if (Request != null)
+                {
+                    Size += Request.Mem.Length;
+                }
+                foreach (var item in Childs)
+                {
+                    item.CaclSize();
+                    Size += item.Size;
+                }
+            }
             public FakeRequest Request;
 
             public List<WebIndexItem> Childs = new List<WebIndexItem>();
@@ -142,6 +165,11 @@ namespace commander
                 }
             }
 
+            foreach (var item in Roots)
+            {
+                item.CaclSize();
+            }
+
             treeListView1.GridLines = true;
             treeListView1.CanExpandGetter = (z) =>
             {
@@ -161,7 +189,14 @@ namespace commander
                 }
                 return null;
             };
-            treeListView1.SetObjects(Roots);
+
+            
+            (treeListView1.Columns[1] as OLVColumn).TextAlign = HorizontalAlignment.Right;
+            (treeListView1.Columns[1] as OLVColumn).AspectGetter = (x) =>
+            {
+                return Stuff.GetUserFriendlyFileSize((x as WebIndexItem).Size);
+            };
+            treeListView1.SetObjects(Roots.OrderBy(z => z.Name));
         }
 
         private void TreeListView1_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -182,7 +217,7 @@ namespace commander
         {
             toolStripLabel2.Text = "cache items: " + StreamWrapper.StaticRequests.Count;
             toolStripLabel2.ForeColor = Color.Green;
-         
+
 
             RegistryKey registry = Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", true);
 

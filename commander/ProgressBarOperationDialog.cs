@@ -60,8 +60,9 @@ namespace commander
             progressBar1.Invoke((Action)(() =>
             {
                 progressBar1.Value = progressBar1.Maximum;
+                Close();
             }));
-            Close();
+            
         }
     }
 }

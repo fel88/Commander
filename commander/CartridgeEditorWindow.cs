@@ -23,5 +23,10 @@ namespace commander
             if (sfd.ShowDialog() != DialogResult.OK) return;
             
         }
+
+        private void Button2_Click(object sender, EventArgs e)
+        {
+            
+        }
     }
 }
