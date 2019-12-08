@@ -48,5 +48,5 @@ namespace commander
         {
             richTextBox1.Enabled = false;
         }
-    }
+    } 
 }

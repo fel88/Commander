@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using PluginLib;
 
@@ -19,9 +13,12 @@ namespace commander
 
         }
 
+        
+
         GifLib.GifContainer container;
         internal void SetImage(IFileInfo file)
         {
+            if (file == null) { container = null; return; }
             using (var stream = file.Filesystem.OpenReadOnlyStream(file))
             {
                 container = GifLib.GifParser.Parse(stream);

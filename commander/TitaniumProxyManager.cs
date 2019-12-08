@@ -48,7 +48,7 @@ namespace commander
 
         private void Button3_Click(object sender, EventArgs e)
         {
-            StreamWrapper.StaticRequests.Clear();
+            StreamWrapper.Caches.Clear();
             BuildIndex();
             GC.Collect();
         }
@@ -69,8 +69,12 @@ namespace commander
                 var bb2 = Encoding.UTF32.GetString(dat1);
 
                 var bb1 = Encoding.UTF8.GetString(Convert.FromBase64String(key));
-
-                StreamWrapper.StaticRequests.Add(new FakeRequest()
+                if (StreamWrapper.ActiveCache == null)
+                {
+                    StreamWrapper.Caches.Add(new WebCache());
+                    StreamWrapper.ActiveCache = StreamWrapper.Caches.Last();
+                }
+                StreamWrapper.ActiveCache.Table.Add(new FakeRequest()
                 {
                     Host = host,
                     Port = port,
@@ -215,7 +219,7 @@ namespace commander
 
         private void Timer1_Tick(object sender, EventArgs e)
         {
-            toolStripLabel2.Text = "cache items: " + StreamWrapper.StaticRequests.Count;
+            toolStripLabel2.Text = "cache items: " + StreamWrapper.StaticRequests.Length;
             toolStripLabel2.ForeColor = Color.Green;
 
 

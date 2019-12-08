@@ -39,7 +39,14 @@ namespace commander
 
         public FileAttributes Attributes => File.GetAttributes(FullName);
 
-        public bool Exist => FileInfo.Exists;
+        public bool Exist
+        {
+            get
+            {
+                //FileInfo.Refresh();
+                return File.Exists(FileInfo.FullName);
+            }
+        }
 
         public IFilesystem Filesystem => Directory.Filesystem;
     }

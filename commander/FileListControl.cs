@@ -15,6 +15,7 @@ using PluginLib;
 using System.Threading;
 using IsoLib;
 using System.Management;
+using System.IO.Compression;
 
 namespace commander
 {
@@ -245,11 +246,26 @@ namespace commander
                 if (SelectedFile != null)
                 {
                     RenameDialog rd = new RenameDialog();
+                    rd.Validation = (x) =>
+                    {
+                        if (File.Exists(Path.Combine(SelectedFile.Directory.FullName, x)))
+                        {
+                            return new Tuple<bool, string>(false, "same file already exist.");
+                        }
+                        return new Tuple<bool, string>(true, string.Empty);
+                    };
                     rd.Value = SelectedFile.Name;
                     if (rd.ShowDialog() == DialogResult.OK)
                     {
-                        File.Move(SelectedFile.FullName, Path.Combine(SelectedFile.Directory.FullName, rd.Value));
-                        UpdateList(CurrentDirectory.FullName);
+                        try
+                        {
+                            File.Move(SelectedFile.FullName, Path.Combine(SelectedFile.Directory.FullName, rd.Value));
+                            UpdateList(CurrentDirectory.FullName);
+                        }
+                        catch (Exception ex)
+                        {
+                            Stuff.Error(ex.Message);
+                        }
                     }
 
                 }
@@ -1355,6 +1371,11 @@ namespace commander
                 Stuff.Warning("Filesystem is readonly.");
                 return;
             }
+            if ((drs.Count + fls.Count) == 0)
+            {
+                Stuff.Warning("Nothing selected.");
+                return;
+            }
             if (Stuff.Question("Are your sure to delete: " + drs.Count + " directories and " + fls.Count + " files?") == DialogResult.Yes)
             {
                 var res = Stuff.Question("Delete all tags if exist?") == DialogResult.Yes;
@@ -1919,82 +1940,80 @@ namespace commander
             }
         }
 
+
+        static void ShowDeduplication(IDirectoryInfo[] dirs, IFileInfo[] fls)
+        {
+            DedupContext ctx = new DedupContext(dirs, fls);
+
+            ProgressBarOperationDialog pd = new ProgressBarOperationDialog();
+            IFileInfo[][] groups = null;
+            pd.Init(() =>
+            {
+                groups = RepeatsWindow.FindDuplicates(ctx, (p, max, title) => pd.SetProgress(title, p, max));
+                pd.Complete();
+            });
+            pd.ShowDialog();
+            if (pd.DialogResult == DialogResult.Abort)
+            {
+                return;
+            }
+
+            //var groups = RepeatsWindow.FindDuplicates(ctx);
+            if (groups.Count() == 0)
+            {
+                Stuff.Info("No duplicates found.");
+            }
+            else
+            {
+                RepeatsWindow rp = new RepeatsWindow();
+                rp.MdiParent = mdi.MainForm;
+                rp.SetGroups(ctx, groups.ToArray());
+                rp.Show();
+            }
+        }
+
         private void deduplicationsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (listView1.SelectedItems.Count > 0)
+            if (listView1.SelectedItems.Count == 0)
             {
-                var tag = listView1.SelectedItems[0].Tag;
-                if (tag is IDirectoryInfo || tag is FilesystemLibrary)
+                if (CurrentDirectory == null || Mode != ViewModeEnum.Filesystem) return;
+                ShowDeduplication(new[] { CurrentDirectory }, new IFileInfo[] { });
+                return;
+            }
+
+            var tag = listView1.SelectedItems[0].Tag;
+            if (tag is IDirectoryInfo || tag is FilesystemLibrary)
+            {
+
+                IDirectoryInfo d = null;
+                if (tag is FilesystemLibrary)
                 {
-
-                    IDirectoryInfo d = null;
-                    if (tag is FilesystemLibrary)
-                    {
-                        var l = tag as FilesystemLibrary;
-                        d = l.BaseDirectory;
-                    }
-                    else
-                    {
-                        d = listView1.SelectedItems[0].Tag as IDirectoryInfo;
-                    }
-                    DedupContext ctx = new DedupContext(new[] { d }, new IFileInfo[] { });
-
-                    ProgressBarOperationDialog pd = new ProgressBarOperationDialog();
-                    IFileInfo[][] groups = null;
-                    pd.Init(() =>
-                    {
-                        groups = RepeatsWindow.FindDuplicates(ctx, (p, max, title) => pd.SetProgress(title, p, max));
-                        pd.Complete();
-                    });
-                    pd.ShowDialog();
-                    if (pd.DialogResult == DialogResult.Abort)
-                    {
-                        return;
-                    }
-
-                    //var groups = RepeatsWindow.FindDuplicates(ctx);
-                    if (groups.Count() == 0)
-                    {
-                        Stuff.Info("No duplicates found.");
-                    }
-                    else
-                    {
-                        RepeatsWindow rp = new RepeatsWindow();
-                        rp.MdiParent = mdi.MainForm;
-                        rp.SetGroups(ctx, groups.ToArray());
-                        rp.Show();
-                    }
+                    var l = tag as FilesystemLibrary;
+                    d = l.BaseDirectory;
                 }
                 else
                 {
-                    List<IFileInfo> ff = new List<IFileInfo>();
-                    List<IDirectoryInfo> dd = new List<IDirectoryInfo>();
-                    for (int i = 0; i < listView1.SelectedItems.Count; i++)
+                    d = listView1.SelectedItems[0].Tag as IDirectoryInfo;
+                }
+                ShowDeduplication(new[] { d }, new IFileInfo[] { });
+            }
+            else
+            {
+                List<IFileInfo> ff = new List<IFileInfo>();
+                List<IDirectoryInfo> dd = new List<IDirectoryInfo>();
+                for (int i = 0; i < listView1.SelectedItems.Count; i++)
+                {
+                    var tag0 = listView1.SelectedItems[i].Tag;
+                    if (tag0 is IFileInfo)
                     {
-                        var tag0 = listView1.SelectedItems[i].Tag;
-                        if (tag0 is IFileInfo)
-                        {
-                            ff.Add(tag0 as IFileInfo);
-                        }
-                        if (tag0 is IDirectoryInfo)
-                        {
-                            dd.Add(tag0 as IDirectoryInfo);
-                        }
+                        ff.Add(tag0 as IFileInfo);
                     }
-                    DedupContext ctx = new DedupContext(dd.ToArray(), ff.ToArray());
-                    var groups = RepeatsWindow.FindDuplicates(ctx);
-                    if (groups.Count() == 0)
+                    if (tag0 is IDirectoryInfo)
                     {
-                        Stuff.Info("No duplicates found.");
-                    }
-                    else
-                    {
-                        RepeatsWindow rp = new RepeatsWindow();
-                        rp.MdiParent = mdi.MainForm;
-                        rp.SetGroups(ctx, groups.ToArray());
-                        rp.Show();
+                        dd.Add(tag0 as IDirectoryInfo);
                     }
                 }
+                ShowDeduplication(dd.ToArray(), ff.ToArray());
             }
         }
 
@@ -2221,8 +2240,46 @@ namespace commander
             }
         }
 
+
+        static void ShowImgDedupliaction(IDirectoryInfo[] dirs, IFileInfo[] fls)
+        {
+            DedupContext ctx = new DedupContext(dirs, fls);
+
+
+            ProgressBarOperationDialog pd = new ProgressBarOperationDialog();
+            IFileInfo[][] groups = null;
+            pd.Init(() =>
+            {
+                groups = ImagesDeduplicationWindow.FindDuplicates(ctx, (p, max, title) => pd.SetProgress(title, p, max));
+                pd.Complete();
+            });
+            pd.ShowDialog();
+            if (pd.DialogResult == DialogResult.Abort)
+            {
+                return;
+            }
+            if (groups.Count() == 0)
+            {
+                Stuff.Info("No duplicates found.");
+            }
+            else
+            {
+                ImagesDeduplicationWindow rp = new ImagesDeduplicationWindow();
+                rp.MdiParent = mdi.MainForm;
+                rp.SetGroups(ctx, groups.ToArray());
+                rp.Show();
+            }
+        }
         private void ImagesDeduplicationsToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (listView1.SelectedItems.Count == 0)
+            {
+                if (CurrentDirectory == null || Mode != ViewModeEnum.Filesystem) return;
+
+                ShowImgDedupliaction(new IDirectoryInfo[] { CurrentDirectory }, new IFileInfo[] { });
+                return;
+            }
+
             if (listView1.SelectedItems.Count > 0)
             {
                 var self = SelectedFiles;
@@ -2233,32 +2290,7 @@ namespace commander
                 dirs.AddRange(seld);
                 dirs.AddRange(sell.Select(z => z.BaseDirectory));
 
-                DedupContext ctx = new DedupContext(dirs.ToArray(), self.ToArray());
-
-
-                ProgressBarOperationDialog pd = new ProgressBarOperationDialog();
-                IFileInfo[][] groups = null;
-                pd.Init(() =>
-                {
-                    groups = ImagesDeduplicationWindow.FindDuplicates(ctx, (p, max, title) => pd.SetProgress(title, p, max));
-                    pd.Complete();
-                });
-                pd.ShowDialog();
-                if (pd.DialogResult == DialogResult.Abort)
-                {
-                    return;
-                }
-                if (groups.Count() == 0)
-                {
-                    Stuff.Info("No duplicates found.");
-                }
-                else
-                {
-                    ImagesDeduplicationWindow rp = new ImagesDeduplicationWindow();
-                    rp.MdiParent = mdi.MainForm;
-                    rp.SetGroups(ctx, groups.ToArray());
-                    rp.Show();
-                }
+                ShowImgDedupliaction(dirs.ToArray(), self.ToArray());
             }
 
         }
@@ -2386,7 +2418,15 @@ namespace commander
             }
         }
 
+        private void ZipToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            Stuff.Warning("not implemented yet");
+        }
 
+        private void UnzipToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Stuff.Warning("not implemented yet");
+        }
     }
     public enum ViewModeEnum
     {

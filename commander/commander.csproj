@@ -46,6 +46,10 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\Microsoft.NET.Build.Extensions\net461\lib\System.IO.Compression.dll</HintPath>
+    </Reference>
     <Reference Include="System.Management" />
     <Reference Include="System.Net.Http, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System.Web" />
@@ -126,7 +130,13 @@
     <Compile Include="DirectBitmap.cs" />
     <Compile Include="DirectoryInfoWrapper.cs" />
     <Compile Include="DiskFilesystem.cs" />
+    <Compile Include="ExplorerPreviewExtension.cs" />
+    <Compile Include="Extensions\DjvuPreviewExtension.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="Extensions\ImgPreviewExtension.cs" />
+    <Compile Include="Extensions\OdtPreviewExtension.cs" />
+    <Compile Include="Extensions\PdfPreviewExtension.cs" />
+    <Compile Include="Extensions\VideoPreviewExtension.cs" />
     <Compile Include="FileInfoWrapper.cs" />
     <Compile Include="FileListControl.cs">
       <SubType>UserControl</SubType>
@@ -154,6 +164,7 @@
     <Compile Include="DjvuReader.Designer.cs">
       <DependentUpon>DjvuReader.cs</DependentUpon>
     </Compile>
+    <Compile Include="Extensions\GifPreviewExtension.cs" />
     <Compile Include="HotkeyShortcutInfo.cs" />
     <Compile Include="IFileListControl.cs" />
     <Compile Include="ImagesDeduplicationWindow.cs">
@@ -243,6 +254,13 @@
     </Compile>
     <Compile Include="TagPropertyDialog.Designer.cs">
       <DependentUpon>TagPropertyDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Extensions\TextPreviewExtension.cs" />
+    <Compile Include="OdtPreviewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="OdtPreviewer.Designer.cs">
+      <DependentUpon>OdtPreviewer.cs</DependentUpon>
     </Compile>
     <Compile Include="TitaniumProxyManager.cs">
       <SubType>Form</SubType>
@@ -480,6 +498,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="TagPropertyDialog.resx">
       <DependentUpon>TagPropertyDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OdtPreviewer.resx">
+      <DependentUpon>OdtPreviewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TitaniumProxyManager.resx">
       <DependentUpon>TitaniumProxyManager.cs</DependentUpon>

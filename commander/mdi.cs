@@ -499,6 +499,11 @@ namespace commander
             mim.MdiParent = this;
             mim.Show();
         }
+
+        public void AddExplorerPreviewExtension(ExplorerPreviewExtension e)
+        {
+            Explorer.PreviewExtensions.Add(e);
+        }
     }
 
     public class ConnectionInfo

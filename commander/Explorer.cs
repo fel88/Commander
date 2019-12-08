@@ -38,74 +38,42 @@ namespace commander
             fileListControl2.FollowAction += followAction;
             UpdateTabs();
 
-            previewer = new ImgViewerPanel() { Dock = DockStyle.Fill };
-            gpreviewer = new GifViewerPanel() { Dock = DockStyle.Fill };
-            vpreviewer = new VideoPlayer() { Dock = DockStyle.Fill };
-            textPreviewer = new TextPreviewer() { Dock = DockStyle.Fill };
-            dpreviewer = new DjvuReader() { Dock = DockStyle.Fill };
-            pdfPreviewer = new PdfPreviewer() { Dock = DockStyle.Fill };
+            // previewer = new ImgViewerPanel() { Dock = DockStyle.Fill };
+
+            PreviewExtensions.Add(new GifPreviewExtension());
+            PreviewExtensions.Add(new DjvuPreviewExtension());
+            PreviewExtensions.Add(new TextPreviewExtension());
+            PreviewExtensions.Add(new VideoPreviewExtension());
+            PreviewExtensions.Add(new PdfPreviewExtension());
+            PreviewExtensions.Add(new ImgPreviewExtension());
+            PreviewExtensions.Add(new OdtPreviewExtension());
 
             fileListControl1.AddSelectedFileChangedAction((x) =>
-           {
-               if (!IsPreviewMode) return;
+               {
+                   if (!IsPreviewMode) return;
 
-               string[] exts = new string[] { ".txt", ".cs", ".js", ".xml", ".htm", ".bat", ".html", ".log", ".csproj", ".config", ".resx", ".sln", ".settings", ".md", ".cpp", ".h", ".asm" };
-               splitContainer1.Panel2.Controls.Remove(gpreviewer);
-               splitContainer1.Panel2.Controls.Remove(previewer);
-               splitContainer1.Panel2.Controls.Remove(vpreviewer);
-               splitContainer1.Panel2.Controls.Remove(textPreviewer);
-               splitContainer1.Panel2.Controls.Remove(dpreviewer);
-               splitContainer1.Panel2.Controls.Remove(pdfPreviewer);
+                   splitContainer1.Panel2.Controls.Clear();
 
-               if (exts.Contains(x.Extension))
-               {
-                   splitContainer1.Panel2.Controls.Add(textPreviewer);
-                   textPreviewer.LoadFile(x);
-               }
-               else
-               {
-                   textPreviewer.Disable();
-               }
-
-
-               string[] gexts = new string[] { ".jpg", ".png", ".bmp" };
-               if (new string[] { ".djvu" }.Contains(x.Extension.ToLower()))
-               {
-                   splitContainer1.Panel2.Controls.Add(dpreviewer);
-                   dpreviewer.Init(x);
-               }
-               else
-               {
-                   dpreviewer.UnloadBook();
-               }
-               if (new string[] { ".pdf" }.Contains(x.Extension.ToLower()))
-               {
-                   splitContainer1.Panel2.Controls.Add(pdfPreviewer);
-                   pdfPreviewer.Init(x);
-               }
-
-               if (gexts.Contains(x.Extension.ToLower()))
-               {
-                   splitContainer1.Panel2.Controls.Add(previewer);
-                   previewer.SetImage(x);
-               }
-               if (new string[] { ".gif" }.Contains(x.Extension.ToLower()))
-               {
-                   splitContainer1.Panel2.Controls.Add(gpreviewer);
-                   gpreviewer.SetImage(x);
-               }
-               if (new string[] { ".mpg", ".flv", ".wmv", ".mp4", ".avi", ".mkv", ".webm", ".mp3" }.Contains(x.Extension.ToLower()))
-               {
-                   splitContainer1.Panel2.Controls.Add(vpreviewer);
-                   vpreviewer.RunVideo(x.FullName);
-               }
-               else
-               {
-                   vpreviewer.StopVideo();
-               }
-
-           });
+                   foreach (var item in PreviewExtensions)
+                   {
+                       if (item.Extensions.Contains(x.Extension.ToLower()))
+                       {
+                           splitContainer1.Panel2.Controls.Add(item.Fabric(x));
+                           CurrentPreviewer = item;
+                       }
+                       else
+                       {
+                           item.Deselect();
+                       }
+                   }
+               });
         }
+
+        public static List<ExplorerPreviewExtension> PreviewExtensions = new List<ExplorerPreviewExtension>();
+
+        public ExplorerPreviewExtension CurrentPreviewer = null;
+
+
 
         private void Explorer_Shown(object sender, EventArgs e)
         {
@@ -115,15 +83,10 @@ namespace commander
 
         private void FileListControl1_DeleteFileAction(FileListControl arg1, IFileInfo arg2)
         {
-
-            if (previewer.CurrentFile != null && previewer.CurrentFile.FullName == arg2.FullName)
+            foreach (var item in PreviewExtensions)
             {
-                previewer.ResetImage();
-            }
-            if (pdfPreviewer.CurrentFile != null && pdfPreviewer.CurrentFile.FullName == arg2.FullName)
-            {
-                pdfPreviewer.Reset();
-            }
+                item.Release(arg2);
+            }            
         }
 
         private void followAction(FileListControl fc, IFileInfo f)
@@ -460,19 +423,14 @@ namespace commander
             splitContainer1.Panel2.Controls.Clear();
         }
 
-        ImgViewerPanel previewer;
-        GifViewerPanel gpreviewer;
-        VideoPlayer vpreviewer;
-        DjvuReader dpreviewer;
-        PdfPreviewer pdfPreviewer;
 
-        TextPreviewer textPreviewer = new TextPreviewer() { Dock = DockStyle.Fill };
+
         bool IsPreviewMode = false;
         private void TablePreviewerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             IsPreviewMode = true;
             RemoveSecondTab();
-            splitContainer1.Panel2.Controls.Add(previewer);
+            //splitContainer1.Panel2.Controls.Add(previewer);
         }
 
         private void CompareBinaryToolStripMenuItem_Click(object sender, EventArgs e)
@@ -567,12 +525,6 @@ namespace commander
             }
         }
 
-        private void TableTextEditorToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-            RemoveSecondTab();
-            splitContainer1.Panel2.Controls.Add(textPreviewer);
-        }
 
         private void Explorer_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -653,7 +605,9 @@ namespace commander
             s.MdiParent = MdiParent;
             s.Show();
         }
+
     }
+    
 
 }
 

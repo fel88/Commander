@@ -401,21 +401,21 @@
             // packToolStripMenuItem
             // 
             this.packToolStripMenuItem.Name = "packToolStripMenuItem";
-            this.packToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.packToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.packToolStripMenuItem.Text = "pack";
             this.packToolStripMenuItem.Click += new System.EventHandler(this.PackToolStripMenuItem_Click);
             // 
             // packAsLibraryToolStripMenuItem
             // 
             this.packAsLibraryToolStripMenuItem.Name = "packAsLibraryToolStripMenuItem";
-            this.packAsLibraryToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.packAsLibraryToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.packAsLibraryToolStripMenuItem.Text = "pack as library";
             this.packAsLibraryToolStripMenuItem.Click += new System.EventHandler(this.PackAsLibraryToolStripMenuItem_Click);
             // 
             // mountToolStripMenuItem
             // 
             this.mountToolStripMenuItem.Name = "mountToolStripMenuItem";
-            this.mountToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.mountToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.mountToolStripMenuItem.Text = "mount";
             this.mountToolStripMenuItem.DropDownOpening += new System.EventHandler(this.MountToolStripMenuItem_DropDownOpening);
             this.mountToolStripMenuItem.Click += new System.EventHandler(this.MountToolStripMenuItem_Click);
@@ -423,14 +423,14 @@
             // extractToolStripMenuItem
             // 
             this.extractToolStripMenuItem.Name = "extractToolStripMenuItem";
-            this.extractToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.extractToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.extractToolStripMenuItem.Text = "extract";
             this.extractToolStripMenuItem.Click += new System.EventHandler(this.ExtractToolStripMenuItem_Click);
             // 
             // unmountToolStripMenuItem
             // 
             this.unmountToolStripMenuItem.Name = "unmountToolStripMenuItem";
-            this.unmountToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.unmountToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.unmountToolStripMenuItem.Text = "unmount";
             this.unmountToolStripMenuItem.Click += new System.EventHandler(this.UnmountToolStripMenuItem_Click);
             // 
@@ -446,14 +446,16 @@
             // zipToolStripMenuItem1
             // 
             this.zipToolStripMenuItem1.Name = "zipToolStripMenuItem1";
-            this.zipToolStripMenuItem1.Size = new System.Drawing.Size(103, 22);
+            this.zipToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.zipToolStripMenuItem1.Text = "zip";
+            this.zipToolStripMenuItem1.Click += new System.EventHandler(this.ZipToolStripMenuItem1_Click);
             // 
             // unzipToolStripMenuItem
             // 
             this.unzipToolStripMenuItem.Name = "unzipToolStripMenuItem";
-            this.unzipToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.unzipToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.unzipToolStripMenuItem.Text = "unzip";
+            this.unzipToolStripMenuItem.Click += new System.EventHandler(this.UnzipToolStripMenuItem_Click);
             // 
             // propertiesToolStripMenuItem
             // 

@@ -77,7 +77,9 @@ namespace commander
                 listView2.Items.Clear();
                 foreach (var l in ff)
                 {
-                    listView2.Items.Add(new ListViewItem(new string[] { l.FullName, Stuff.GetUserFriendlyFileSize(l.Length) }) { Tag = l });
+                    var tgs = Stuff.GetAllTagsOfFile(l.FullName.ToLower());
+                    var tt = tgs.Aggregate("", (x, y) => x + y.Name + "; "); 
+                    listView2.Items.Add(new ListViewItem(new string[] { l.FullName, Stuff.GetUserFriendlyFileSize(l.Length), tt }) { Tag = l });
                 }
                 listView2.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
                 listView2.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
@@ -147,13 +149,47 @@ namespace commander
 
         private void button2_Click(object sender, EventArgs e)
         {
-
+            Stuff.Warning("not implemented");
         }
 
 
         private void DeleteFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (listView2.SelectedItems.Count == 0) return;
 
+            if (listView2.SelectedItems[0].Tag is IFileInfo)
+            {
+                var f = listView2.SelectedItems[0].Tag as IFileInfo;
+                if (Stuff.Question("Are you sure to delete " + f.FullName + "?") == DialogResult.Yes)
+                {
+                    f.Filesystem.DeleteFile(f);
+                }
+            }
+
+        }
+
+        private void DeleteAllButThisToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //delete all and merge tags
+            if (listView2.SelectedItems.Count == 0) return;
+            var fli = listView2.SelectedItems[0].Tag as IFileInfo;
+            if (Stuff.Question("Are you sure to delete all files in this group except " + fli.FullName + ", and merge all tags into it?") != DialogResult.Yes) return;
+
+            List<TagInfo> tags = new List<TagInfo>();
+            for (int i = 0; i < listView2.Items.Count; i++)
+            {
+                var fl = listView2.Items[i].Tag as IFileInfo;
+                if (fl == fli) continue;
+                var tgs = Stuff.GetAllTagsOfFile(fl.FullName);
+                tags.AddRange(tgs);
+                fl.Filesystem.DeleteFile(fl);
+            }
+            tags = tags.Distinct().ToList();
+            foreach (var item in tags)
+            {
+                if (item.ContainsFile(fli)) continue;
+                item.AddFile(fli);
+            }
         }
     }
 }

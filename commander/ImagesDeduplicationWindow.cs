@@ -268,7 +268,7 @@ namespace commander
             //delete all and merge tags
             if (listView2.SelectedItems.Count == 0) return;
             var fli = listView2.SelectedItems[0].Tag as IFileInfo;
-            if (Stuff.Question("Are you sure to delete all files in this group except " + fli.Name + ", and merge all tags into it?") != DialogResult.Yes) return;
+            if (Stuff.Question("Are you sure to delete all files in this group except " + fli.FullName + ", and merge all tags into it?") != DialogResult.Yes) return;
                         
             List<TagInfo> tags = new List<TagInfo>();
             for (int i = 0; i < listView2.Items.Count; i++)

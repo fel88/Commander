@@ -38,10 +38,12 @@
             this.listView2 = new System.Windows.Forms.ListView();
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.executeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyPathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteAllButThisToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.folowInExplorerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
             this.button2 = new System.Windows.Forms.Button();
@@ -113,7 +115,8 @@
             // 
             this.listView2.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader3,
-            this.columnHeader6});
+            this.columnHeader6,
+            this.columnHeader7});
             this.listView2.ContextMenuStrip = this.contextMenuStrip1;
             this.listView2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listView2.FullRowSelect = true;
@@ -135,42 +138,54 @@
             // 
             this.columnHeader6.Text = "Size";
             // 
+            // columnHeader7
+            // 
+            this.columnHeader7.Text = "Tags";
+            // 
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.executeToolStripMenuItem,
             this.copyPathToolStripMenuItem,
             this.deleteFileToolStripMenuItem,
+            this.deleteAllButThisToolStripMenuItem,
             this.folowInExplorerToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(163, 92);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(165, 114);
             // 
             // executeToolStripMenuItem
             // 
             this.executeToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.executeToolStripMenuItem.Name = "executeToolStripMenuItem";
-            this.executeToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.executeToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.executeToolStripMenuItem.Text = "execute";
             this.executeToolStripMenuItem.Click += new System.EventHandler(this.ExecuteToolStripMenuItem_Click);
             // 
             // copyPathToolStripMenuItem
             // 
             this.copyPathToolStripMenuItem.Name = "copyPathToolStripMenuItem";
-            this.copyPathToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.copyPathToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.copyPathToolStripMenuItem.Text = "copy path";
             this.copyPathToolStripMenuItem.Click += new System.EventHandler(this.CopyPathToolStripMenuItem_Click);
             // 
             // deleteFileToolStripMenuItem
             // 
             this.deleteFileToolStripMenuItem.Name = "deleteFileToolStripMenuItem";
-            this.deleteFileToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.deleteFileToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.deleteFileToolStripMenuItem.Text = "delete file";
             this.deleteFileToolStripMenuItem.Click += new System.EventHandler(this.DeleteFileToolStripMenuItem_Click);
+            // 
+            // deleteAllButThisToolStripMenuItem
+            // 
+            this.deleteAllButThisToolStripMenuItem.Name = "deleteAllButThisToolStripMenuItem";
+            this.deleteAllButThisToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.deleteAllButThisToolStripMenuItem.Text = "delete all but this";
+            this.deleteAllButThisToolStripMenuItem.Click += new System.EventHandler(this.DeleteAllButThisToolStripMenuItem_Click);
             // 
             // folowInExplorerToolStripMenuItem
             // 
             this.folowInExplorerToolStripMenuItem.Name = "folowInExplorerToolStripMenuItem";
-            this.folowInExplorerToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.folowInExplorerToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.folowInExplorerToolStripMenuItem.Text = "folow in explorer";
             this.folowInExplorerToolStripMenuItem.Click += new System.EventHandler(this.FolowInExplorerToolStripMenuItem_Click);
             // 
@@ -209,7 +224,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(300, 8);
+            this.label1.Location = new System.Drawing.Point(168, 3);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(35, 13);
             this.label1.TabIndex = 3;
@@ -218,7 +233,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(300, 21);
+            this.label2.Location = new System.Drawing.Point(168, 16);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(35, 13);
             this.label2.TabIndex = 3;
@@ -254,7 +269,7 @@
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.statusStrip1);
             this.Name = "RepeatsWindow";
-            this.Text = "RepeatsWindow";
+            this.Text = "Deduplication window";
             this.tableLayoutPanel1.ResumeLayout(false);
             this.contextMenuStrip1.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
@@ -290,5 +305,7 @@
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
+        private System.Windows.Forms.ToolStripMenuItem deleteAllButThisToolStripMenuItem;
+        private System.Windows.Forms.ColumnHeader columnHeader7;
     }
 }
