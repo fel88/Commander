@@ -8,6 +8,8 @@ namespace PluginLib
         void OpenWindow(Form frm);
         void OpenWindow(Control cc);
 
+        void AddExplorerPreviewExtension(ExplorerPreviewExtension e);
+
         ILibrary[] Libraries { get; }
         ITagInfo[] Tags { get; }
 

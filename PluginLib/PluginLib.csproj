@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComboBoxItem.cs" />
+    <Compile Include="ExplorerPreviewExtension.cs" />
     <Compile Include="IAppContainer.cs" />
     <Compile Include="IDirectoryInfo.cs" />
     <Compile Include="IFileInfo.cs" />

@@ -17,5 +17,4 @@ namespace PluginLib
 
         IFilesystem Filesystem { get; }
     }
-
 }
