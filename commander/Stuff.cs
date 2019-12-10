@@ -359,11 +359,11 @@ namespace commander
             }
         }
 
-        public static string CalcMD5(string filename)
+        public static string CalcMD5(IFileInfo file)
         {
             using (var md5 = MD5.Create())
-            {
-                using (var stream = File.OpenRead(filename))
+            {                
+                using (var stream = file.Filesystem.OpenReadOnlyStream(file))
                 {
                     var hash = md5.ComputeHash(stream);
                     return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
@@ -388,14 +388,13 @@ namespace commander
                 null, control, new object[] { true });
         }
 
-        public static string CalcPartMD5(string filename, int bytes)
+        public static string CalcPartMD5(IFileInfo file, int bytes)
         {
-
-            var fi = new FileInfo(filename);
-            if (fi.Length < bytes) return CalcMD5(filename);
+            
+            if (file.Length < bytes) return CalcMD5(file);
             using (var md5 = MD5.Create())
             {
-                using (var stream = File.OpenRead(filename))
+                using (var stream = file.Filesystem.OpenReadOnlyStream(file))
                 {
                     byte[] bb = new byte[bytes];
                     stream.Read(bb, 0, bytes);

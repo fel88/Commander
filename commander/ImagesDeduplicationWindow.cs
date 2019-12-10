@@ -202,7 +202,7 @@ namespace commander
             foreach (var fileInfo in groups.OrderByDescending(z => z.First().Length * z.Length))
             {
                 listView1.Items.Add(new ListViewItem(new string[] { fileInfo.First().Name,
-                    Stuff.CalcPartMD5(fileInfo.First().FullName,1024*1024),
+                    Stuff.CalcPartMD5(fileInfo.First(),1024*1024),
                     fileInfo.Length + "" ,
                     Stuff.GetUserFriendlyFileSize((fileInfo.First().Length*(fileInfo.Length-1)))
                 })

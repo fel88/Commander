@@ -37,7 +37,7 @@ namespace commander
             foreach (var item in grp1)
             {
                 reportProgress?.Invoke(75, 100, "grouping 2");
-                var arr0 = item.GroupBy(z => Stuff.CalcPartMD5(z.FullName, 1024 * 1024)).ToArray();
+                var arr0 = item.GroupBy(z => Stuff.CalcPartMD5(z, 1024 * 1024)).ToArray();
                 var cnt0 = arr0.Count(z => z.Count() > 1);
                 if (cnt0 == 0) continue;
                 groups.AddRange(arr0.Select(z => z.ToArray()).ToArray());
@@ -55,7 +55,7 @@ namespace commander
             foreach (var fileInfo in repeats.OrderByDescending(z => z.First().Length * z.Length))
             {
                 listView1.Items.Add(new ListViewItem(new string[] { fileInfo.First().Name,
-                    Stuff.CalcPartMD5(fileInfo.First().FullName,1024*1024),
+                    Stuff.CalcPartMD5(fileInfo.First(),1024*1024),
                     fileInfo.Length + "" ,
                     Stuff.GetUserFriendlyFileSize((fileInfo.First().Length*(fileInfo.Length-1)))
                 })
@@ -78,7 +78,7 @@ namespace commander
                 foreach (var l in ff)
                 {
                     var tgs = Stuff.GetAllTagsOfFile(l.FullName.ToLower());
-                    var tt = tgs.Aggregate("", (x, y) => x + y.Name + "; "); 
+                    var tt = tgs.Aggregate("", (x, y) => x + y.Name + "; ");
                     listView2.Items.Add(new ListViewItem(new string[] { l.FullName, Stuff.GetUserFriendlyFileSize(l.Length), tt }) { Tag = l });
                 }
                 listView2.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);

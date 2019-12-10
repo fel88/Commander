@@ -432,7 +432,7 @@ namespace commander
                int fcnt = 0;
                foreach (var item in fls)
                {
-                   var md5 = Stuff.CalcMD5(item.FullName);
+                   var md5 = Stuff.CalcMD5(new FileInfoWrapper(item.FullName));
                    md5cache.Add(md5);
                    statusStrip1.Invoke((Action)(() =>
                    {

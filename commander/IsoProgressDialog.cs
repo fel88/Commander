@@ -18,6 +18,12 @@ namespace commander
         public IsoProgressDialog()
         {
             InitializeComponent();
+            Shown += IsoProgressDialog_Shown;
+        }
+
+        private void IsoProgressDialog_Shown(object sender, EventArgs e)
+        {
+            th.Start();
         }
 
         public static void PopulateFromFolder(CDBuilder builder, IDirectoryInfo di, string basePath)
@@ -158,7 +164,7 @@ namespace commander
 
             });
             th.IsBackground = true;
-            th.Start();
+         
         }
 
         private void Button1_Click(object sender, EventArgs e)

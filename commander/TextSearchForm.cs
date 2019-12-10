@@ -301,7 +301,7 @@ namespace commander
         {
             if (string.IsNullOrEmpty(text)) return true;
             if (!(item is FileInfoWrapper)) return true;
-            var md5 = Stuff.CalcMD5((item as FileInfoWrapper).FullName);
+            var md5 = Stuff.CalcMD5((item as FileInfoWrapper));
             return (md5 == text);
 
         }

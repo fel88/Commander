@@ -438,12 +438,27 @@ namespace commander
             {
                 flss.AddRange(tag.Files);
             }
+
+            var gg = flss.GroupBy(z => z.FullName.ToLower()).ToArray();
+            flss.Clear();
+            foreach (var item in gg)
+            {
+                flss.Add(item.First());
+            }
+
             var ord = flss.GroupBy(z => z.FullName.ToLower()).ToArray();
             var ord2 = flss.GroupBy(z => z.Name.ToLower()).ToArray();
             if (ord2.Any(z => z.Count() > 1))
             {
                 var fer = ord2.Where(z => z.Count() > 1).Sum(z => z.Count());
                 Stuff.Warning(fer + " files has same names. Pack impossible");
+                if (Stuff.Question("Open pack editor?") == DialogResult.Yes)
+                {
+                    PackEditor p = new PackEditor();
+                    p.Init(flss);
+                    p.MdiParent = mdi.MainForm;
+                    p.Show();
+                }
                 return;
             }
 
@@ -496,7 +511,7 @@ namespace commander
 
         }
 
-    
+
         public Action<IFileInfo> FollowAction;
 
         public event Action<IFileInfo> SelectedFileChanged;

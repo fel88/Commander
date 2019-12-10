@@ -50,6 +50,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\Microsoft.NET.Build.Extensions\net461\lib\System.IO.Compression.dll</HintPath>
     </Reference>
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Management" />
     <Reference Include="System.Net.Http, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System.Web" />
@@ -157,6 +158,7 @@
       <DependentUpon>FileMetaInfoEditorDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="FileRoutines.cs" />
+    <Compile Include="FilesAndDirectoriesContext.cs" />
     <Compile Include="FilesystemLibrary.cs" />
     <Compile Include="DjvuReader.cs">
       <SubType>UserControl</SubType>
@@ -199,6 +201,12 @@
       <DependentUpon>MetaInfoManager.cs</DependentUpon>
     </Compile>
     <Compile Include="NativeMethods.cs" />
+    <Compile Include="PackEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PackEditor.Designer.cs">
+      <DependentUpon>PackEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="PdfPreviewer.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -418,6 +426,12 @@
     <Compile Include="YoutubeExtractorWindow.Designer.cs">
       <DependentUpon>YoutubeExtractorWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="ZipEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ZipEditor.Designer.cs">
+      <DependentUpon>ZipEditor.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="AboutBox1.resx">
       <DependentUpon>AboutBox1.cs</DependentUpon>
     </EmbeddedResource>
@@ -474,6 +488,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MetaInfoManager.resx">
       <DependentUpon>MetaInfoManager.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PackEditor.resx">
+      <DependentUpon>PackEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PdfPreviewer.resx">
       <DependentUpon>PdfPreviewer.cs</DependentUpon>
@@ -575,6 +592,9 @@
     <EmbeddedResource Include="YoutubeExtractorWindow.resx">
       <DependentUpon>YoutubeExtractorWindow.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ZipEditor.resx">
+      <DependentUpon>ZipEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -592,7 +612,6 @@
     <Content Include="matr.ico" />
     <None Include="Resources\4dS9v.png" />
     <Content Include="settings.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </Content>
     <Content Include="todo.txt" />

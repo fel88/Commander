@@ -2024,7 +2024,7 @@ namespace commander
                 if (listView1.SelectedItems[0].Tag is IFileInfo)
                 {
                     var f = listView1.SelectedItems[0].Tag as IFileInfo;
-                    var md5 = Stuff.CalcMD5(f.FullName);
+                    var md5 = Stuff.CalcMD5(f);
                     Clipboard.SetText(md5);
                     MessageBox.Show("MD5: " + md5, "Commander", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
@@ -2420,7 +2420,25 @@ namespace commander
 
         private void ZipToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            Stuff.Warning("not implemented yet");
+            ZipEditor z = new ZipEditor();
+            z.MdiParent = mdi.MainForm;
+            FilesAndDirectoriesContext ctx = null;
+            if ((SelectedDirectories != null && SelectedDirectories.Count() > 0) || (SelectedFiles != null && SelectedFiles.Count() > 0))
+            {
+                ctx = new FilesAndDirectoriesContext(SelectedDirectories, SelectedFiles);
+            }
+            else if (CurrentDirectory != null)
+            {
+                ctx = new FilesAndDirectoriesContext(new[] { CurrentDirectory }, null);
+
+            }
+
+            if (ctx != null)
+            {
+                z.Init(ctx);
+                z.Show();
+
+            }
         }
 
         private void UnzipToolStripMenuItem_Click(object sender, EventArgs e)
