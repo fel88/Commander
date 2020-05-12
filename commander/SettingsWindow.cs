@@ -17,6 +17,7 @@ namespace commander
             InitializeComponent();
             Stuff.SetDoubleBuffered(listView1);
             Stuff.SetDoubleBuffered(listView2);
+            checkBox4.Checked = mdi.MainForm.TopMost;
 
             allowFire = false;
             checkBox2.Checked = Stuff.FiltersHelperVisible;
@@ -147,6 +148,11 @@ namespace commander
             if (ofd.ShowDialog() != DialogResult.Yes) return;
             //show what sections we need to import: bookmarks/tabs/metainfo.. etc
             throw new NotImplementedException();
+        }
+
+        private void checkBox4_CheckedChanged(object sender, EventArgs e)
+        {
+            mdi.MainForm.TopMost = checkBox4.Checked;
         }
     }
 

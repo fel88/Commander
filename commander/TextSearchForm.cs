@@ -656,6 +656,11 @@ namespace commander
         {
 
         }
+
+        private void textBox9_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 
     public interface ITextSearcPositionInfo

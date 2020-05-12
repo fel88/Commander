@@ -10,6 +10,7 @@ using System.Net;
 using System.Net.Mime;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using System.Security.Policy;
 using System.Text;
 using System.Windows.Forms;
 
@@ -20,8 +21,8 @@ namespace commander
         public Browser()
         {
             InitializeComponent();
-            webBrowser1.ScriptErrorsSuppressed = true;           
-            
+            webBrowser1.ScriptErrorsSuppressed = true;
+
             Stuff.SetDoubleBuffered(listView1);
             foreach (var item in Stuff.Libraries)
             {
@@ -29,9 +30,9 @@ namespace commander
             }
         }
 
-        
+
         public string UserAgent { get; set; } = "User-Agent: Mozilla/5.0";
-        
+
         private void TextBox1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
@@ -146,7 +147,7 @@ namespace commander
                     wc.DownloadFile(uri.ToString(), path);
                 }
             }
-            toolStripStatusLabel1.Text = "Total: " + listView1.Items.Count + "; Skipped: " + skipped;
+            toolStripStatusLabel1.Text = "Total: " + listView1.Items.Count + "; Skipped: " + skipped + "; total: " + listView1.Items.Count;
         }
 
         private void ToolStripDropDownButton1_Click(object sender, EventArgs e)
@@ -160,47 +161,82 @@ namespace commander
             listView1.Items.Clear();
         }
 
+        public void AppendUrl()
+        {
+            try
+            {
+                var txt = Clipboard.GetText();
+                var arr = txt.Split(new char[] { '\r', '\n', ' ' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
+
+                listView1.BeginUpdate();
+                int added = 0;
+                int duplicates = 0;
+                foreach (var item in arr)
+                {
+                    var uri = new Uri(item);
+                    if (uris.Add(uri.ToString()))
+                    {
+                        listView1.Items.Add(new ListViewItem(new string[] { item, uri.Segments.Last() }) { Tag = uri });
+                        added++;
+                    }
+                    else
+                    {
+                        duplicates++;
+                    }
+                }
+                toolStripStatusLabel1.Text = "Added: " + added + "; skipped: " + duplicates + "; total: " + listView1.Items.Count;
+
+            }
+            catch (Exception ex)
+            {
+                Stuff.Error(ex.Message);
+            }
+            finally
+            {
+                listView1.EndUpdate();
+                listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+                listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+            }
+        }
+
         HashSet<string> uris = new HashSet<string>();
         private void TextBox2_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.V && e.Modifiers == Keys.Control)
             {
                 e.SuppressKeyPress = true;
+                AppendUrl();
+            }
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            timer1.Enabled = checkBox1.Checked;
+        }
+
+        string lastClipboardText = "";
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            var txt = Clipboard.GetText();
+            if (txt != lastClipboardText)
+            {
+                lastClipboardText = txt;
                 try
                 {
-                    var txt = Clipboard.GetText();
-                    var arr = txt.Split(new char[] { '\r', '\n', ' ' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
-
-                    listView1.BeginUpdate();
-                    int added = 0;
-                    int duplicates = 0;
-                    foreach (var item in arr)
-                    {
-                        var uri = new Uri(item);
-                        if (uris.Add(uri.ToString()))
-                        {
-                            listView1.Items.Add(new ListViewItem(new string[] { item, uri.Segments.Last() }) { Tag = uri });
-                            added++;
-                        }
-                        else
-                        {
-                            duplicates++;
-                        }
-                    }
-                    toolStripStatusLabel1.Text = "Added: " + added + "; skipped: " + duplicates;
-
+                    var uu = new Uri(txt);
+                    AppendUrl();
                 }
                 catch (Exception ex)
                 {
-                    Stuff.Error(ex.Message);
+
                 }
-                finally
-                {
-                    listView1.EndUpdate();
-                    listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
-                    listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
-                }
+
             }
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

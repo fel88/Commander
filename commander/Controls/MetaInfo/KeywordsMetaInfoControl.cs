@@ -23,10 +23,16 @@ namespace commander.Controls.MetaInfo
             Info.Keywords = textBox1.Text;            
             ValueChanged?.Invoke();
         }
+
+        public void Stop()
+        {
+            
+        }
     }
 
     public interface IMetaInfoEditorControl
     {
         event Action ValueChanged;
+        void Stop();
     }
 }

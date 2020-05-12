@@ -13,7 +13,7 @@ namespace commander
     {
         public VideoPlayer()
         {
-            InitializeComponent();
+            InitializeComponent();            
         }
 
         internal void RunVideo(string fullName)

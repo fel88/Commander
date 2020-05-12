@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -81,7 +82,7 @@ namespace commander
 
         public static FileMetaInfo GetMetaInfoOfFile(IFileInfo fileInfo)
         {
-            
+
             foreach (var item in Stuff.MetaInfos)
             {
                 if (item.File.FullName.ToLower() != fileInfo.FullName.ToLower()) continue;
@@ -149,6 +150,83 @@ namespace commander
             }
             return list.ToArray();
         }
+        internal static void ReadMeta(IFileInfo fileInfo)
+        {
+            var b64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(fileInfo.FullName));
+            if (!File.Exists("settings.zip"))
+            {
+                return;
+            }
+            using (var zip = System.IO.Compression.ZipFile.OpenRead("settings.zip"))
+            {
+                foreach (var item in zip.Entries)
+                {
+                    if (item.FullName.StartsWith("meta"))
+                    {
+                        if (item.FullName.EndsWith(b64))
+                        {
+                            using (var stream = item.Open())
+                            {
+                                var r = new StreamReader(stream);
+                                var mi = Stuff.GetMetaInfoOfFile(fileInfo);
+                                if (mi == null)
+                                {
+                                    Stuff.MetaInfos.Add(new FileMetaInfo() { File = fileInfo });
+                                }
+                                mi = Stuff.GetMetaInfoOfFile(fileInfo);
+                                if (mi.Infos.Any(z => z is SubtitlesMetaInfo))
+                                {
+                                    mi.Infos.RemoveAll(z => z is SubtitlesMetaInfo);
+                                }
+                                var sub = SubtitlesMetaInfo.FromSRT(r.ReadToEnd());
+                                sub.Parent = mi;
+                                mi.Infos.Add(sub);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        internal static void SaveMeta(IFileInfo fileInfo)
+        {
+            var mi = Stuff.GetMetaInfoOfFile(fileInfo);
+            if (mi == null) return;
+            var b64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(fileInfo.FullName));
+            if (!File.Exists("settings.zip"))
+            {
+                using (var cr = ZipFile.Open("settings.zip", ZipArchiveMode.Create))
+                {
+
+
+                }
+            }
+            using (var zip = System.IO.Compression.ZipFile.Open("settings.zip", ZipArchiveMode.Update))
+            {
+                var fr = (zip.Entries.FirstOrDefault(z => z.FullName.EndsWith(b64)));
+                if (fr != null)
+                {
+                    fr.Delete();
+                }
+
+                var fr1 = mi.Infos.FirstOrDefault(z => z is SubtitlesMetaInfo);
+                if (fr1 != null)
+                {
+                    var ent = zip.CreateEntry("meta\\" + b64);
+
+                    using (var stream = ent.Open())
+                    {
+                        using (var r = new StreamWriter(stream))
+                        {
+                            var sub = (fr1 as SubtitlesMetaInfo);
+                            r.Write(sub.GetSRT());
+                            r.Flush();
+                        }
+                    }                    
+                }                
+            }
+        }
+
         internal static void DeleteBookmark(UrlBookmark bm)
         {
             UrlBookmarks.Remove(bm);
@@ -362,7 +440,7 @@ namespace commander
         public static string CalcMD5(IFileInfo file)
         {
             using (var md5 = MD5.Create())
-            {                
+            {
                 using (var stream = file.Filesystem.OpenReadOnlyStream(file))
                 {
                     var hash = md5.ComputeHash(stream);
@@ -390,7 +468,7 @@ namespace commander
 
         public static string CalcPartMD5(IFileInfo file, int bytes)
         {
-            
+
             if (file.Length < bytes) return CalcMD5(file);
             using (var md5 = MD5.Create())
             {
@@ -517,6 +595,8 @@ namespace commander
             Tabs.Add(tab);
             IsDirty = true;
         }
+
+
         public static void LoadSettings()
         {
             var s = XDocument.Load("settings.xml");
@@ -564,7 +644,7 @@ namespace commander
                 {
                     var fid = int.Parse(item.Attribute("fileId").Value);
                     var f = fileentries.First(z => z.Id == fid);
-                    Stuff.MetaInfos.Add(new FileMetaInfo() { File = new FileInfoWrapper(new FileInfo(f.FullName))});
+                    Stuff.MetaInfos.Add(new FileMetaInfo() { File = new FileInfoWrapper(new FileInfo(f.FullName)) });
                     var minf = Stuff.MetaInfos.Last();
 
                     foreach (var kitem in item.Descendants())
@@ -573,6 +653,7 @@ namespace commander
                         {
                             minf.Infos.Add(new KeywordsMetaInfo() { Parent = minf, Keywords = kitem.Value });
                         }
+
                     }
 
                 }
@@ -757,6 +838,8 @@ namespace commander
             Stuff.IsDirty = true;
             TagsListChanged?.Invoke();
         }
+
+
         public static void SaveSettings()
         {
             StringBuilder sb = new StringBuilder();
@@ -827,7 +910,7 @@ namespace commander
                 sb.AppendLine($"<file fileId=\"{fr.Id}\">");
                 foreach (var zitem in item.Infos)
                 {
-                    if(zitem is KeywordsMetaInfo kmi)
+                    if (zitem is KeywordsMetaInfo kmi)
                     {
                         sb.Append("<keywordsMetaInfo>");
                         sb.Append(kmi.Keywords);
@@ -1183,6 +1266,7 @@ namespace commander
     {
         public string Keywords;
     }
+
 
 
     public class MovieMetaInfo : MetaInfo

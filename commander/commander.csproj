@@ -101,6 +101,12 @@
     <Compile Include="Controls\MetaInfo\KeywordsMetaInfoControl.Designer.cs">
       <DependentUpon>KeywordsMetaInfoControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\MetaInfo\SubtitlesMetaInfoControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\MetaInfo\SubtitlesMetaInfoControl.Designer.cs">
+      <DependentUpon>SubtitlesMetaInfoControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="CopyDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -250,6 +256,7 @@
     <Compile Include="ShellContextMenu.cs" />
     <Compile Include="ShellIcon.cs" />
     <Compile Include="SimpleProxyCache.cs" />
+    <Compile Include="SubtitlesMetaInfo.cs" />
     <Compile Include="TabInfo.cs" />
     <Compile Include="TagPanelHelper.cs">
       <SubType>UserControl</SubType>
@@ -452,6 +459,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\MetaInfo\KeywordsMetaInfoControl.resx">
       <DependentUpon>KeywordsMetaInfoControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\MetaInfo\SubtitlesMetaInfoControl.resx">
+      <DependentUpon>SubtitlesMetaInfoControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="CopyDialog.resx">
       <DependentUpon>CopyDialog.cs</DependentUpon>
