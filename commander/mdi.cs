@@ -6,11 +6,14 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Text;
 using System.Windows.Forms;
+using System.Xml.Linq;
 using YoutubeExtractor;
 
 namespace commander
@@ -21,7 +24,7 @@ namespace commander
         {
             InitializeComponent();
             MainForm = this;
-            LoadPlugins();            
+            LoadPlugins();
 
             MdiChildActivate += Mdi_MdiChildActivate;
             Stuff.LoadSettings();
@@ -272,7 +275,7 @@ namespace commander
 
         private void WebToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+
         }
 
         private void ToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -430,13 +433,13 @@ namespace commander
             f.Show();
         }
 
-        
+
         private void ProxyServerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             TitaniumProxyManager pm = new TitaniumProxyManager();
             //ProxyManagerWindow pm = new ProxyManagerWindow();
             pm.MdiParent = this;
-            
+
             pm.Show();
         }
 
@@ -488,9 +491,7 @@ namespace commander
 
         private void CartridgeEditorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CartridgeEditorWindow mlw = new CartridgeEditorWindow();
-            mlw.MdiParent = this;
-            mlw.Show();
+
         }
 
         private void MetaInfoRecordsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -503,6 +504,35 @@ namespace commander
         public void AddExplorerPreviewExtension(ExplorerPreviewExtension e)
         {
             Explorer.PreviewExtensions.Add(e);
+        }
+
+        private void exportToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CartridgeEditorWindow mlw = new CartridgeEditorWindow();
+            mlw.MdiParent = this;
+            mlw.Show();
+        }
+
+        private void importToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+
+            ofd.Filter = "*.zip|*.zip";
+            if (ofd.ShowDialog() != DialogResult.OK) return;
+
+            using (var zip = ZipFile.OpenRead(ofd.FileName))
+            {
+                var bkm = zip.Entries.FirstOrDefault(z => z.Name.Contains("bookmarks.xml"));
+                if (bkm != null)
+                {
+                    using (var f = bkm.Open())
+                    {
+                        var doc = XDocument.Load(f);
+                        Stuff.LoadBookmarks(doc.Descendants("root").First());
+                    }
+                }
+            }
+            Stuff.Info("Import complete!");
         }
     }
 

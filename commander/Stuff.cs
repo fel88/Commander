@@ -222,8 +222,8 @@ namespace commander
                             r.Write(sub.GetSRT());
                             r.Flush();
                         }
-                    }                    
-                }                
+                    }
+                }
             }
         }
 
@@ -234,10 +234,15 @@ namespace commander
         }
 
         public static List<UrlBookmark> UrlBookmarks = new List<UrlBookmark>();
-        internal static void AddUrlBookmark(UrlBookmark b)
+        internal static bool AddUrlBookmark(UrlBookmark b)
         {
+            if (UrlBookmarks.Any(z => z.OriginalUrl == b.OriginalUrl))
+            {
+                return false;
+            }
             UrlBookmarks.Add(b);
             IsDirty = true;
+            return true;
         }
 
         public static IFilesystem DefaultFileSystem = new DiskFilesystem();
@@ -769,7 +774,13 @@ namespace commander
                 var f = new OfflineSiteInfo() { Path = path };
                 Stuff.OfflineSites.Add(f);
             }
-            foreach (var book in s.Descendants("bookmark"))
+            var root = s.Descendants("bookmarks").First();
+            LoadBookmarks(root);
+        }
+
+        public static void LoadBookmarks(XElement elem)
+        {            
+            foreach (var book in elem.Descendants("bookmark"))
             {
                 var uri = Encoding.UTF8.GetString(Convert.FromBase64String(book.Attribute("uri").Value));
                 var orig = Encoding.UTF8.GetString(Convert.FromBase64String(book.Attribute("original").Value));
@@ -777,7 +788,7 @@ namespace commander
 
                 var f = new UrlBookmark() { OriginalUrl = orig, Info = info, Uri = new Uri(uri) };
                 Stuff.AddUrlBookmark(f);
-            }
+            }            
         }
 
         internal static void OCRFile(IFileInfo selectedFile)
@@ -1025,6 +1036,14 @@ namespace commander
             }
             sb.AppendLine("</offlineSites>");
 
+            GetBookmarks(sb);
+
+            sb.AppendLine("</settings>");
+            File.WriteAllText("settings.xml", sb.ToString());
+        }
+
+        public static void GetBookmarks(StringBuilder sb)
+        {
             sb.AppendLine("<bookmarks>");
             foreach (var item in Stuff.UrlBookmarks)
             {
@@ -1036,9 +1055,6 @@ namespace commander
                 sb.AppendLine($"<bookmark uri=\"{ Convert.ToBase64String(Encoding.UTF8.GetBytes(item.Uri.ToString()))}\" info=\"{b64}\" original=\"{Convert.ToBase64String(Encoding.UTF8.GetBytes(item.OriginalUrl))}\"/>");
             }
             sb.AppendLine("</bookmarks>");
-
-            sb.AppendLine("</settings>");
-            File.WriteAllText("settings.xml", sb.ToString());
         }
 
         public static event Action TagsListChanged;

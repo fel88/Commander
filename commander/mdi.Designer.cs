@@ -56,13 +56,16 @@
             this.indexToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.indexesListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.partialIndexMountListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.metaInfoRecordsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sectionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exchangeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.renameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyPathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.metaInfoRecordsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.sectionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -80,7 +83,8 @@
             this.pluginsToolStripMenuItem,
             this.windowsToolStripMenuItem,
             this.proxyServerToolStripMenuItem,
-            this.indexToolStripMenuItem});
+            this.indexToolStripMenuItem,
+            this.exchangeToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1071, 24);
@@ -275,16 +279,45 @@
             // indexesListToolStripMenuItem
             // 
             this.indexesListToolStripMenuItem.Name = "indexesListToolStripMenuItem";
-            this.indexesListToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.indexesListToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.indexesListToolStripMenuItem.Text = "full-text manager";
             this.indexesListToolStripMenuItem.Click += new System.EventHandler(this.IndexesListToolStripMenuItem_Click);
             // 
             // partialIndexMountListToolStripMenuItem
             // 
             this.partialIndexMountListToolStripMenuItem.Name = "partialIndexMountListToolStripMenuItem";
-            this.partialIndexMountListToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.partialIndexMountListToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.partialIndexMountListToolStripMenuItem.Text = "distributed index";
             this.partialIndexMountListToolStripMenuItem.Click += new System.EventHandler(this.PartialIndexMountListToolStripMenuItem_Click);
+            // 
+            // metaInfoRecordsToolStripMenuItem
+            // 
+            this.metaInfoRecordsToolStripMenuItem.Name = "metaInfoRecordsToolStripMenuItem";
+            this.metaInfoRecordsToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.metaInfoRecordsToolStripMenuItem.Text = "meta info records";
+            this.metaInfoRecordsToolStripMenuItem.Click += new System.EventHandler(this.MetaInfoRecordsToolStripMenuItem_Click);
+            // 
+            // sectionsToolStripMenuItem
+            // 
+            this.sectionsToolStripMenuItem.Name = "sectionsToolStripMenuItem";
+            this.sectionsToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.sectionsToolStripMenuItem.Text = "sections";
+            // 
+            // exchangeToolStripMenuItem
+            // 
+            this.exchangeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.exportToolStripMenuItem,
+            this.importToolStripMenuItem});
+            this.exchangeToolStripMenuItem.Name = "exchangeToolStripMenuItem";
+            this.exchangeToolStripMenuItem.Size = new System.Drawing.Size(69, 20);
+            this.exchangeToolStripMenuItem.Text = "Exchange";
+            // 
+            // exportToolStripMenuItem
+            // 
+            this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exportToolStripMenuItem.Text = "Export";
+            this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
             // 
             // toolStrip1
             // 
@@ -325,18 +358,12 @@
             this.copyPathToolStripMenuItem.Text = "copy path";
             this.copyPathToolStripMenuItem.Click += new System.EventHandler(this.CopyPathToolStripMenuItem_Click);
             // 
-            // metaInfoRecordsToolStripMenuItem
+            // importToolStripMenuItem
             // 
-            this.metaInfoRecordsToolStripMenuItem.Name = "metaInfoRecordsToolStripMenuItem";
-            this.metaInfoRecordsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.metaInfoRecordsToolStripMenuItem.Text = "meta info records";
-            this.metaInfoRecordsToolStripMenuItem.Click += new System.EventHandler(this.MetaInfoRecordsToolStripMenuItem_Click);
-            // 
-            // sectionsToolStripMenuItem
-            // 
-            this.sectionsToolStripMenuItem.Name = "sectionsToolStripMenuItem";
-            this.sectionsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.sectionsToolStripMenuItem.Text = "sections";
+            this.importToolStripMenuItem.Name = "importToolStripMenuItem";
+            this.importToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.importToolStripMenuItem.Text = "Import";
+            this.importToolStripMenuItem.Click += new System.EventHandler(this.importToolStripMenuItem_Click);
             // 
             // mdi
             // 
@@ -395,5 +422,8 @@
         private System.Windows.Forms.ToolStripMenuItem cartridgeEditorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem metaInfoRecordsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem sectionsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exchangeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem importToolStripMenuItem;
     }
 }
