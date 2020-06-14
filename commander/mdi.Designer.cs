@@ -60,12 +60,12 @@
             this.sectionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exchangeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.renameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyPathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -279,28 +279,28 @@
             // indexesListToolStripMenuItem
             // 
             this.indexesListToolStripMenuItem.Name = "indexesListToolStripMenuItem";
-            this.indexesListToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.indexesListToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.indexesListToolStripMenuItem.Text = "full-text manager";
             this.indexesListToolStripMenuItem.Click += new System.EventHandler(this.IndexesListToolStripMenuItem_Click);
             // 
             // partialIndexMountListToolStripMenuItem
             // 
             this.partialIndexMountListToolStripMenuItem.Name = "partialIndexMountListToolStripMenuItem";
-            this.partialIndexMountListToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
-            this.partialIndexMountListToolStripMenuItem.Text = "distributed index";
+            this.partialIndexMountListToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.partialIndexMountListToolStripMenuItem.Text = "distributed file-index";
             this.partialIndexMountListToolStripMenuItem.Click += new System.EventHandler(this.PartialIndexMountListToolStripMenuItem_Click);
             // 
             // metaInfoRecordsToolStripMenuItem
             // 
             this.metaInfoRecordsToolStripMenuItem.Name = "metaInfoRecordsToolStripMenuItem";
-            this.metaInfoRecordsToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.metaInfoRecordsToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.metaInfoRecordsToolStripMenuItem.Text = "meta info records";
             this.metaInfoRecordsToolStripMenuItem.Click += new System.EventHandler(this.MetaInfoRecordsToolStripMenuItem_Click);
             // 
             // sectionsToolStripMenuItem
             // 
             this.sectionsToolStripMenuItem.Name = "sectionsToolStripMenuItem";
-            this.sectionsToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.sectionsToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.sectionsToolStripMenuItem.Text = "sections";
             // 
             // exchangeToolStripMenuItem
@@ -315,9 +315,16 @@
             // exportToolStripMenuItem
             // 
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.exportToolStripMenuItem.Text = "Export";
             this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
+            // 
+            // importToolStripMenuItem
+            // 
+            this.importToolStripMenuItem.Name = "importToolStripMenuItem";
+            this.importToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
+            this.importToolStripMenuItem.Text = "Import";
+            this.importToolStripMenuItem.Click += new System.EventHandler(this.importToolStripMenuItem_Click);
             // 
             // toolStrip1
             // 
@@ -357,13 +364,6 @@
             this.copyPathToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
             this.copyPathToolStripMenuItem.Text = "copy path";
             this.copyPathToolStripMenuItem.Click += new System.EventHandler(this.CopyPathToolStripMenuItem_Click);
-            // 
-            // importToolStripMenuItem
-            // 
-            this.importToolStripMenuItem.Name = "importToolStripMenuItem";
-            this.importToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.importToolStripMenuItem.Text = "Import";
-            this.importToolStripMenuItem.Click += new System.EventHandler(this.importToolStripMenuItem_Click);
             // 
             // mdi
             // 

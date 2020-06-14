@@ -144,6 +144,13 @@
     <Compile Include="Extensions\OdtPreviewExtension.cs" />
     <Compile Include="Extensions\PdfPreviewExtension.cs" />
     <Compile Include="Extensions\VideoPreviewExtension.cs" />
+    <Compile Include="FileIndex.cs" />
+    <Compile Include="FileIndexesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FileIndexesForm.Designer.cs">
+      <DependentUpon>FileIndexesForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="FileInfoWrapper.cs" />
     <Compile Include="FileListControl.cs">
       <SubType>UserControl</SubType>
@@ -471,6 +478,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Desktop.resx">
       <DependentUpon>Desktop.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FileIndexesForm.resx">
+      <DependentUpon>FileIndexesForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FileListControl.resx">
       <DependentUpon>FileListControl.cs</DependentUpon>

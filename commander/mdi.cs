@@ -486,7 +486,9 @@ namespace commander
 
         private void PartialIndexMountListToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            FileIndexesForm mlw = new FileIndexesForm();
+            mlw.MdiParent = this;
+            mlw.Show();
         }
 
         private void CartridgeEditorToolStripMenuItem_Click(object sender, EventArgs e)

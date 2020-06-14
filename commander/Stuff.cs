@@ -22,6 +22,9 @@ namespace commander
 {
     public class Stuff
     {
+
+
+
         public static Dictionary<string, Tuple<Bitmap, int>> Icons = new Dictionary<string, Tuple<Bitmap, int>>();
         public static Dictionary<string, Tuple<Bitmap, int>> ExeIcons = new Dictionary<string, Tuple<Bitmap, int>>();
         public static Tuple<Bitmap, int> GetBitmapOfFile(string fn)
@@ -604,6 +607,14 @@ namespace commander
 
         public static void LoadSettings()
         {
+            var findex = new FileIndex() { FileName = "settings.xml", RootPath = Application.StartupPath };
+            using (FileStream fs = new FileStream("settings.xml", FileMode.Open, FileAccess.Read))
+            {
+                findex.Load(fs, new DirectoryInfoWrapper(new DirectoryInfo(Application.StartupPath)), "settings.xml");
+            }
+
+            FileIndexes.Add(findex);
+
             var s = XDocument.Load("settings.xml");
             var fr = s.Descendants("settings").First();
             Stuff.PasswordHash = fr.Attribute("password").Value;
@@ -614,56 +625,56 @@ namespace commander
 
             List<DirectoryEntry> direntries = new List<DirectoryEntry>();
             List<FileEntry> fileentries = new List<FileEntry>();
-            #region load directory and files entries
-            var entries = s.Descendants("entries").First();
-            foreach (var item in entries.Descendants("directory"))
-            {
-                var id = int.Parse(item.Attribute("id").Value);
-                var path = item.Value;
-                //var dir = new DirectoryInfo(path);
-                //path = dir.Parent.GetDirectories(dir.Name).First().FullName;
-                direntries.Add(new DirectoryEntry() { Id = id, Path = path });
-            }
-            foreach (var item in entries.Descendants("file"))
-            {
-                var id = int.Parse(item.Attribute("id").Value);
-                var dirId = int.Parse(item.Attribute("dirId").Value);
-                var name = item.Value;
+            //#region load directory and files entries
+            //var entries = s.Descendants("entries").First();
+            //foreach (var item in entries.Descendants("directory"))
+            //{
+            //    var id = int.Parse(item.Attribute("id").Value);
+            //    var path = item.Value;
+            //    //var dir = new DirectoryInfo(path);
+            //    //path = dir.Parent.GetDirectories(dir.Name).First().FullName;
+            //    direntries.Add(new DirectoryEntry() { Id = id, Path = path });
+            //}
+            //foreach (var item in entries.Descendants("file"))
+            //{
+            //    var id = int.Parse(item.Attribute("id").Value);
+            //    var dirId = int.Parse(item.Attribute("dirId").Value);
+            //    var name = item.Value;
 
-                var dir = direntries.First(z => z.Id == dirId);
-                //var path = Path.Combine(dir.Path, name);
-                //var diri = new DirectoryInfo(dir.Path);                
-                //name = diri.GetFiles(name).First().Name;
+            //    var dir = direntries.First(z => z.Id == dirId);
+            //    //var path = Path.Combine(dir.Path, name);
+            //    //var diri = new DirectoryInfo(dir.Path);                
+            //    //name = diri.GetFiles(name).First().Name;
 
-                fileentries.Add(new FileEntry() { Id = id, Directory = dir, Name = name });
-            }
-            #endregion
+            //    fileentries.Add(new FileEntry() { Id = id, Directory = dir, Name = name });
+            //}
+            //#endregion
 
 
-            #region meta
+            //#region meta
 
-            var metas = s.Descendants("meta").FirstOrDefault();
-            if (metas != null)
-            {
-                foreach (var item in metas.Descendants("file"))
-                {
-                    var fid = int.Parse(item.Attribute("fileId").Value);
-                    var f = fileentries.First(z => z.Id == fid);
-                    Stuff.MetaInfos.Add(new FileMetaInfo() { File = new FileInfoWrapper(new FileInfo(f.FullName)) });
-                    var minf = Stuff.MetaInfos.Last();
+            //var metas = s.Descendants("meta").FirstOrDefault();
+            //if (metas != null)
+            //{
+            //    foreach (var item in metas.Descendants("file"))
+            //    {
+            //        var fid = int.Parse(item.Attribute("fileId").Value);
+            //        var f = fileentries.First(z => z.Id == fid);
+            //        Stuff.MetaInfos.Add(new FileMetaInfo() { File = new FileInfoWrapper(new FileInfo(f.FullName)) });
+            //        var minf = Stuff.MetaInfos.Last();
 
-                    foreach (var kitem in item.Descendants())
-                    {
-                        if (kitem.Name == "keywordsMetaInfo")
-                        {
-                            minf.Infos.Add(new KeywordsMetaInfo() { Parent = minf, Keywords = kitem.Value });
-                        }
+            //        foreach (var kitem in item.Descendants())
+            //        {
+            //            if (kitem.Name == "keywordsMetaInfo")
+            //            {
+            //                minf.Infos.Add(new KeywordsMetaInfo() { Parent = minf, Keywords = kitem.Value });
+            //            }
 
-                    }
+            //        }
 
-                }
-            }
-            #endregion
+            //    }
+            //}
+            //#endregion
             foreach (var descendant in s.Descendants("tab"))
             {
                 var hint = descendant.Attribute("hint").Value;
@@ -729,32 +740,32 @@ namespace commander
                 }
             }
 
-            foreach (var descendant in s.Descendants("tag"))
-            {
-                var name = descendant.Attribute("name").Value;
+            //foreach (var descendant in s.Descendants("tag"))
+            //{
+            //    var name = descendant.Attribute("name").Value;
 
-                string flags = "";
-                if (descendant.Attribute("flags") != null) { flags = descendant.Attribute("flags").Value; }
+            //    string flags = "";
+            //    if (descendant.Attribute("flags") != null) { flags = descendant.Attribute("flags").Value; }
 
-                var tag = new TagInfo() { Name = name, IsHidden = flags.Contains("hidden") };
+            //    var tag = new TagInfo() { Name = name, IsHidden = flags.Contains("hidden") };
 
-                var snms = descendant.Descendants("synonym");
-                foreach (var item in snms)
-                {
-                    tag.Synonyms.Add(item.Value.Trim());
-                }
+            //    var snms = descendant.Descendants("synonym");
+            //    foreach (var item in snms)
+            //    {
+            //        tag.Synonyms.Add(item.Value.Trim());
+            //    }
 
-                Stuff.Tags.Add(tag);
-                foreach (var item in descendant.Descendants("file"))
-                {
-                    var arr1 = item.Attribute("id").Value.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray();
-                    foreach (var aitem in arr1)
-                    {
-                        var ff = fileentries.First(z => z.Id == aitem);
-                        tag.AddFile(new FileInfoWrapper(ff.FullName));
-                    }
-                }
-            }
+            //    Stuff.Tags.Add(tag);
+            //    foreach (var item in descendant.Descendants("file"))
+            //    {
+            //        var arr1 = item.Attribute("id").Value.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray();
+            //        foreach (var aitem in arr1)
+            //        {
+            //            var ff = fileentries.First(z => z.Id == aitem);
+            //            tag.AddFile(new FileInfoWrapper(ff.FullName));
+            //        }
+            //    }
+            //}
 
             foreach (var descendant in s.Descendants("fileContextMenuItem"))
             {
@@ -779,7 +790,7 @@ namespace commander
         }
 
         public static void LoadBookmarks(XElement elem)
-        {            
+        {
             foreach (var book in elem.Descendants("bookmark"))
             {
                 var uri = Encoding.UTF8.GetString(Convert.FromBase64String(book.Attribute("uri").Value));
@@ -788,7 +799,7 @@ namespace commander
 
                 var f = new UrlBookmark() { OriginalUrl = orig, Info = info, Uri = new Uri(uri) };
                 Stuff.AddUrlBookmark(f);
-            }            
+            }
         }
 
         internal static void OCRFile(IFileInfo selectedFile)
@@ -966,6 +977,7 @@ namespace commander
                 sb.Append($"<file id=\"");
                 foreach (var fitem in item.Files)
                 {
+                    if (!Stuff.FileIndexes[0].ContainsFile(fitem)) continue;
                     if (fitem is IsoFileWrapper)
                     {
                         continue;
@@ -1079,6 +1091,7 @@ namespace commander
         public static List<ILibrary> Libraries = new List<ILibrary>();
         public static List<TagInfo> Tags = new List<TagInfo>();
         public static List<FileMetaInfo> MetaInfos = new List<FileMetaInfo>();
+        public static List<FileIndex> FileIndexes = new List<FileIndex>();
 
         public static void SetShowHidden(bool val)
         {
@@ -1219,6 +1232,11 @@ namespace commander
             page
                 .BuildPageImage()
                 .Save("TestImage2.png", ImageFormat.Png);*/
+        }
+
+        public static void AddFileIndex(FileIndex findex)
+        {
+            FileIndexes.Add(findex);
         }
     }
 

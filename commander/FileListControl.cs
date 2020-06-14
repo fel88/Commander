@@ -1213,40 +1213,14 @@ namespace commander
 
         private void TxtFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            int index = 0;
-            while (true)
-            {
-                string name = "noname" + index + ".txt";
-                string path = Path.Combine(CurrentDirectory.FullName, name);
-                if (!File.Exists(path))
-                {
-                    File.WriteAllText(path, "");
-                    break;
-                }
-                index++;
-            }
 
-            UpdateList(CurrentDirectory.FullName);
 
         }
 
         FileSystemWatcher watcher = new FileSystemWatcher();
         private void FolderToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            int index = 0;
-            while (true)
-            {
-                string name = "folder" + index;
-                string path = Path.Combine(CurrentDirectory.FullName, name);
-                if (!Directory.Exists(path))
-                {
-                    Directory.CreateDirectory(path);
-                    break;
-                }
-                index++;
-            }
 
-            UpdateList(CurrentDirectory.FullName);
         }
 
         void DeleteItemFromListView(ListViewItem lvi)
@@ -1447,7 +1421,7 @@ namespace commander
 
         private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DeleteSelected();
+
         }
 
         public List<Action<IFileInfo>> SelectedFileChangedDelegates = new List<Action<IFileInfo>>();
@@ -1687,13 +1661,7 @@ namespace commander
 
         private void AddShortcutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (SelectedFile != null)
-            {
-                Stuff.Shortcuts.Add(new AppShortcutInfo(SelectedFile.FullName, SelectedFile.Name));
-                Stuff.IsDirty = true;
-                mdi.MainForm.AppendShortCutPanelButton(Stuff.Shortcuts.Last());
 
-            }
         }
 
 
@@ -1813,54 +1781,22 @@ namespace commander
 
         private void PropertiesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (SelectedLibraries.Any())
-            {
-                LibraryPropertiesDialog p = new LibraryPropertiesDialog();
-                p.Init(SelectedLibraries[0]);
-                p.ShowDialog();
-                return;
-            }
-            if (SelectedFile == null && SelectedDirectory == null) { return; }
-            if (SelectedFile != null)
-            {
-                Stuff.ShowFileProperties(SelectedFile.FullName);
-            }
-            else
-            {
-                Stuff.ShowFileProperties(SelectedDirectory.FullName);
-            }
+
         }
 
         private void addSiteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (SelectedFile == null) return;
-            if (Stuff.OfflineSites.Any(z => z.Path == SelectedFile.FullName))
-            {
-                Stuff.Warning("Already exist"); ;
-            }
-            else
-            {
-                Stuff.OfflineSites.Add(new commander.OfflineSiteInfo() { Path = SelectedFile.FullName });
-                Stuff.IsDirty = true;
-            }
+
         }
 
         private void autotegToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("feature is not implemented yet");
+
         }
 
         private void copyPathToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (SelectedFile == null && SelectedDirectory == null) { return; }
-            if (SelectedFile != null)
-            {
-                Clipboard.SetText(SelectedFile.FullName);
-            }
-            else
-            {
-                Clipboard.SetText(SelectedDirectory.FullName);
-            }
+
         }
 
         private void calcMemToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -2161,13 +2097,7 @@ namespace commander
 
         private void TaToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (SelectedFile == null) return;
-            QuickTagsWindow q = new QuickTagsWindow();
 
-            q.Init(this, SelectedFile);
-            q.MdiParent = mdi.MainForm;
-            q.TopLevel = false;
-            q.Show();
         }
 
         private void WindowsMenuToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2445,7 +2375,157 @@ namespace commander
         {
             Stuff.Warning("not implemented yet");
         }
+
+        private void copyPathToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (SelectedFile == null && SelectedDirectory == null) { return; }
+            if (SelectedFile != null)
+            {
+                Clipboard.SetText(SelectedFile.FullName);
+            }
+            else
+            {
+                Clipboard.SetText(SelectedDirectory.FullName);
+            }
+        }
+
+        private void deleteToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            DeleteSelected();
+        }
+
+        private void propertiesToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (SelectedLibraries.Any())
+            {
+                LibraryPropertiesDialog p = new LibraryPropertiesDialog();
+                p.Init(SelectedLibraries[0]);
+                p.ShowDialog();
+                return;
+            }
+            if (SelectedFile == null && SelectedDirectory == null) { return; }
+            if (SelectedFile != null)
+            {
+                Stuff.ShowFileProperties(SelectedFile.FullName);
+            }
+            else
+            {
+                Stuff.ShowFileProperties(SelectedDirectory.FullName);
+            }
+        }
+
+        private void addShortcutToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (SelectedFile != null)
+            {
+                Stuff.Shortcuts.Add(new AppShortcutInfo(SelectedFile.FullName, SelectedFile.Name));
+                Stuff.IsDirty = true;
+                mdi.MainForm.AppendShortCutPanelButton(Stuff.Shortcuts.Last());
+
+            }
+        }
+
+        private void autotagToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("feature is not implemented yet");
+        }
+
+        private void folderToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            int index = 0;
+            while (true)
+            {
+                string name = "folder" + index;
+                string path = Path.Combine(CurrentDirectory.FullName, name);
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                    break;
+                }
+                index++;
+            }
+
+            UpdateList(CurrentDirectory.FullName);
+        }
+
+        private void txtFileToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            int index = 0;
+            while (true)
+            {
+                string name = "noname" + index + ".txt";
+                string path = Path.Combine(CurrentDirectory.FullName, name);
+                if (!File.Exists(path))
+                {
+                    File.WriteAllText(path, "");
+                    break;
+                }
+                index++;
+            }
+
+            UpdateList(CurrentDirectory.FullName);
+        }
+
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void setTagsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tagPanelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SelectedFile == null) return;
+            QuickTagsWindow q = new QuickTagsWindow();
+
+            q.Init(this, SelectedFile);
+            q.MdiParent = mdi.MainForm;
+            q.TopLevel = false;
+            q.Show();
+        }
+
+        private void addSiteToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (SelectedFile == null) return;
+            if (Stuff.OfflineSites.Any(z => z.Path == SelectedFile.FullName))
+            {
+                Stuff.Warning("Already exist"); ;
+            }
+            else
+            {
+                Stuff.OfflineSites.Add(new commander.OfflineSiteInfo() { Path = SelectedFile.FullName });
+                Stuff.IsDirty = true;
+            }
+        }
+
+        private void mountFileindexToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SelectedFile == null) return;
+            var findex = new FileIndex();
+            using (var strm = SelectedFile.Filesystem.OpenReadOnlyStream(SelectedFile))
+            {
+                using (var arch = new ZipArchive(strm))
+                {
+                    foreach (var item in arch.Entries)
+                    {
+                        if (item.FullName == "index.xml")
+                        {
+                            using (var fs = item.Open())
+                            {
+                                findex.Load(fs, CurrentDirectory, SelectedFile.Name);
+                                Stuff.AddFileIndex(findex);
+                            }
+                        }
+                    }
+                }
+            }
+            Stuff.Info("Index was mounted!");
+        }
     }
+
     public enum ViewModeEnum
     {
         Filesystem, Libraries, Tags

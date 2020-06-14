@@ -28,13 +28,13 @@ namespace commander
         {
             return fn.Filesystem.FileHasTag(fn, this);
         }
-        public void AddFile(IFileInfo fn)
+        public void AddFile(IFileInfo fn, bool dirtyEnable = true)
         {
             if (!ContainsFile(fn))
             {
                 files.Add(fn);
                 hash.Add(fn.FullName.ToLower());
-                if (!(fn is IsoFileWrapper))
+                if (!(fn is IsoFileWrapper) && dirtyEnable)
                 {
                     Stuff.IsDirty = true;
                 }
