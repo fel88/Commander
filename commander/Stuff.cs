@@ -607,6 +607,7 @@ namespace commander
 
         public static void LoadSettings()
         {
+            if (!File.Exists("settings.xml")) return;
             var findex = new FileIndex() { FileName = "settings.xml", RootPath = Application.StartupPath };
             using (FileStream fs = new FileStream("settings.xml", FileMode.Open, FileAccess.Read))
             {
