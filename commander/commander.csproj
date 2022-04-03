@@ -14,7 +14,7 @@
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,6 +23,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -107,6 +108,13 @@
     <Compile Include="Controls\MetaInfo\SubtitlesMetaInfoControl.Designer.cs">
       <DependentUpon>SubtitlesMetaInfoControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\WebpViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\WebpViewer.Designer.cs">
+      <DependentUpon>WebpViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\WebpWrapper.cs" />
     <Compile Include="CopyDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -144,6 +152,7 @@
     <Compile Include="Extensions\OdtPreviewExtension.cs" />
     <Compile Include="Extensions\PdfPreviewExtension.cs" />
     <Compile Include="Extensions\VideoPreviewExtension.cs" />
+    <Compile Include="Extensions\WebpPreviewExtension.cs" />
     <Compile Include="FileIndex.cs" />
     <Compile Include="FileIndexesForm.cs">
       <SubType>Form</SubType>
@@ -469,6 +478,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\MetaInfo\SubtitlesMetaInfoControl.resx">
       <DependentUpon>SubtitlesMetaInfoControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\WebpViewer.resx">
+      <DependentUpon>WebpViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="CopyDialog.resx">
       <DependentUpon>CopyDialog.cs</DependentUpon>

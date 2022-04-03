@@ -47,6 +47,7 @@ namespace commander
             PreviewExtensions.Add(new PdfPreviewExtension());
             PreviewExtensions.Add(new ImgPreviewExtension());
             PreviewExtensions.Add(new OdtPreviewExtension());
+            PreviewExtensions.Add(new WebpPreviewExtension());
 
             fileListControl1.AddSelectedFileChangedAction((x) =>
                {

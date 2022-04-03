@@ -1,0 +1,1 @@
+cl /D "NDEBUG"  /LD /O2  webp.c example_util.c imageio_util.c libwebp.lib libwebpdemux.lib libwebpdecoder.lib
