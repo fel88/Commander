@@ -39,6 +39,7 @@
             this.urlBookmarksToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extractorsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.youtubeToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.internalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.vkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.containersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.isoEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -66,6 +67,7 @@
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.renameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyPathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ytdlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -148,15 +150,25 @@
             // 
             // youtubeToolStripMenuItem1
             // 
+            this.youtubeToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.internalToolStripMenuItem,
+            this.ytdlToolStripMenuItem});
             this.youtubeToolStripMenuItem1.Name = "youtubeToolStripMenuItem1";
-            this.youtubeToolStripMenuItem1.Size = new System.Drawing.Size(118, 22);
+            this.youtubeToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.youtubeToolStripMenuItem1.Text = "youtube";
             this.youtubeToolStripMenuItem1.Click += new System.EventHandler(this.YoutubeToolStripMenuItem1_Click);
+            // 
+            // internalToolStripMenuItem
+            // 
+            this.internalToolStripMenuItem.Name = "internalToolStripMenuItem";
+            this.internalToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.internalToolStripMenuItem.Text = "internal";
+            this.internalToolStripMenuItem.Click += new System.EventHandler(this.internalToolStripMenuItem_Click);
             // 
             // vkToolStripMenuItem
             // 
             this.vkToolStripMenuItem.Name = "vkToolStripMenuItem";
-            this.vkToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.vkToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.vkToolStripMenuItem.Text = "vk";
             this.vkToolStripMenuItem.Click += new System.EventHandler(this.vkToolStripMenuItem_Click);
             // 
@@ -365,6 +377,13 @@
             this.copyPathToolStripMenuItem.Text = "copy path";
             this.copyPathToolStripMenuItem.Click += new System.EventHandler(this.CopyPathToolStripMenuItem_Click);
             // 
+            // ytdlToolStripMenuItem
+            // 
+            this.ytdlToolStripMenuItem.Name = "ytdlToolStripMenuItem";
+            this.ytdlToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.ytdlToolStripMenuItem.Text = "yt-dlp";
+            this.ytdlToolStripMenuItem.Click += new System.EventHandler(this.ytdlToolStripMenuItem_Click);
+            // 
             // mdi
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -425,5 +444,7 @@
         private System.Windows.Forms.ToolStripMenuItem exchangeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem importToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem internalToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ytdlToolStripMenuItem;
     }
 }

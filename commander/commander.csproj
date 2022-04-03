@@ -189,6 +189,12 @@
       <DependentUpon>DjvuReader.cs</DependentUpon>
     </Compile>
     <Compile Include="Extensions\GifPreviewExtension.cs" />
+    <Compile Include="Forms\YtDlpDownloader.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\YtDlpDownloader.Designer.cs">
+      <DependentUpon>YtDlpDownloader.cs</DependentUpon>
+    </Compile>
     <Compile Include="HotkeyShortcutInfo.cs" />
     <Compile Include="IFileListControl.cs" />
     <Compile Include="ImagesDeduplicationWindow.cs">
@@ -505,6 +511,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FileMetaInfoEditorDialog.resx">
       <DependentUpon>FileMetaInfoEditorDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\YtDlpDownloader.resx">
+      <DependentUpon>YtDlpDownloader.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ImagesDeduplicationWindow.resx">
       <DependentUpon>ImagesDeduplicationWindow.cs</DependentUpon>

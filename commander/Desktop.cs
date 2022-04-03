@@ -20,11 +20,21 @@ namespace commander
 
             SizeChanged += Desktop_SizeChanged;
 
-            InitGui();
+            searchTextBox = new TextBox();
+            searchTextBox.TextChanged += SearchTextBox_TextChanged;
 
+            InitGui();
+           
+            pictureBox1.Controls.Add(searchTextBox);
             pictureBox1.MouseDoubleClick += PictureBox1_MouseDoubleClick;
         }
 
+        private void SearchTextBox_TextChanged(object sender, EventArgs e)
+        {
+            InitGui();
+        }
+
+        TextBox searchTextBox;
         private void PictureBox1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             if (!Elements.Any(z => z.Hovered)) return;
@@ -34,11 +44,16 @@ namespace commander
 
         public void InitGui()
         {
+            Elements.Clear();
+
             foreach (var item in Stuff.Shortcuts)
             {
                 DesktopIcon d = new DesktopIcon();
                 d.Caption = item.Name;
                 
+                if (!string.IsNullOrEmpty(searchTextBox.Text) && !d.Caption.ToLower().Contains(searchTextBox.Text)) 
+                    continue;
+
                 if (item is AppShortcutInfo)
                 {
                     var apps = item as AppShortcutInfo;
@@ -69,8 +84,8 @@ namespace commander
         private void timer1_Tick(object sender, EventArgs e)
         {
             gr.Clear(Color.White);
-            int xx = 20;
-            int yy = 10;
+            int xx = 30;
+            int yy = 30;
             var ctx = new DesktopDrawingContext(gr, pictureBox1);
 
             #region arrange icons
@@ -79,17 +94,14 @@ namespace commander
                 //var ms = gr.MeasureString(item.Caption, font1);
                 //gr.DrawString(item.Caption, font1, Brushes.Black, xx + xsz / 2 - ms.Width / 2, yy + yshift);
                 item.Position = new PointF(xx, yy);
-                yy += 80;
-                if (yy > (Height - 150))
+                xx += 90;
+                if (xx > (Width - 100))
                 {
-                    yy = 10;
-                    xx += 90;
+                    yy += 80;
+                    xx = 30;
                 }
             }
             #endregion
-
-
-
 
             foreach (var item in Elements.OrderBy(z => z.ZOrder))
             {
@@ -142,6 +154,7 @@ namespace commander
         public static Font DefaultFont = new Font("Arial", 10);
         public override void Draw(DesktopDrawingContext ctx)
         {
+            if (Image == null) return;
             var pos = ctx.CursorPos;
             Hovered = BoundingBox.IntersectsWith(new RectangleF(pos.X, pos.Y, 1, 1));
             var gr = ctx.Graphics;

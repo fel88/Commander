@@ -1,4 +1,5 @@
-﻿using PluginLib;
+﻿using commander.Forms;
+using PluginLib;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -428,9 +429,7 @@ namespace commander
 
         private void YoutubeToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            Form1 f = new Form1();
-            f.MdiParent = this;
-            f.Show();
+            
         }
 
 
@@ -535,6 +534,20 @@ namespace commander
                 }
             }
             Stuff.Info("Import complete!");
+        }
+
+        private void internalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form1 f = new Form1();
+            f.MdiParent = this;
+            f.Show();
+        }
+
+        private void ytdlToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            YtDlpDownloader f = new YtDlpDownloader();
+            f.MdiParent = this;
+            f.Show();
         }
     }
 
