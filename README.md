@@ -1,11 +1,11 @@
 # Commander
 Yet another file commander.
 
-Containers, tags, extractors and navigation. (**Project progress: 40%**)
+Containers, tags, extractors and navigation. 
 
 **Some features:**
 1. Organize your files into tag groups for quick access
-2. Preview your files (images, videos, music, pdf, djvu, gifs)
+2. Preview your files (images, videos, music, pdf, djvu, gifs, webp)
 3. Monitor disk space consumption with scanner
 4. Url bookmarks with search
 5. Quick access to your favorite applications
@@ -15,12 +15,19 @@ Containers, tags, extractors and navigation. (**Project progress: 40%**)
 9. Plugins
 10. Games (via plugin) 
 
-Video preview:<br/>
+# File previewer
 <img width="90%" src="imgs/1.png"/>
-<br/>Scanner:<br/>
+
+# Scanner
 <img width="50%" src="imgs/2.png"/>
-<br/>
-Jigsaw puzzle game:<br/>
+Also, scanner available as separate tool : https://github.com/fel88/Scanner
+
+# Youtube downloader 
+<img width="70%" src="imgs/4.png"/>
+You can install yt-dlp from here: https://github.com/yt-dlp/yt-dlp/releases
+
+
+# Games  
 <img width="70%" src="imgs/3.png"/>
 
 # References:
@@ -29,9 +36,11 @@ Jigsaw puzzle game:<br/>
 * https://github.com/Telavian/DjvuNet (MIT)
 * https://github.com/pvginkel/PdfiumViewer (Apache-2.0)
 * https://github.com/DiscUtils/DiscUtils (MIT)
+* https://github.com/yt-dlp/yt-dlp
 
 # Useful references:
 * https://www.codeproject.com/Articles/11505/NGif-Animated-GIF-Encoder-for-NET 
 * http://kbyte.ru/ru/Programming/Articles.aspx?id=66&mode=art
 * https://www.codeproject.com/Articles/93301/Implementing-a-Multithreaded-HTTP-HTTPS-Debugging
 * http://www.steffengerlach.de/freeware/
+* https://github.com/webmproject/libwebp
