@@ -20,12 +20,13 @@ Containers, tags, extractors and navigation.
 
 # Scanner
 <img width="50%" src="imgs/2.png"/>
-Also, scanner available as separate tool : https://github.com/fel88/Scanner
+Also available as a separate tool : https://github.com/fel88/Scanner
 
 # Youtube downloader 
 <img width="70%" src="imgs/4.png"/>
 You can install yt-dlp from here: https://github.com/yt-dlp/yt-dlp/releases
 
+Also available as a separate tool :https://github.com/fel88/YoutubeDownloader
 
 # Games  
 <img width="70%" src="imgs/3.png"/>
