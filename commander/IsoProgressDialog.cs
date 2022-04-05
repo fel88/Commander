@@ -18,12 +18,6 @@ namespace commander
         public IsoProgressDialog()
         {
             InitializeComponent();
-            Shown += IsoProgressDialog_Shown;
-        }
-
-        private void IsoProgressDialog_Shown(object sender, EventArgs e)
-        {
-            th.Start();
         }
 
         public static void PopulateFromFolder(CDBuilder builder, IDirectoryInfo di, string basePath)
@@ -50,6 +44,29 @@ namespace commander
         {
             //var fls = Stuff.GetAllFiles(dir);
             List<TagInfo> tags = new List<TagInfo>();
+            List<IDirectoryInfo> dirs = new List<IDirectoryInfo>();
+            dirs.Add(root);
+            HashSet<string> hs = new HashSet<string>();
+            foreach (var item in fls)
+            {
+                IDirectoryInfo p = item.Directory;
+                while (true)
+                {
+                    if (p.FullName == root.FullName) break;
+
+                    if (hs.Add(p.FullName))
+                        dirs.Add(p);
+
+                    p = p.Parent;
+                }
+            }
+            List<DirectoryEntry> dentries = new List<DirectoryEntry>();
+            int dId = 0;
+            foreach (var item in dirs)
+            {
+                dentries.Add(new DirectoryEntry() { Path = item.FullName, Id = dId++ });
+            }
+
             foreach (var item in fls)
             {
                 var ww = Stuff.Tags.Where(z => z.ContainsFile(item));
@@ -59,18 +76,51 @@ namespace commander
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("<?xml version=\"1.0\"?>");
             sb.AppendLine("<root>");
+            sb.AppendLine("<index>");
+            sb.AppendLine("<entries>");
+            foreach (var item in dentries)
+            {
+                sb.AppendLine($"<directory id=\"{item.Id}\"><![CDATA[{item.Path.Replace(root.FullName, string.Empty)}]]></directory>");
+            }
+            int fId = 0;
+            List<FileEntry> fEntries = new List<FileEntry>();
+
+            foreach (var item in fls)
+            {
+                var dirEntry = dentries.First(z => z.Path == item.DirectoryName);
+                fEntries.Add(new FileEntry() { Id = fId, Directory = dirEntry, Name = item.Name });
+                sb.AppendLine($"<file dirId=\"{dirEntry.Id}\" id=\"{fId++}\"><![CDATA[{item.FullName.Replace(dirEntry.Path, string.Empty).Trim(new char[] { '\\' })}]]></file>");
+            }
+            sb.AppendLine("</entries>");
             sb.AppendLine("<tags>");
             foreach (var item in tags)
             {
                 sb.AppendLine($"<tag name=\"{item.Name}\">");
+                sb.AppendLine("<synonyms>");
+                foreach (var sitem in item.Synonyms)
+                {
+                    sb.Append("<synonym>");
+                    sb.Append(sitem);
+                    sb.Append("</synonym>");
+                }
+                sb.AppendLine("</synonyms>");
                 var aa = fls.Where(z => item.ContainsFile(z)).ToArray();
-                foreach (var aitem in aa)
+                sb.Append($"<file id=\"");
+                foreach (var fitem in fEntries)
+                {
+                    if (aa.Any(u => u.FullName.ToLower() == fitem.FullName.ToLower()))
+                        sb.Append($"{fitem.Id};");
+                }
+                sb.AppendLine($"\"/>");
+
+                /*foreach (var aitem in aa)
                 {
                     sb.AppendLine($"<file><![CDATA[{aitem.FullName.Replace(root.FullName, "").Trim(new char[] { '\\' })}]]></file>");
-                }
+                }*/
                 sb.AppendLine($"</tag>");
             }
             sb.AppendLine("</tags>");
+            sb.AppendLine("</index>");
             sb.AppendLine("</root>");
 
             return sb.ToString();
@@ -81,7 +131,6 @@ namespace commander
         internal void Run(PackToIsoSettings stg)
         {
             packStg = stg;
-            label1.Text = "Iso image path: " + stg.Path;
             Text = "iso writing..";
             stg.ProgressReport = (now, total) =>
             {
@@ -142,17 +191,17 @@ namespace commander
                         builder.AddFile(item.FullName, item.FullName);
                     }
                 }
-                this.Invoke((Action)(() =>
+                Invoke((Action)(() =>
                 {
                     label1.Text = "Building image: " + stg.Path;
                 }));
                 try
                 {
                     builder.Build(stg.Path);
-                    if (stg.AfterPackFinished != null)
+                    Invoke((Action)(() =>
                     {
-                        stg.AfterPackFinished();
-                    }
+                        stg.AfterPackFinished?.Invoke();
+                    }));
                 }
                 catch (ThreadAbortException ex)
                 {
@@ -161,10 +210,9 @@ namespace commander
                         File.Delete(packStg.Path);
                     }
                 }
-
             });
             th.IsBackground = true;
-         
+            th.Start();
         }
 
         private void Button1_Click(object sender, EventArgs e)
@@ -174,6 +222,43 @@ namespace commander
                 th.Abort();
                 Close();
             }
+        }
+
+        PackToIsoSettings ps;
+        private void button2_Click(object sender, EventArgs e)
+        {
+            button1.Visible = true;
+            button2.Enabled = false;
+            Run(ps);
+        }
+
+        internal void Init(PackToIsoSettings stg)
+        {
+            ps = stg;
+            textBox1.Text = stg.VolumeId;
+
+            List<IFileInfo> files = new List<IFileInfo>();
+            foreach (var item in stg.Dirs)
+            {
+                Stuff.GetAllFiles(item, files);
+            }
+
+            files.AddRange(ps.Files);
+            foreach (var item in files)
+            {
+                listView1.Items.Add(new ListViewItem(item.FullName.Replace(stg.Root.FullName, "")) { Tag = item });
+            }
+            label1.Text = "Iso image path: " + stg.Path;
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            ps.VolumeId = textBox1.Text;
+        }
+        bool flatFiles = true;
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            flatFiles = checkBox1.Checked;
         }
     }
 }

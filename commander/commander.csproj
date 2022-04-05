@@ -222,6 +222,7 @@
     <Compile Include="LibraryPropertiesDialog.Designer.cs">
       <DependentUpon>LibraryPropertiesDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="MessageFilter.cs" />
     <Compile Include="MetaInfoManager.cs">
       <SubType>Form</SubType>
     </Compile>

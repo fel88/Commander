@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PluginLib;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -40,21 +41,21 @@ namespace commander
 
         Bitmap bmp;
         Graphics gr;
-        string lastPath = "";
+        IFileInfo lastPath = null;
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                OpenFile(ofd.FileName);
+                //OpenFile(ofd.FileName);
             }
         }
 
-        public void OpenFile(string path)
+        public void OpenFile(IFileInfo path)
         {
             lastPath = path;
-            Text = path;
-            var vf = File.ReadAllBytes(path);
+            Text = path.FullName;
+            var vf = path.Filesystem.ReadAllBytes(path.FullName);
             bytes = vf;
         }
 
@@ -136,7 +137,7 @@ namespace commander
 
         private void toolStripButton2_Click(object sender, EventArgs e)
         {
-            var vf = File.ReadAllBytes(lastPath);
+            var vf = lastPath.Filesystem.ReadAllBytes(lastPath.FullName);
             bytes = vf;
         }
     }

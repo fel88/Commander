@@ -20,5 +20,10 @@ namespace commander
                 listView1.Items.Add(new ListViewItem(new string[] { item.FullName }) { Tag = item });
             }
         }
+
+        private void checkBox1_CheckedChanged(object sender, System.EventArgs e)
+        {
+
+        }
     }
 }

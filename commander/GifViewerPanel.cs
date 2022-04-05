@@ -10,10 +10,13 @@ namespace commander
         {
             InitializeComponent();
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
-
+            label1 = new Label();
+            label1.ForeColor = System.Drawing.Color.Red;
+            pictureBox1.Controls.Add(label1);
+            label1.Visible = false;
         }
+        Label label1;
 
-        
 
         GifLib.GifContainer container;
         internal void SetImage(IFileInfo file)
@@ -29,12 +32,20 @@ namespace commander
         private void Timer1_Tick(object sender, EventArgs e)
         {
             if (container == null) return;
-            pictureBox1.Image = container.GetFrame(frame++);
-            frame %= container.Frames;
-            if (container.LastGceBlock.Delay == 0) { timer1.Interval = 15; }
-            else
+            try
             {
-                timer1.Interval = container.LastGceBlock.Delay;
+                pictureBox1.Image = container.GetFrame(frame++);
+                frame %= container.Frames;
+                if (container.LastGceBlock.Delay == 0) { timer1.Interval = 15; }
+                else
+                {
+                    timer1.Interval = container.LastGceBlock.Delay;
+                }
+            }
+            catch (Exception ex)
+            {
+                label1.Text = ex.Message;
+                label1.Visible = true;
             }
         }
     }

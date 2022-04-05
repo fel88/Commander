@@ -37,7 +37,7 @@ namespace commander
             }
             foreach (var item in covers.OrderBy(z => z.Name))
             {
-                if (item.TagInfo.IsHidden && !Stuff.ShowHidden) continue;
+                //if (item.TagInfo.IsHidden && !Stuff.ShowHidden) continue;
                 if (arr.Any())
                 {
                     if (!arr.Any(z => item.Name.ToLower().Contains(z))) continue;

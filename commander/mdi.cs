@@ -346,8 +346,16 @@ namespace commander
                         e.Cancel = true;
                         break;
                     case DialogResult.Yes:
-                        Stuff.UnmountAll();
-                        Stuff.SaveSettings();
+                        try
+                        {
+                            Stuff.UnmountAll();
+                            Stuff.SaveSettings();
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message);
+                            e.Cancel = true;
+                        }
                         break;
 
                 }
@@ -429,7 +437,7 @@ namespace commander
 
         private void YoutubeToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            
+
         }
 
 

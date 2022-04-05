@@ -22,7 +22,7 @@ namespace commander
             textBox8.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
             textBox8.AutoCompleteSource = AutoCompleteSource.CustomSource;
             var acsc = new AutoCompleteStringCollection();
-            acsc.AddRange(Stuff.Tags.Where(z => !z.IsHidden || (z.IsHidden && Stuff.ShowHidden)).Select(z => z.Name).ToArray());
+            acsc.AddRange(Stuff.Tags/*.Where(z => !z.IsHidden || (z.IsHidden && Stuff.ShowHidden))*/.Select(z => z.Name).ToArray());
             textBox8.AutoCompleteCustomSource = acsc;
             previewPbox.SizeMode = PictureBoxSizeMode.Zoom;
             previewPbox.Dock = DockStyle.Fill;

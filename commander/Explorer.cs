@@ -68,8 +68,16 @@ namespace commander
                        }
                    }
                });
+            Load += Explorer_Load;
         }
 
+        private void Explorer_Load(object sender, EventArgs e)
+        {            
+            mf = new MessageFilter();
+            Application.AddMessageFilter(mf);
+        }
+
+        MessageFilter mf = null;
         public static List<ExplorerPreviewExtension> PreviewExtensions = new List<ExplorerPreviewExtension>();
 
         public ExplorerPreviewExtension CurrentPreviewer = null;

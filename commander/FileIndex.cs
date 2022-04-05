@@ -11,6 +11,7 @@ namespace commander
     {
         public bool ContainsFile(IFileInfo f)
         {
+            //todo : hashset
             return _fileEntries.Any(z => z.FullName.ToLower() == f.FullName.ToLower());            
         }
         
@@ -86,7 +87,7 @@ namespace commander
                 string flags = "";
                 if (descendant.Attribute("flags") != null) { flags = descendant.Attribute("flags").Value; }
 
-                var tag = new TagInfo() { Name = name, IsHidden = flags.Contains("hidden") };
+                var tag = new TagInfo() { Name = name, /*IsHidden = flags.Contains("hidden")*/ };
 
                 var snms = descendant.Descendants("synonym");
                 foreach (var item in snms)
@@ -107,6 +108,4 @@ namespace commander
             }
         }
     }
-
-
 }

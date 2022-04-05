@@ -1,4 +1,5 @@
 ﻿using PluginLib;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 
@@ -6,7 +7,7 @@ namespace commander
 {
     public class DiskFilesystem : IFilesystem
     {
-        public bool IsReadOnly { get; set; } 
+        public bool IsReadOnly { get; set; }
 
         public Image BitmapFromFile(IFileInfo file)
         {
@@ -58,9 +59,22 @@ namespace commander
             return File.ReadAllText(fullName);
         }
 
+        public string ReadAllText(IFileInfo file, System.Text.Encoding encoding)
+        {            
+            return File.ReadAllText(file.FullName, encoding);
+        }
+
         public string ReadAllText(IFileInfo file)
         {
             return File.ReadAllText(file.FullName);
+        }
+
+        public void Run(IFileInfo file)
+        {
+            ProcessStartInfo psi = new ProcessStartInfo();
+            psi.WorkingDirectory = file.DirectoryName;
+            psi.FileName = file.FullName;
+            Process.Start(psi);
         }
 
         public void WriteAllText(IFileInfo fileInfo, string text)

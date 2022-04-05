@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
+using System.Text;
 
 namespace PluginLib
 {
@@ -10,6 +11,7 @@ namespace PluginLib
         byte[] ReadAllBytes(string path);
         string[] ReadAllLines(string fullName);
         string ReadAllText(string fullName);
+        string ReadAllText(IFileInfo file, Encoding encoding);
         string ReadAllText(IFileInfo file);
         Image BitmapFromFile(IFileInfo fullName);
 
@@ -21,7 +23,9 @@ namespace PluginLib
         Stream OpenReadOnlyStream(IFileInfo file);
         void WriteAllText(IFileInfo fileInfo, string text);
 
-        bool FileExist(string path );
+        bool FileExist(string path);
+
+        void Run(IFileInfo file);
     }
 
 }

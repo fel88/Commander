@@ -8,7 +8,6 @@ namespace commander
     {
         public string Name { get; set; }
         public List<string> Synonyms = new List<string>();
-        public bool IsHidden { get; set; }
         private List<IFileInfo> files = new List<IFileInfo>();
         private HashSet<string> hash = new HashSet<string>();
         public List<TagInfo> Tags = new List<TagInfo>();

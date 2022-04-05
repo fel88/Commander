@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace commander
 {
@@ -56,8 +57,23 @@ namespace commander
             throw new System.NotImplementedException();
         }
 
+        public string ReadAllText(string path, Encoding encoding)
+        {
+            var fr = Files.First(z => z.FullName == path);
+            if (UseIndexes)
+            {
+                var frr = Stuff.Indexes.FirstOrDefault(z => z.Path == fr.FileInfo.FullName);
+                if (frr != null)
+                {
+                    return frr.Text;
+                }
+            }
+            return File.ReadAllText(fr.FileInfo.FullName, encoding);
+        }
+
         public string ReadAllText(string path)
         {
+
             var fr = Files.First(z => z.FullName == path);
             if (UseIndexes)
             {
@@ -99,6 +115,17 @@ namespace commander
         public bool FileExist(string path)
         {
             return Files.Any(z => z.FullName.ToLower() == path.ToLower());
+        }
+
+        public void Run(IFileInfo file)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public string ReadAllText(IFileInfo file, Encoding encoding)
+        {
+            return File.ReadAllText(ToVirtualFileInfo(file).FileInfo.FullName, encoding);
+
         }
     }
 }

@@ -972,109 +972,103 @@ namespace commander
 
         void ExecuteSelected()
         {
-            if (listView1.SelectedItems.Count > 0)
+            if (listView1.SelectedItems.Count < 1) return;
+            if (listView1.SelectedItems[0].Tag is IFileInfo)
             {
-                if (listView1.SelectedItems[0].Tag is IFileInfo)
+                var f = listView1.SelectedItems[0].Tag as IFileInfo;
+                DialogResult cancel = DialogResult.OK;
+                if (f.Extension.Contains("bat") && (cancel = MessageBox.Show("show internal console?", Text, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question)) == DialogResult.Yes)
                 {
-                    var f = listView1.SelectedItems[0].Tag as IFileInfo;
-                    DialogResult cancel = DialogResult.OK;
-                    if (f.Extension.Contains("bat") && (cancel = MessageBox.Show("show internal console?", Text, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question)) == DialogResult.Yes)
+                    ConsoleOutputWindow cow = new ConsoleOutputWindow();
+                    ProcessStartInfo psi = new ProcessStartInfo();
+                    psi.WorkingDirectory = f.DirectoryName;
+                    psi.FileName = "cmd";
+                    psi.Arguments = "/c " + f.FullName;
+                    psi.WorkingDirectory = f.DirectoryName;
+                    //Process.Start(f.FullName);
+                    psi.RedirectStandardOutput = true;
+                    psi.UseShellExecute = false;
+                    psi.CreateNoWindow = true;
+                    Process proc = new Process();
+                    proc.StartInfo = psi;
+
+                    proc.Start();
+
+                    StringBuilder sb = new StringBuilder();
+                    var output = proc.StandardOutput.ReadToEnd();
+                    /*
+                    while (!proc.StandardOutput.EndOfStream)
                     {
-                        ConsoleOutputWindow cow = new ConsoleOutputWindow();
-                        ProcessStartInfo psi = new ProcessStartInfo();
-                        psi.WorkingDirectory = f.DirectoryName;
-                        psi.FileName = "cmd";
-                        psi.Arguments = "/c " + f.FullName;
-                        psi.WorkingDirectory = f.DirectoryName;
-                        //Process.Start(f.FullName);
-                        psi.RedirectStandardOutput = true;
-                        psi.UseShellExecute = false;
-                        psi.CreateNoWindow = true;
-                        Process proc = new Process();
-                        proc.StartInfo = psi;
+                        string line = proc.StandardOutput.ReadLine();
+                        sb.AppendLine(line);
 
-                        proc.Start();
-
-                        StringBuilder sb = new StringBuilder();
-                        var output = proc.StandardOutput.ReadToEnd();
-                        /*
-                        while (!proc.StandardOutput.EndOfStream)
-                        {
-                            string line = proc.StandardOutput.ReadLine();
-                            sb.AppendLine(line);
-
-                        }
-                        */
-                        //cow.SetText("> Start\nProcess complete.. 100%\n > Exit");
-                        cow.SetText(sb.ToString());
-                        cow.SetText(output);
-
-                        mdi.MainForm.OpenWindow(cow);
                     }
-                    else if (f.Extension.ToLower().EndsWith(".iso") && (cancel = MessageBox.Show("use internal viewer?", Text, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question)) == DialogResult.Yes)
+                    */
+                    //cow.SetText("> Start\nProcess complete.. 100%\n > Exit");
+                    cow.SetText(sb.ToString());
+                    cow.SetText(output);
+
+                    mdi.MainForm.OpenWindow(cow);
+                }
+                else if (f.Extension.ToLower().EndsWith(".iso") && (cancel = MessageBox.Show("use internal viewer?", Text, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question)) == DialogResult.Yes)
+                {
+                    IsoLibViewer frm = new IsoLibViewer() { Dock = DockStyle.Fill };
+
+                    frm.LoadIso(f.FullName);
+                    frm.MdiParent = mdi.MainForm;
+
+                    frm.Show();
+                }
+                /*else if (f.Extension.Contains("mp4") && MessageBox.Show("use internal player?", Text, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    VideoPlayer vp = new VideoPlayer() { Dock=DockStyle.Fill};
+                    var frm = new Form();
+                    frm.Width = 600;
+                    frm.Height = 600;
+                    vp.RunVideo(f.FullName);
+                    frm.MdiParent = mdi.MainForm;
+                    frm.Controls.Add(vp);
+                    frm.Show();
+                }*/
+                else if (cancel != DialogResult.Cancel)
+                {
+                    f.Filesystem.Run(f);
+                }
+            }
+            else
+            if (listView1.SelectedItems[0].Tag is IDirectoryInfo)
+            {
+                try
+                {
+                    var f = listView1.SelectedItems[0].Tag as IDirectoryInfo;
+                    UpdateList(f, Filter);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Commander", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                }
+            }
+            else
+            if (listView1.SelectedItems[0].Tag is FilesystemLibrary || listView1.SelectedItems[0].Tag == libraryRootObject)
+            {
+                try
+                {
+
+                    if (listView1.SelectedItems[0].Tag == libraryRootObject)
                     {
-                        IsoLibViewer frm = new IsoLibViewer() { Dock = DockStyle.Fill };
-
-                        frm.LoadIso(f.FullName);
-                        frm.MdiParent = mdi.MainForm;
-
-                        frm.Show();
+                        UpdateLibrariesList(null, Filter);
                     }
-                    /*else if (f.Extension.Contains("mp4") && MessageBox.Show("use internal player?", Text, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    else
                     {
-                        VideoPlayer vp = new VideoPlayer() { Dock=DockStyle.Fill};
-                        var frm = new Form();
-                        frm.Width = 600;
-                        frm.Height = 600;
-                        vp.RunVideo(f.FullName);
-                        frm.MdiParent = mdi.MainForm;
-                        frm.Controls.Add(vp);
-                        frm.Show();
-                    }*/
-                    else if (cancel != DialogResult.Cancel)
-                    {
-                        ProcessStartInfo psi = new ProcessStartInfo();
-                        psi.WorkingDirectory = f.DirectoryName;
-                        psi.FileName = f.FullName;
-                        //Process.Start(f.FullName);
-                        Process.Start(psi);
+                        var f = listView1.SelectedItems[0].Tag as FilesystemLibrary;
+                        UpdateLibrariesList(f.BaseDirectory, Filter);
                     }
                 }
-                else
-                if (listView1.SelectedItems[0].Tag is IDirectoryInfo)
+                catch (UnauthorizedAccessException ex)
                 {
-                    try
-                    {
-                        var f = listView1.SelectedItems[0].Tag as IDirectoryInfo;
-                        UpdateList(f, Filter);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message, "Commander", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(ex.Message, "Commander", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                    }
-                }
-                else
-                if (listView1.SelectedItems[0].Tag is FilesystemLibrary || listView1.SelectedItems[0].Tag == libraryRootObject)
-                {
-                    try
-                    {
-
-                        if (listView1.SelectedItems[0].Tag == libraryRootObject)
-                        {
-                            UpdateLibrariesList(null, Filter);
-                        }
-                        else
-                        {
-                            var f = listView1.SelectedItems[0].Tag as FilesystemLibrary;
-                            UpdateLibrariesList(f.BaseDirectory, Filter);
-                        }
-                    }
-                    catch (UnauthorizedAccessException ex)
-                    {
-                        MessageBox.Show(ex.Message, "Commander", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                    }
                 }
             }
         }
@@ -1549,7 +1543,7 @@ namespace commander
             List<TagInfo> cands = new List<TagInfo>();
             foreach (var item in Stuff.Tags.OrderBy(z => z.Name))
             {
-                if (item.IsHidden && !Stuff.ShowHidden) continue;
+                //if (item.IsHidden && !Stuff.ShowHidden) continue;
                 cands.Add(item);
             }
 
@@ -1731,23 +1725,26 @@ namespace commander
 
         private void PackToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (SelectedDirectory == null) return;
-            var seld = SelectedDirectory;
+            packAllSelectedToIso();
+        }
+
+        void packAllSelectedToIso(bool includeIndex = false)
+        {
+            if (!(SelectedFiles.Any() || SelectedDirectories.Any()))
+                return;
+
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.Filter = "iso files|*.iso";
             if (sfd.ShowDialog() == DialogResult.OK)
             {
                 PackToIsoSettings stg = new PackToIsoSettings();
-                stg.Root = seld;
+                stg.Root = CurrentDirectory;
                 stg.Path = sfd.FileName;
-                stg.Dirs.Add(seld);
-                stg.VolumeId = seld.Name;
-
-
-
+                stg.IncludeMeta = includeIndex;
+                stg.Dirs.AddRange(SelectedDirectories.Where(z => z != CurrentDirectory).ToArray());
+                stg.Files.AddRange(SelectedFiles.ToArray());
+                stg.VolumeId = CurrentDirectory.Name;
                 Stuff.PackToIso(stg);
-
-
             }
         }
 
@@ -1969,71 +1966,62 @@ namespace commander
 
         private void searchToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (listView1.SelectedItems.Count > 0)
-            {
-                if (listView1.SelectedItems[0].Tag is IDirectoryInfo)
-                {
-                    var d = listView1.SelectedItems[0].Tag as IDirectoryInfo;
-                    TextSearchForm tsf = new TextSearchForm();
-                    tsf.SetPath(d.FullName);
-                    tsf.Show();
+            if (listView1.SelectedItems.Count == 0) return;
 
-                }
-                else
-                if (listView1.SelectedItems[0].Tag is IFileInfo)
-                {
-                    var d = listView1.SelectedItems[0].Tag as IFileInfo;
-                    TextSearchForm tsf = new TextSearchForm();
-                    tsf.SetPath(d.DirectoryName);
-                    tsf.Show();
-                }
+            if (listView1.SelectedItems[0].Tag is IDirectoryInfo)
+            {
+                var d = listView1.SelectedItems[0].Tag as IDirectoryInfo;
+                TextSearchForm tsf = new TextSearchForm();
+                tsf.SetPath(d.FullName);
+                tsf.Show();
+
             }
+            else
+            if (listView1.SelectedItems[0].Tag is IFileInfo)
+            {
+                var d = listView1.SelectedItems[0].Tag as IFileInfo;
+                TextSearchForm tsf = new TextSearchForm();
+                tsf.SetPath(d.DirectoryName);
+                tsf.Show();
+            }
+
         }
 
         private void opeInHexToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (listView1.SelectedItems.Count > 0)
+            if (listView1.SelectedItems.Count == 0) return;
+            if (listView1.SelectedItems[0].Tag is IFileInfo)
             {
-
-                if (listView1.SelectedItems[0].Tag is FileInfo)
-                {
-                    var d = listView1.SelectedItems[0].Tag as FileInfo;
-                    HexEditor hex = new HexEditor();
-                    hex.OpenFile(d.FullName);
-                    hex.Show();
-
-                }
-
+                var d = listView1.SelectedItems[0].Tag as IFileInfo;
+                HexEditor hex = new HexEditor();
+                hex.OpenFile(d);
+                hex.Show();
             }
         }
 
         private void openInImageViewerToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            if (listView1.SelectedItems.Count > 0)
-            {
+            if (listView1.SelectedItems.Count == 0) return;
 
-                if (listView1.SelectedItems[0].Tag is FileInfo)
-                {
-                    var d = listView1.SelectedItems[0].Tag as FileInfo;
-                    ImageViewer tsf = new ImageViewer();
-                    tsf.SetBitmap(Bitmap.FromFile(d.FullName) as Bitmap);
-                    tsf.Show();
-                }
+            if (listView1.SelectedItems[0].Tag is IFileInfo)
+            {
+                var d = listView1.SelectedItems[0].Tag as IFileInfo;
+                ImageViewer tsf = new ImageViewer();
+                tsf.SetBitmap(Bitmap.FromStream(d.Filesystem.OpenReadOnlyStream(d)) as Bitmap);
+                tsf.Show();
             }
         }
 
         private void MakeLibraryToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            if (listView1.SelectedItems.Count > 0)
+            if (listView1.SelectedItems.Count == 0) return;
+            if (listView1.SelectedItems[0].Tag is IDirectoryInfo)
             {
-                if (listView1.SelectedItems[0].Tag is IDirectoryInfo)
+                var f = listView1.SelectedItems[0].Tag as IDirectoryInfo;
+                if (Stuff.Question("Make " + f.Name + " library?") == DialogResult.Yes)
                 {
-                    var f = listView1.SelectedItems[0].Tag as IDirectoryInfo;
-                    if (Stuff.Question("Make " + f.Name + " library?") == DialogResult.Yes)
-                    {
-                        Stuff.Libraries.Add(new FilesystemLibrary() { BaseDirectory = f, Name = f.Name });
-                        Stuff.IsDirty = true;
-                    }
+                    Stuff.Libraries.Add(new FilesystemLibrary() { BaseDirectory = f, Name = f.Name });
+                    Stuff.IsDirty = true;
                 }
             }
         }
@@ -2074,8 +2062,8 @@ namespace commander
 
         private void PackAsLibraryToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (SelectedDirectory == null) return;
-
+            packAllSelectedToIso(true);
+            /*if (SelectedDirectory == null) return;
 
             //pack with .indx directory (+tags,+meta infos,etc.)
             SaveFileDialog sfd = new SaveFileDialog();
@@ -2092,7 +2080,7 @@ namespace commander
                 stg.Root = SelectedDirectory;
 
                 Stuff.PackToIso(stg);
-            }
+            }*/
         }
 
         private void TaToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2505,24 +2493,38 @@ namespace commander
         {
             if (SelectedFile == null) return;
             var findex = new FileIndex();
-            using (var strm = SelectedFile.Filesystem.OpenReadOnlyStream(SelectedFile))
+            string[] zipExts = new string[] { ".zip" };
+            if (zipExts.Any(z => SelectedFile.Extension.ToLower().Contains(z)))
             {
-                using (var arch = new ZipArchive(strm))
+
+                using (var strm = SelectedFile.Filesystem.OpenReadOnlyStream(SelectedFile))
                 {
-                    foreach (var item in arch.Entries)
+                    using (var arch = new ZipArchive(strm))
                     {
-                        if (item.FullName == "index.xml")
+                        foreach (var item in arch.Entries)
                         {
-                            using (var fs = item.Open())
+                            if (item.FullName == "index.xml")
                             {
-                                findex.Load(fs, CurrentDirectory, SelectedFile.Name);
-                                Stuff.AddFileIndex(findex);
+                                using (var fs = item.Open())
+                                {
+                                    findex.Load(fs, CurrentDirectory, SelectedFile.Name);
+                                    Stuff.AddFileIndex(findex);
+                                }
                             }
                         }
                     }
                 }
+                Stuff.Info("Index was mounted!");
             }
-            Stuff.Info("Index was mounted!");
+            else if (SelectedFile.Extension.EndsWith(".xml"))
+            {
+                using (var stream = SelectedFile.Filesystem.OpenReadOnlyStream(SelectedFile))
+                {
+                    findex.Load(stream, CurrentDirectory, SelectedFile.Name);
+                    Stuff.AddFileIndex(findex);
+                    Stuff.Info("Index was mounted!");
+                }
+            }
         }
     }
 

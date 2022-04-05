@@ -341,7 +341,6 @@ namespace commander
                 if (level != null) { level++; }
                 foreach (var d in dir.GetDirectories())
                 {
-
                     GetAllFiles(d, files, level, maxlevel);
                 }
             }
@@ -428,17 +427,48 @@ namespace commander
             {
                 var txt = r.Filesystem.ReadAllText(".indx\\meta.xml");
                 var doc = XDocument.Parse(txt);
+                List<FileEntry> fEntries = new List<FileEntry>();
+                List<DirectoryEntry> dEntries = new List<DirectoryEntry>();
+                var entries = doc.Descendants("entries").First();
+                foreach (var item in entries.Elements("directory"))
+                {
+                    var id = int.Parse(item.Attribute("id").Value);
+                    var path = item.Value;                   
+
+                    //dEntries.Add(new DirectoryEntry() { Id = id, Path = Path.Combine(root.FullName, path) });
+                    dEntries.Add(new DirectoryEntry() { Id = id, Path = Path.Combine(mountInfo.FullPath, path) });
+                }
+                foreach (var item in entries.Descendants("file"))
+                {
+                    var id = int.Parse(item.Attribute("id").Value);
+                    var dirId = int.Parse(item.Attribute("dirId").Value);
+                    var name = item.Value;
+
+                    var dir = dEntries.First(z => z.Id == dirId);                    
+
+                    fEntries.Add(new FileEntry() { Id = id, Directory = dir, Name = Path.Combine(mountInfo.MountTarget.FullName, name) });
+                }
+                var fls = Stuff.GetAllFiles(mountInfo.MountTarget);
                 foreach (var item in doc.Descendants("tag"))
                 {
                     var nm = item.Attribute("name").Value;
                     var tagg = Stuff.AddTag(new TagInfo() { Name = nm });
                     foreach (var fitem in item.Descendants("file"))
                     {
-                        var pt = fitem.Value;
+                        var arr1 = fitem.Attribute("id").Value.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray();
+                        foreach (var aitem in arr1)
+                        {
+                            var ff = fEntries.First(z => z.Id == aitem);
+                            var fr = fls.First(z => z.FullName.ToLower() == ff.FullName.ToLower());
+                            tagg.AddFile(fr);
+                            //tagg.AddFile(new FileInfoWrapper(ff.FullName), false);
+                        }
+                        /*var pt = fitem.Value;
                         var path = Path.Combine(mountInfo.MountTarget.FullName, pt);
-                        var fls = Stuff.GetAllFiles(mountInfo.MountTarget);
+                       
                         var fr = fls.First(z => z.FullName.ToLower() == path.ToLower());
-                        tagg.AddFile(fr);
+                        tagg.AddFile(fr);*/
+
                         //tagg.AddFile((r.Filesystem as IsoFilesystem).GetFile(path));
                     }
                 }
@@ -580,7 +610,7 @@ namespace commander
 
         public static TagInfo[] GetTagsOfFile(string fullName)
         {
-            return Stuff.Tags.Where(z => (!z.IsHidden || Stuff.ShowHidden) && z.ContainsFile(fullName)).ToArray();
+            return Stuff.Tags.Where(z => /*(!z.IsHidden || Stuff.ShowHidden) &&*/ z.ContainsFile(fullName)).ToArray();
         }
         public static TagInfo[] GetAllTagsOfFile(string fullName)
         {
@@ -966,7 +996,7 @@ namespace commander
                 {
                     continue;
                 }
-                sb.AppendLine($"<tag name=\"{item.Name}\" flags=\"{(item.IsHidden ? "hidden" : "")}\" >");
+                sb.AppendLine($"<tag name=\"{item.Name}\" flags=\"{/*(item.IsHidden ? "hidden" : "")*/""}\" >");
                 sb.AppendLine("<synonyms>");
                 foreach (var sitem in item.Synonyms)
                 {
@@ -978,7 +1008,7 @@ namespace commander
                 sb.Append($"<file id=\"");
                 foreach (var fitem in item.Files)
                 {
-                    if (!Stuff.FileIndexes[0].ContainsFile(fitem)) continue;
+                    //if (!Stuff.FileIndexes[0].ContainsFile(fitem)) continue;
                     if (fitem is IsoFileWrapper)
                     {
                         continue;
@@ -1151,14 +1181,10 @@ namespace commander
             fs.Write(bb, 0, bb.Length);
         }
 
-
-
-
         internal static void PackToIso(PackToIsoSettings stg)
         {
-
             IsoProgressDialog iso = new IsoProgressDialog();
-            iso.Run(stg);
+            iso.Init(stg);
             iso.ShowDialog();
 
             return;

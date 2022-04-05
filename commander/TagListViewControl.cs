@@ -168,7 +168,7 @@ namespace commander
                 }
                 foreach (var item in covers.OrderBy(z => z.Name))
                 {
-                    if (!Stuff.ShowHidden && item.TagInfo.IsHidden) continue;
+                   // if (!Stuff.ShowHidden && item.TagInfo.IsHidden) continue;
                     if (!IsFilterPass(item.Name, fltrs)) continue;
                     if (item.IsMain)
                     {
@@ -207,14 +207,14 @@ namespace commander
                 {
                     try
                     {
-                        if (!Stuff.ShowHidden)
+                        /*if (!Stuff.ShowHidden)
                         {
                             var tags = Stuff.GetAllTagsOfFile(finfo.FullName);
                             if (tags.Any(z => z.IsHidden))
                             {
                                 continue;
                             }
-                        }
+                        }*/
                         var f = finfo;
                         //var tp = FileListControl.GetBitmapOfFile(f.FullName);
                         //bmp.MakeTransparent();
@@ -339,12 +339,12 @@ namespace commander
                 var tag = listView1.SelectedItems[0].Tag;
                 if (tag is TagInfo)
                 {
-                    if (!(tag as TagInfo).IsHidden)
+                    /*if (!(tag as TagInfo).IsHidden)
                     {
                         (tag as TagInfo).IsHidden = true;
                         Stuff.IsDirty = true;
                         UpdateList(null);
-                    }
+                    }*/
                 }
             }
         }
@@ -356,12 +356,12 @@ namespace commander
                 var tag = listView1.SelectedItems[0].Tag;
                 if (tag is TagInfo)
                 {
-                    if ((tag as TagInfo).IsHidden)
+                    /*if ((tag as TagInfo).IsHidden)
                     {
                         (tag as TagInfo).IsHidden = false;
                         Stuff.IsDirty = true;
                         UpdateList(null);
-                    }
+                    }*/
                 }
             }
         }
@@ -430,13 +430,14 @@ namespace commander
             var vdir = new VirtualDirectoryInfo(vfs);
             //vdir.FullName = "z:\\" + tag.Name;
             vdir.FullName = "z:\\";
+            vdir.Name = "z:\\";
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.DefaultExt = "iso";
             sfd.Filter = "iso images|*.iso";
             List<IFileInfo> flss = new List<IFileInfo>();
             foreach (var tag in tags)
             {
-                flss.AddRange(tag.Files);
+                flss.AddRange(tag.Files.Where(z=>z.Exist));
             }
 
             var gg = flss.GroupBy(z => z.FullName.ToLower()).ToArray();
@@ -491,8 +492,6 @@ namespace commander
                 Stuff.PackToIso(stg);
             }
         }
-
-
 
         private void copyPathToolStripMenuItem_Click(object sender, EventArgs e)
         {
