@@ -423,9 +423,14 @@ namespace commander
             var r = new IsoDirectoryInfoWrapper(f, f.Reader.WorkPvd.RootDir);
             //r.Parent = null;
             r.Filesystem = new IsoFilesystem(f) { IsoFileInfo = f.IsoPath };
-            if (r.Filesystem.FileExist(".indx\\meta.xml"))
+            MountIndex(".indx\\meta.xml", r, mountInfo.MountTarget, mountInfo.FullPath);
+        }
+
+        public static void MountIndex(string indexPath, IDirectoryInfo r, IDirectoryInfo mountTarget, string mountFullPath)
+        {
+            if (r.Filesystem.FileExist(indexPath))
             {
-                var txt = r.Filesystem.ReadAllText(".indx\\meta.xml");
+                var txt = r.Filesystem.ReadAllText(indexPath);
                 var doc = XDocument.Parse(txt);
                 List<FileEntry> fEntries = new List<FileEntry>();
                 List<DirectoryEntry> dEntries = new List<DirectoryEntry>();
@@ -433,10 +438,10 @@ namespace commander
                 foreach (var item in entries.Elements("directory"))
                 {
                     var id = int.Parse(item.Attribute("id").Value);
-                    var path = item.Value;                   
+                    var path = item.Value;
 
                     //dEntries.Add(new DirectoryEntry() { Id = id, Path = Path.Combine(root.FullName, path) });
-                    dEntries.Add(new DirectoryEntry() { Id = id, Path = Path.Combine(mountInfo.FullPath, path) });
+                    dEntries.Add(new DirectoryEntry() { Id = id, Path = Path.Combine(mountFullPath, path) });
                 }
                 foreach (var item in entries.Descendants("file"))
                 {
@@ -444,11 +449,11 @@ namespace commander
                     var dirId = int.Parse(item.Attribute("dirId").Value);
                     var name = item.Value;
 
-                    var dir = dEntries.First(z => z.Id == dirId);                    
+                    var dir = dEntries.First(z => z.Id == dirId);
 
-                    fEntries.Add(new FileEntry() { Id = id, Directory = dir, Name = Path.Combine(mountInfo.MountTarget.FullName, name) });
+                    fEntries.Add(new FileEntry() { Id = id, Directory = dir, Name = Path.Combine(mountTarget.FullName, name) });
                 }
-                var fls = Stuff.GetAllFiles(mountInfo.MountTarget);
+                var fls = Stuff.GetAllFiles(mountTarget);
                 foreach (var item in doc.Descendants("tag"))
                 {
                     var nm = item.Attribute("name").Value;

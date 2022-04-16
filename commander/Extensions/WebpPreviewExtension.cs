@@ -23,9 +23,9 @@ namespace commander
 
         public override void Deselect()
         {
-            control = null;
             if (control == null) return;
             control.ResetImage();
+            control = null;
         }
     }
 }

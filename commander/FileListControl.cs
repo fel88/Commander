@@ -917,8 +917,14 @@ namespace commander
                 else
                 if (listView1.SelectedItems[0].Tag is IFileInfo)
                 {
-                    var d = listView1.SelectedItems[0].Tag as IFileInfo;
-                    Process.Start(d.DirectoryName);
+                    var d = listView1.SelectedItems[0].Tag as IFileInfo;                    
+                    string args = string.Format("/e, /select, \"{0}\"", d.FullName);
+
+                    ProcessStartInfo info = new ProcessStartInfo();
+                    info.FileName = "explorer";
+                    info.Arguments = args;
+                    Process.Start(info);
+                    
                 }
 
             }
@@ -2520,8 +2526,9 @@ namespace commander
             {
                 using (var stream = SelectedFile.Filesystem.OpenReadOnlyStream(SelectedFile))
                 {
-                    findex.Load(stream, CurrentDirectory, SelectedFile.Name);
-                    Stuff.AddFileIndex(findex);
+                    Stuff.MountIndex(SelectedFile.FullName, CurrentDirectory, CurrentDirectory, CurrentDirectory.FullName);
+                    //findex.Load(stream, CurrentDirectory, SelectedFile.Name);
+                    //Stuff.AddFileIndex(findex);
                     Stuff.Info("Index was mounted!");
                 }
             }
