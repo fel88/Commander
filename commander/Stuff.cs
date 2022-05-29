@@ -639,9 +639,19 @@ namespace commander
             IsDirty = true;
         }
 
-
+        public static void GetDefaultPathes()
+        {   
+            var p1 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+            var p2 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+            var dirs = new DirectoryInfo(p1).GetDirectories().Union(new DirectoryInfo(p2).GetDirectories());
+            var lod = dirs.FirstOrDefault(z => z.Name.ToLower() == "libreoffice");
+            if (lod == null) return;
+            var path = Path.Combine(lod.FullName, "program", "soffice.com");
+            if (!File.Exists(path)) return;
+            Stuff.LibreOfficePath = path;
+        }
         public static void LoadSettings()
-        {
+        {       
             if (!File.Exists("settings.xml")) return;
             var findex = new FileIndex() { FileName = "settings.xml", RootPath = Application.StartupPath };
             using (FileStream fs = new FileStream("settings.xml", FileMode.Open, FileAccess.Read))
@@ -823,6 +833,15 @@ namespace commander
             }
             var root = s.Descendants("bookmarks").First();
             LoadBookmarks(root);
+
+            try
+            {
+                GetDefaultPathes();
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
 
         public static void LoadBookmarks(XElement elem)
@@ -1172,6 +1191,7 @@ namespace commander
         public static List<FileContextMenuItem> FileContextMenuItems { get; internal set; } = new List<FileContextMenuItem>();
         public static List<OfflineSiteInfo> OfflineSites { get; } = new List<OfflineSiteInfo>();
         public static List<HotkeyShortcutInfo> Hotkeys { get; internal set; } = new List<HotkeyShortcutInfo>();
+        public static string LibreOfficePath { get; internal set; }
 
         public static List<ShortcutInfo> Shortcuts = new List<ShortcutInfo>();
 

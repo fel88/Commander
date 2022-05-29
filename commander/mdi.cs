@@ -41,6 +41,14 @@ namespace commander
             {
                 AppendShortCutPanelButton(item);
             }
+
+            DebugHelper.ErrorHandler = (x) =>
+            {
+                DebugControl.Messages.Add(new DebugMessageInfo() { Text = x, Timestamp = DateTime.Now, Type = DebugMessageInfoTypeEnum.Error });
+                var dc = MdiChildren.OfType<DebugControl>().FirstOrDefault();
+                if (dc != null)
+                    dc.UpdateList();
+            };
         }
 
         private void Mdi_MdiChildActivate(object sender, EventArgs e)
@@ -556,6 +564,18 @@ namespace commander
             YtDlpDownloader f = new YtDlpDownloader();
             f.MdiParent = this;
             f.Show();
+        }
+
+        private void debugToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DebugControl f = new DebugControl();
+            f.MdiParent = this;
+            f.Show();
+        }
+
+        private void exchangeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 

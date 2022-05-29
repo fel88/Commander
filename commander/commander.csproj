@@ -63,6 +63,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AboutBox1.cs">
@@ -127,6 +128,13 @@
     <Compile Include="CopyReplaceDialog.Designer.cs">
       <DependentUpon>CopyReplaceDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="DebugControl.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DebugControl.Designer.cs">
+      <DependentUpon>DebugControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DebugHelper.cs" />
     <Compile Include="DedupContext.cs" />
     <Compile Include="CmdShortcutInfo.cs" />
     <Compile Include="ConsoleOutputWindow.cs">
@@ -494,6 +502,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="CopyReplaceDialog.resx">
       <DependentUpon>CopyReplaceDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DebugControl.resx">
+      <DependentUpon>DebugControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Desktop.resx">
       <DependentUpon>Desktop.cs</DependentUpon>

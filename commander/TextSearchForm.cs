@@ -241,13 +241,91 @@ namespace commander
                             if (!item.Name.ToLower().Contains(textBox4.Text.ToLower())) continue;
 
                             bool add = false;
+                            var searchString = textBox2.Text.ToLower();
+                            SetStatus($"search in: {item.Name}");
+                            SetStatus3($"{progressBar1.Value} / {progressBar1.Maximum}");
                             if (!string.IsNullOrEmpty(textBox2.Text))
                             {
-
-                                var t = d.Filesystem.ReadAllLines(item.FullName);
-                                if (t.Any(z => z.ToUpper().Contains(textBox2.Text.ToUpper())))
+                                string[] exts = new[] { ".doc", ".odt", ".docx" };
+                                if (deepSearchText && exts.Any(uu => item.Name.EndsWith(uu)) && !string.IsNullOrEmpty(Stuff.LibreOfficePath) && File.Exists(Stuff.LibreOfficePath))//override some extensions
                                 {
-                                    add = true;
+                                    //read file using libre office                                    
+                                    //try
+                                    //{
+                                    //    using (WordprocessingDocument wordDocument = WordprocessingDocument.Open(item.FullName, false))
+                                    //    {
+                                    //        var paragraphs = wordDocument.MainDocumentPart.RootElement.Descendants<DocumentFormat.OpenXml.Wordprocessing.Paragraph>();
+                                    //        foreach (var paragraph in paragraphs)
+                                    //        {
+                                    //            //Console.WriteLine(paragraph.InnerText);
+                                    //        }
+                                    //        //Console.ReadKey();
+                                    //    }
+                                    //}
+                                    //catch (FileFormatException ex)
+                                    //{
+
+                                    //}
+
+                                    ProcessStartInfo pci = new ProcessStartInfo(Stuff.LibreOfficePath)
+                                    {
+                                        WorkingDirectory = item.DirectoryName,
+                                        Arguments = $"--cat --headless \"{item.Name}\"",
+                                        CreateNoWindow = true,
+                                        UseShellExecute = false,
+                                        RedirectStandardOutput = true,
+                                        RedirectStandardError = true
+                                    };
+
+                                    var p = new Process() { StartInfo = pci };
+
+                                    AutoResetEvent event1 = new AutoResetEvent(false);
+                                    p.OutputDataReceived += (sender, data) =>
+                                    {
+                                        if (data.Data == null) event1.Set();
+                                        if (string.IsNullOrEmpty(data.Data)) return;
+                                        string line = data.Data;
+                                        if (line.ToLower().Contains(searchString))
+                                        {
+                                            add = true;
+                                            return;
+                                        }
+
+                                    };
+                                    p.ErrorDataReceived += (sender, data) =>
+                                    {
+                                        if (string.IsNullOrEmpty(data.Data)) return;
+                                        string line = data.Data;
+                                    };
+                                    p.Start();
+                                    p.BeginOutputReadLine();
+                                    p.BeginErrorReadLine();
+                                    if (!p.WaitForExit(60 * 1000))
+                                    {
+                                        throw new CommanderException($"{item.Name} file reading timeout reached");
+                                    }
+                                    if (!event1.WaitOne(60 * 1000))
+                                    {
+                                        throw new CommanderException($"{item.Name} file reading timeout reached");
+                                    }
+                                }
+                                else//default read
+                                {
+                                    using (var opstrm = d.Filesystem.OpenReadOnlyStream(item))
+                                    {
+                                        using (StreamReader sr = new StreamReader(opstrm))
+                                        {
+                                            while (!sr.EndOfStream)
+                                            {
+                                                var ln = sr.ReadLine();
+                                                if (ln.ToLower().Contains(searchString))
+                                                {
+                                                    add = true;
+                                                }
+                                            }
+                                        }
+                                        //var t = d.Filesystem.ReadAllLines(item.FullName);                              
+                                    }
                                 }
                             }
                             else
@@ -275,14 +353,18 @@ namespace commander
 
                             if (add)
                             {
-                                listView2.BeginUpdate();
-                                listView2.Items.Add(new ListViewItem(new string[] { item.Name }) { Tag = item });
-                                listView2.EndUpdate();
+                                listView2.Invoke((Action)(() =>
+                                {
+
+                                    listView2.BeginUpdate();
+                                    listView2.Items.Add(new ListViewItem(new string[] { item.Name }) { Tag = item });
+                                    listView2.EndUpdate();
+                                }));
                             }
                         }
                         catch (Exception ex)
                         {
-
+                            DebugHelper.Error(ex.Message + ": " + ex.StackTrace.ToString());
                         }
                     }
                     foreach (var item in d.GetDirectories())
@@ -364,8 +446,6 @@ namespace commander
         int[] imgHashInt = null;
         private void button1_Click(object sender, EventArgs e)
         {
-
-
             if (searchThread != null)
             {
                 button1.Text = "Start";
@@ -460,10 +540,22 @@ namespace commander
          });
             searchThread.IsBackground = true;
             searchThread.Start();
-
-
         }
 
+        public void SetStatus(string text)
+        {
+            statusStrip1.Invoke((Action)(() =>
+            {
+                toolStripStatusLabel1.Text = text;
+            }));
+        }
+        public void SetStatus3(string text)
+        {
+            statusStrip1.Invoke((Action)(() =>
+            {
+                toolStripStatusLabel3.Text = text;
+            }));
+        }
         private void listView2_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (listView2.SelectedItems.Count > 0)
@@ -660,6 +752,12 @@ namespace commander
         private void textBox9_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        bool deepSearchText = false;
+        private void checkBox4_CheckedChanged(object sender, EventArgs e)
+        {
+            deepSearchText = checkBox4.Checked;
         }
     }
 

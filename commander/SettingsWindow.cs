@@ -20,6 +20,7 @@ namespace commander
             checkBox4.Checked = mdi.MainForm.TopMost;
 
             allowFire = false;
+            textBox2.Text = Stuff.LibreOfficePath;
             checkBox2.Checked = Stuff.FiltersHelperVisible;
             checkBox3.Checked = Stuff.TagsHelperVisible;
             allowFire = true;
@@ -153,6 +154,17 @@ namespace commander
         private void checkBox4_CheckedChanged(object sender, EventArgs e)
         {
             mdi.MainForm.TopMost = checkBox4.Checked;
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            if (!allowFire) return;
+            Stuff.LibreOfficePath = textBox2.Text;
         }
     }
 

@@ -40,6 +40,7 @@
             this.extractorsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.youtubeToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.internalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ytdlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.vkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.containersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.isoEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -67,7 +68,7 @@
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.renameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyPathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ytdlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -86,7 +87,8 @@
             this.windowsToolStripMenuItem,
             this.proxyServerToolStripMenuItem,
             this.indexToolStripMenuItem,
-            this.exchangeToolStripMenuItem});
+            this.exchangeToolStripMenuItem,
+            this.debugToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1071, 24);
@@ -154,21 +156,28 @@
             this.internalToolStripMenuItem,
             this.ytdlToolStripMenuItem});
             this.youtubeToolStripMenuItem1.Name = "youtubeToolStripMenuItem1";
-            this.youtubeToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.youtubeToolStripMenuItem1.Size = new System.Drawing.Size(118, 22);
             this.youtubeToolStripMenuItem1.Text = "youtube";
             this.youtubeToolStripMenuItem1.Click += new System.EventHandler(this.YoutubeToolStripMenuItem1_Click);
             // 
             // internalToolStripMenuItem
             // 
             this.internalToolStripMenuItem.Name = "internalToolStripMenuItem";
-            this.internalToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.internalToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.internalToolStripMenuItem.Text = "internal";
             this.internalToolStripMenuItem.Click += new System.EventHandler(this.internalToolStripMenuItem_Click);
+            // 
+            // ytdlToolStripMenuItem
+            // 
+            this.ytdlToolStripMenuItem.Name = "ytdlToolStripMenuItem";
+            this.ytdlToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+            this.ytdlToolStripMenuItem.Text = "yt-dlp";
+            this.ytdlToolStripMenuItem.Click += new System.EventHandler(this.ytdlToolStripMenuItem_Click);
             // 
             // vkToolStripMenuItem
             // 
             this.vkToolStripMenuItem.Name = "vkToolStripMenuItem";
-            this.vkToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.vkToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
             this.vkToolStripMenuItem.Text = "vk";
             this.vkToolStripMenuItem.Click += new System.EventHandler(this.vkToolStripMenuItem_Click);
             // 
@@ -323,18 +332,19 @@
             this.exchangeToolStripMenuItem.Name = "exchangeToolStripMenuItem";
             this.exchangeToolStripMenuItem.Size = new System.Drawing.Size(69, 20);
             this.exchangeToolStripMenuItem.Text = "Exchange";
+            this.exchangeToolStripMenuItem.Click += new System.EventHandler(this.exchangeToolStripMenuItem_Click);
             // 
             // exportToolStripMenuItem
             // 
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exportToolStripMenuItem.Text = "Export";
             this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
             // 
             // importToolStripMenuItem
             // 
             this.importToolStripMenuItem.Name = "importToolStripMenuItem";
-            this.importToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
+            this.importToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.importToolStripMenuItem.Text = "Import";
             this.importToolStripMenuItem.Click += new System.EventHandler(this.importToolStripMenuItem_Click);
             // 
@@ -377,12 +387,12 @@
             this.copyPathToolStripMenuItem.Text = "copy path";
             this.copyPathToolStripMenuItem.Click += new System.EventHandler(this.CopyPathToolStripMenuItem_Click);
             // 
-            // ytdlToolStripMenuItem
+            // debugToolStripMenuItem
             // 
-            this.ytdlToolStripMenuItem.Name = "ytdlToolStripMenuItem";
-            this.ytdlToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.ytdlToolStripMenuItem.Text = "yt-dlp";
-            this.ytdlToolStripMenuItem.Click += new System.EventHandler(this.ytdlToolStripMenuItem_Click);
+            this.debugToolStripMenuItem.Name = "debugToolStripMenuItem";
+            this.debugToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
+            this.debugToolStripMenuItem.Text = "Debug";
+            this.debugToolStripMenuItem.Click += new System.EventHandler(this.debugToolStripMenuItem_Click);
             // 
             // mdi
             // 
@@ -446,5 +456,6 @@
         private System.Windows.Forms.ToolStripMenuItem importToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem internalToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ytdlToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem debugToolStripMenuItem;
     }
 }
