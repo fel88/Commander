@@ -59,7 +59,12 @@ namespace commander
                    {
                        if (item.Extensions.Contains(x.Extension.ToLower()))
                        {
-                           splitContainer1.Panel2.Controls.Add(item.Fabric(x));
+                           var cntrl = item.Fabric(x);
+                           splitContainer1.Panel2.Controls.Add(cntrl);
+                           if(cntrl is IFileListConsumer flc)
+                           {
+                               flc.SetFileList(fileListControl1);
+                           }
                            CurrentPreviewer = item;
                        }
                        else
