@@ -1,5 +1,6 @@
-# Commander
-Yet another file commander.
+# Tag Commander
+
+Organize your files via tags and other metadata (using NTFS [Forks](https://en.wikipedia.org/wiki/Fork_(file_system)) (Alternate data stream (ADS)))
 
 Containers, tags, extractors and navigation. 
 
@@ -32,6 +33,7 @@ Also available as a separate tool :https://github.com/fel88/YoutubeDownloader
 <img width="70%" src="imgs/3.png"/>
 
 # References:
+* https://www.nuget.org/packages/Trinet.Core.IO.Ntfs
 * https://github.com/flagbug/YoutubeExtractor (MIT/GPLv2)
 * https://www.codeproject.com/Articles/22012/Explorer-Shell-Context-Menu (CPOL License)
 * https://github.com/Telavian/DjvuNet (MIT)
