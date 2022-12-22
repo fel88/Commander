@@ -16,6 +16,7 @@ using System.Threading;
 using IsoLib;
 using System.Management;
 using System.IO.Compression;
+using Trinet.Core.IO.Ntfs;
 
 namespace commander
 {
@@ -917,14 +918,14 @@ namespace commander
                 else
                 if (listView1.SelectedItems[0].Tag is IFileInfo)
                 {
-                    var d = listView1.SelectedItems[0].Tag as IFileInfo;                    
+                    var d = listView1.SelectedItems[0].Tag as IFileInfo;
                     string args = string.Format("/e, /select, \"{0}\"", d.FullName);
 
                     ProcessStartInfo info = new ProcessStartInfo();
                     info.FileName = "explorer";
                     info.Arguments = args;
                     Process.Start(info);
-                    
+
                 }
 
             }
@@ -1441,18 +1442,57 @@ namespace commander
             if (SelectedFile == null) return;
             UpdateIcons();
             UpdateStatus();
+
+            if (Stuff.AllowNTFSStreamsSync)
+                SyncMetaInfo(SelectedFile);
+
             if (SelectedFileChanged != null)
             {
                 SelectedFileChanged(SelectedFile);
             }
             if (SelectedFileChangedDelegates.Any())
             {
-
                 foreach (var item in SelectedFileChangedDelegates)
                 {
                     item(SelectedFile);
                 }
+            }
+        }
 
+        private void SyncMetaInfo(IFileInfo selectedFile)
+        {
+            foreach (var item in new FileInfo(selectedFile.FullName).ListAlternateDataStreams())
+            {
+                if (item.Name == "metainfo")
+                {
+                    try
+                    {
+                        using (var s = item.OpenText())
+                        {
+                            var txt = s.ReadToEnd();
+
+                            var doc = XDocument.Parse(txt);
+                            var tags = doc.Element("root").Element("tags");
+                            foreach (var titem in tags.Elements("tag"))
+                            {
+                                var nm = titem.Attribute("name").Value;
+                                var tg = Stuff.Tags.FirstOrDefault(z => z.Name.ToLower() == nm.ToLower());
+                                if (tg == null)
+                                {
+                                    tg = Stuff.AddTag(new TagInfo() { Name = nm });
+                                }
+                                if (!tg.ContainsFile(selectedFile))
+                                    tg.AddFile(selectedFile);
+                            }
+
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Stuff.Error("Wrong metainfo detected");
+                        item.Delete();
+                    }
+                }
             }
         }
 
@@ -1625,6 +1665,8 @@ namespace commander
                 {
                     f.Item1.AddFile(item);
                 }
+                if (Stuff.AllowNTFSStreamsSync)
+                    Stuff.UpdateFileMetaInfo(item);
             }
         }
 
@@ -1638,7 +1680,6 @@ namespace commander
                 setTagsToolStripMenuItem.DropDown.Close();
             }*/
         }
-
 
         private void ListView1_MouseDown(object sender, MouseEventArgs e)
         {

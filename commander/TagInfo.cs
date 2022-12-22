@@ -1,6 +1,10 @@
 ﻿using PluginLib;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using Trinet.Core.IO.Ntfs;
 
 namespace commander
 {
@@ -27,16 +31,17 @@ namespace commander
         {
             return fn.Filesystem.FileHasTag(fn, this);
         }
+
         public void AddFile(IFileInfo fn, bool dirtyEnable = true)
         {
-            if (!ContainsFile(fn))
+            if (ContainsFile(fn))
+                return;
+
+            files.Add(fn);
+            hash.Add(fn.FullName.ToLower());
+            if (!(fn is IsoFileWrapper) && dirtyEnable)
             {
-                files.Add(fn);
-                hash.Add(fn.FullName.ToLower());
-                if (!(fn is IsoFileWrapper) && dirtyEnable)
-                {
-                    Stuff.IsDirty = true;
-                }
+                Stuff.IsDirty = true;
             }
         }
 

@@ -66,6 +66,8 @@ namespace commander
             {
                 tagg.DeleteFile(currentFile.FullName);
             }
+            if (Stuff.AllowNTFSStreamsSync)
+                Stuff.UpdateFileMetaInfo(currentFile);
             UpdateTagsInfo(currentFile);
         }
 

@@ -388,6 +388,8 @@ namespace commander
                         if (!fileListControl2.CurrentTag.ContainsFile(fn))
                         {
                             fileListControl2.CurrentTag.AddFile(fn);
+                            if (Stuff.AllowNTFSStreamsSync)
+                                Stuff.UpdateFileMetaInfo(fn);
                             MessageBox.Show(Path.GetFileName(fn.FullName) + " tagged as " + fileListControl2.CurrentTag.Name);
                             fileListControl2.UpdateTagsList();
                         }

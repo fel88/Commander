@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Russian Commander")]
+[assembly: AssemblyTitle("Tag Commander")]
 [assembly: AssemblyDescription("Only for case-insensitive filesystem")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("fel88")]
+[assembly: AssemblyCompany("https://github.com/fel88")]
 [assembly: AssemblyProduct("Commander: containers, tags, extractors and navigation")]
-[assembly: AssemblyCopyright("Copyright ©  2019")]
+[assembly: AssemblyCopyright("Copyleft ©  2019-2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

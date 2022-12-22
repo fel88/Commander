@@ -17,6 +17,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using Trinet.Core.IO.Ntfs;
 
 namespace commander
 {
@@ -274,7 +275,35 @@ namespace commander
 
         public static bool TagsHelperVisible = true;
         public static bool FiltersHelperVisible = true;
+        public static bool AllowNTFSStreamsSync = true;
+        public static void UpdateFileMetaInfo( IFileInfo item)
+        {
+            if (!item.Exist)
+                return;
 
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("<?xml version=\"1.0\"?>");
+            sb.AppendLine("<root>");
+            sb.AppendLine("<tags>");
+            var tags = Stuff.Tags.Where(z => z.ContainsFile(item));
+            foreach (var titem in tags)
+            {
+                sb.AppendLine($"<tag name=\"{titem.Name}\" />");
+            }
+
+            sb.AppendLine("</tags>");
+            sb.AppendLine("</root>");
+
+            var altstream = new FileInfo(item.FullName).GetAlternateDataStream("metainfo", FileMode.Create);
+            altstream.Delete();
+            using (var fs = altstream.OpenWrite())
+            {
+                using (var sw = new StreamWriter(fs))
+                {
+                    sw.WriteLine(sb.ToString());
+                }
+            }
+        }
         public static Icon ExtractAssociatedIcon(String filePath)
         {
             try
