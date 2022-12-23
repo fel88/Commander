@@ -1444,7 +1444,7 @@ namespace commander
             UpdateStatus();
 
             if (Stuff.AllowNTFSStreamsSync)
-                SyncMetaInfo(SelectedFile);
+                Stuff.SyncMetaInfo(SelectedFile);
 
             if (SelectedFileChanged != null)
             {
@@ -1457,44 +1457,7 @@ namespace commander
                     item(SelectedFile);
                 }
             }
-        }
-
-        private void SyncMetaInfo(IFileInfo selectedFile)
-        {
-            foreach (var item in new FileInfo(selectedFile.FullName).ListAlternateDataStreams())
-            {
-                if (item.Name == "metainfo")
-                {
-                    try
-                    {
-                        using (var s = item.OpenText())
-                        {
-                            var txt = s.ReadToEnd();
-
-                            var doc = XDocument.Parse(txt);
-                            var tags = doc.Element("root").Element("tags");
-                            foreach (var titem in tags.Elements("tag"))
-                            {
-                                var nm = titem.Attribute("name").Value;
-                                var tg = Stuff.Tags.FirstOrDefault(z => z.Name.ToLower() == nm.ToLower());
-                                if (tg == null)
-                                {
-                                    tg = Stuff.AddTag(new TagInfo() { Name = nm });
-                                }
-                                if (!tg.ContainsFile(selectedFile))
-                                    tg.AddFile(selectedFile);
-                            }
-
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Stuff.Error("Wrong metainfo detected");
-                        item.Delete();
-                    }
-                }
-            }
-        }
+        } 
 
         TagListViewControl tagControl = new TagListViewControl() { Dock = DockStyle.Fill };
         void SetTagMode()

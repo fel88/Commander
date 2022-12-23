@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
 
@@ -61,7 +62,7 @@ namespace commander
                        {
                            var cntrl = item.Fabric(x);
                            splitContainer1.Panel2.Controls.Add(cntrl);
-                           if(cntrl is IFileListConsumer flc)
+                           if (cntrl is IFileListConsumer flc)
                            {
                                flc.SetFileList(fileListControl1);
                            }
@@ -77,7 +78,7 @@ namespace commander
         }
 
         private void Explorer_Load(object sender, EventArgs e)
-        {            
+        {
             mf = new MessageFilter();
             Application.AddMessageFilter(mf);
         }
@@ -100,7 +101,7 @@ namespace commander
             foreach (var item in PreviewExtensions)
             {
                 item.Release(arg2);
-            }            
+            }
         }
 
         private void followAction(FileListControl fc, IFileInfo f)
@@ -622,8 +623,56 @@ namespace commander
             s.Show();
         }
 
+        private void syncTagsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void currentDirectoryOnlyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var fc = fileListControl1;
+            if (fileListControl2.ContainsFocus)
+            {
+                fc = fileListControl2;
+            }
+
+            foreach (var item in fc.CurrentDirectory.GetFiles())
+            {
+                Stuff.SyncMetaInfo(item);
+            }
+        }
+
+        private async void recursevelyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var fc = fileListControl1;
+            if (fileListControl2.ContainsFocus)
+            {
+                fc = fileListControl2;
+            }
+            toolStripProgressBar1.Visible = true;
+            toolStripProgressLabel.Visible = true;
+
+            await Task.Run(() =>
+            {
+                var dirs = Stuff.GetAllDirs(fc.CurrentDirectory);
+                int cnt = 0;
+                toolStripProgressBar1.Maximum = dirs.Count;
+                foreach (var item in dirs)
+                {
+                    cnt++;
+                    toolStripProgressBar1.Value = cnt;
+                    toolStripProgressLabel.Text = $"{cnt} / {dirs.Count}";
+                    foreach (var f in item.GetFiles())
+                    {
+                        Stuff.SyncMetaInfo(f);
+                    }
+                }
+            });
+            toolStripProgressBar1.Visible = false;
+            toolStripProgressLabel.Visible = false;
+        }
     }
-    
+
 
 }
 

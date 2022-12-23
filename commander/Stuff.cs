@@ -276,7 +276,44 @@ namespace commander
         public static bool TagsHelperVisible = true;
         public static bool FiltersHelperVisible = true;
         public static bool AllowNTFSStreamsSync = true;
-        public static void UpdateFileMetaInfo( IFileInfo item)
+
+        public static void SyncMetaInfo(IFileInfo selectedFile)
+        {
+            foreach (var item in new FileInfo(selectedFile.FullName).ListAlternateDataStreams())
+            {
+                if (item.Name == "metainfo")
+                {
+                    try
+                    {
+                        using (var s = item.OpenText())
+                        {
+                            var txt = s.ReadToEnd();
+
+                            var doc = XDocument.Parse(txt);
+                            var tags = doc.Element("root").Element("tags");
+                            foreach (var titem in tags.Elements("tag"))
+                            {
+                                var nm = titem.Attribute("name").Value;
+                                var tg = Stuff.Tags.FirstOrDefault(z => z.Name.ToLower() == nm.ToLower());
+                                if (tg == null)
+                                {
+                                    tg = Stuff.AddTag(new TagInfo() { Name = nm }, false);
+                                }
+                                if (!tg.ContainsFile(selectedFile))
+                                    tg.AddFile(selectedFile);
+                            }
+
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Stuff.Error("Wrong metainfo detected");
+                        item.Delete();
+                    }
+                }
+            }
+        }
+        public static void UpdateFileMetaInfo(IFileInfo item)
         {
             if (!item.Exist)
                 return;
@@ -620,7 +657,10 @@ namespace commander
         public static void DeleteTag(TagInfo t)
         {
             Tags.Remove(t);
-            IsDirty = true;
+
+            if (!AllowNTFSStreamsSync)
+                IsDirty = true;
+
             if (TagsListChanged != null)
             {
                 TagsListChanged();
@@ -669,7 +709,7 @@ namespace commander
         }
 
         public static void GetDefaultPathes()
-        {   
+        {
             var p1 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
             var p2 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
             var dirs = new DirectoryInfo(p1).GetDirectories().Union(new DirectoryInfo(p2).GetDirectories());
@@ -680,7 +720,7 @@ namespace commander
             Stuff.LibreOfficePath = path;
         }
         public static void LoadSettings()
-        {       
+        {
             if (!File.Exists("settings.xml")) return;
             var findex = new FileIndex() { FileName = "settings.xml", RootPath = Application.StartupPath };
             using (FileStream fs = new FileStream("settings.xml", FileMode.Open, FileAccess.Read))
@@ -1148,13 +1188,13 @@ namespace commander
                 {
                     b64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(item.Info));
                 }
-                sb.AppendLine($"<bookmark uri=\"{ Convert.ToBase64String(Encoding.UTF8.GetBytes(item.Uri.ToString()))}\" info=\"{b64}\" original=\"{Convert.ToBase64String(Encoding.UTF8.GetBytes(item.OriginalUrl))}\"/>");
+                sb.AppendLine($"<bookmark uri=\"{Convert.ToBase64String(Encoding.UTF8.GetBytes(item.Uri.ToString()))}\" info=\"{b64}\" original=\"{Convert.ToBase64String(Encoding.UTF8.GetBytes(item.OriginalUrl))}\"/>");
             }
             sb.AppendLine("</bookmarks>");
         }
 
         public static event Action TagsListChanged;
-        internal static TagInfo AddTag(TagInfo tagInfo)
+        internal static TagInfo AddTag(TagInfo tagInfo, bool dirtyEnabled = true)
         {
             if (Tags.Any(z => z.Name == tagInfo.Name))
             {
@@ -1162,7 +1202,10 @@ namespace commander
             }
 
             Tags.Add(tagInfo);
-            IsDirty = true;
+
+            if (dirtyEnabled)
+                IsDirty = true;
+
             if (TagsListChanged != null)
             {
                 TagsListChanged();

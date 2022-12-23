@@ -41,7 +41,8 @@ namespace commander
             hash.Add(fn.FullName.ToLower());
             if (!(fn is IsoFileWrapper) && dirtyEnable)
             {
-                Stuff.IsDirty = true;
+                if (!Stuff.AllowNTFSStreamsSync)
+                    Stuff.IsDirty = true;
             }
         }
 

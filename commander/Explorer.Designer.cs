@@ -31,7 +31,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Explorer));
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
             this.tablesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -41,15 +40,22 @@
             this.compareBinaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.insertClipboardAsFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.massRenamerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.scannerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripDropDownButton3 = new System.Windows.Forms.ToolStripDropDownButton();
             this.hiddenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hideToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.unhideToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changePasswordToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.syncTagsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fileListControl1 = new commander.FileListControl();
             this.fileListControl2 = new commander.FileListControl();
-            this.scannerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.currentDirectoryOnlyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.recursevelyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
+            this.toolStripProgressLabel = new System.Windows.Forms.ToolStripLabel();
             this.tableLayoutPanel1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -81,29 +87,14 @@
             this.toolStripDropDownButton1,
             this.toolStripDropDownButton2,
             this.toolStripDropDownButton3,
-            this.toolStripButton1});
+            this.toolStripButton1,
+            this.toolStripProgressBar1,
+            this.toolStripProgressLabel});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(1004, 25);
             this.toolStrip1.TabIndex = 2;
             this.toolStrip1.Text = "toolStrip1";
-            // 
-            // splitContainer1
-            // 
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(3, 28);
-            this.splitContainer1.Name = "splitContainer1";
-            // 
-            // splitContainer1.Panel1
-            // 
-            this.splitContainer1.Panel1.Controls.Add(this.fileListControl1);
-            // 
-            // splitContainer1.Panel2
-            // 
-            this.splitContainer1.Panel2.Controls.Add(this.fileListControl2);
-            this.splitContainer1.Size = new System.Drawing.Size(998, 529);
-            this.splitContainer1.SplitterDistance = 499;
-            this.splitContainer1.TabIndex = 3;
             // 
             // toolStripButton3
             // 
@@ -149,7 +140,9 @@
             this.compareBinaryToolStripMenuItem,
             this.insertClipboardAsFileToolStripMenuItem,
             this.massRenamerToolStripMenuItem,
-            this.scannerToolStripMenuItem});
+            this.scannerToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.syncTagsToolStripMenuItem});
             this.toolStripDropDownButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton2.Image")));
             this.toolStripDropDownButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton2.Name = "toolStripDropDownButton2";
@@ -182,6 +175,13 @@
             this.massRenamerToolStripMenuItem.Name = "massRenamerToolStripMenuItem";
             this.massRenamerToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
             this.massRenamerToolStripMenuItem.Text = "Mass renamer";
+            // 
+            // scannerToolStripMenuItem
+            // 
+            this.scannerToolStripMenuItem.Name = "scannerToolStripMenuItem";
+            this.scannerToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+            this.scannerToolStripMenuItem.Text = "Scanner";
+            this.scannerToolStripMenuItem.Click += new System.EventHandler(this.ScannerToolStripMenuItem_Click);
             // 
             // toolStripDropDownButton3
             // 
@@ -235,6 +235,38 @@
             this.toolStripButton1.Text = "Switch";
             this.toolStripButton1.Click += new System.EventHandler(this.ToolStripButton1_Click_1);
             // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(3, 28);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.fileListControl1);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.fileListControl2);
+            this.splitContainer1.Size = new System.Drawing.Size(998, 529);
+            this.splitContainer1.SplitterDistance = 499;
+            this.splitContainer1.TabIndex = 3;
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(186, 6);
+            // 
+            // syncTagsToolStripMenuItem
+            // 
+            this.syncTagsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.currentDirectoryOnlyToolStripMenuItem,
+            this.recursevelyToolStripMenuItem});
+            this.syncTagsToolStripMenuItem.Name = "syncTagsToolStripMenuItem";
+            this.syncTagsToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+            this.syncTagsToolStripMenuItem.Text = "Sync tags";
+            this.syncTagsToolStripMenuItem.Click += new System.EventHandler(this.syncTagsToolStripMenuItem_Click);
+            // 
             // fileListControl1
             // 
             this.fileListControl1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -252,12 +284,31 @@
             this.fileListControl2.Size = new System.Drawing.Size(495, 529);
             this.fileListControl2.TabIndex = 1;
             // 
-            // scannerToolStripMenuItem
+            // currentDirectoryOnlyToolStripMenuItem
             // 
-            this.scannerToolStripMenuItem.Name = "scannerToolStripMenuItem";
-            this.scannerToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
-            this.scannerToolStripMenuItem.Text = "Scanner";
-            this.scannerToolStripMenuItem.Click += new System.EventHandler(this.ScannerToolStripMenuItem_Click);
+            this.currentDirectoryOnlyToolStripMenuItem.Name = "currentDirectoryOnlyToolStripMenuItem";
+            this.currentDirectoryOnlyToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.currentDirectoryOnlyToolStripMenuItem.Text = "current directory only";
+            this.currentDirectoryOnlyToolStripMenuItem.Click += new System.EventHandler(this.currentDirectoryOnlyToolStripMenuItem_Click);
+            // 
+            // recursevelyToolStripMenuItem
+            // 
+            this.recursevelyToolStripMenuItem.Name = "recursevelyToolStripMenuItem";
+            this.recursevelyToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.recursevelyToolStripMenuItem.Text = "recursively";
+            this.recursevelyToolStripMenuItem.Click += new System.EventHandler(this.recursevelyToolStripMenuItem_Click);
+            // 
+            // toolStripProgressBar1
+            // 
+            this.toolStripProgressBar1.Name = "toolStripProgressBar1";
+            this.toolStripProgressBar1.Size = new System.Drawing.Size(100, 22);
+            this.toolStripProgressBar1.Visible = false;
+            // 
+            // toolStripProgressLabel
+            // 
+            this.toolStripProgressLabel.Name = "toolStripProgressLabel";
+            this.toolStripProgressLabel.Size = new System.Drawing.Size(13, 22);
+            this.toolStripProgressLabel.Text = "..";
             // 
             // Explorer
             // 
@@ -304,6 +355,12 @@
         private System.Windows.Forms.ToolStripMenuItem insertClipboardAsFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem massRenamerToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem scannerToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem syncTagsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem currentDirectoryOnlyToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem recursevelyToolStripMenuItem;
+        private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
+        private System.Windows.Forms.ToolStripLabel toolStripProgressLabel;
     }
 }
 

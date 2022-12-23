@@ -168,7 +168,7 @@ namespace commander
                 }
                 foreach (var item in covers.OrderBy(z => z.Name))
                 {
-                   // if (!Stuff.ShowHidden && item.TagInfo.IsHidden) continue;
+                    // if (!Stuff.ShowHidden && item.TagInfo.IsHidden) continue;
                     if (!IsFilterPass(item.Name, fltrs)) continue;
                     if (item.IsMain)
                     {
@@ -292,7 +292,23 @@ namespace commander
 
         private void AddTagToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Stuff.AddTag(new TagInfo() { Name = "tag1" });
+            var ntag = new TagInfo() { Name = "tag1" };
+            RenameDialog rd = new RenameDialog();
+            rd.Validation = (x) =>
+            {
+                if (Stuff.IsTagCoverExist(x, ntag.Name))
+                {
+                    return new Tuple<bool, string>(false, "Same tag name already exist!");
+                }
+                return new Tuple<bool, string>(true, null);
+            };
+            rd.Value = ntag.Name;
+            if (rd.ShowDialog() == DialogResult.OK)
+            {
+                ntag.Name = rd.Value;
+                Stuff.AddTag(ntag, false);                
+                UpdateList(null);
+            }
             UpdateList(null);
         }
 
@@ -437,7 +453,7 @@ namespace commander
             List<IFileInfo> flss = new List<IFileInfo>();
             foreach (var tag in tags)
             {
-                flss.AddRange(tag.Files.Where(z=>z.Exist));
+                flss.AddRange(tag.Files.Where(z => z.Exist));
             }
 
             var gg = flss.GroupBy(z => z.FullName.ToLower()).ToArray();

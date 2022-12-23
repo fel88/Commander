@@ -667,6 +667,7 @@
     <None Include="Resources\matr.png" />
     <Content Include="matr.ico" />
     <None Include="Resources\4dS9v.png" />
+    <None Include="Resources\arrow-turn-090.png" />
     <Content Include="settings.xml">
       <SubType>Designer</SubType>
     </Content>
