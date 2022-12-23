@@ -47,3 +47,5 @@ Also available as a separate tool :https://github.com/fel88/YoutubeDownloader
 * https://www.codeproject.com/Articles/93301/Implementing-a-Multithreaded-HTTP-HTTPS-Debugging
 * http://www.steffengerlach.de/freeware/
 * https://github.com/webmproject/libwebp
+
+<sub>Some icons by [Yusuke Kamiyamane](http://p.yusukekamiyamane.com/). Licensed under a [Creative Commons Attribution 3.0 License](http://creativecommons.org/licenses/by/3.0/)</sub>
