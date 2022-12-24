@@ -200,6 +200,12 @@
       <DependentUpon>DjvuReader.cs</DependentUpon>
     </Compile>
     <Compile Include="Extensions\GifPreviewExtension.cs" />
+    <Compile Include="Forms\NTFSStreamsEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\NTFSStreamsEditor.Designer.cs">
+      <DependentUpon>NTFSStreamsEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\YtDlpDownloader.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -526,6 +532,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FileMetaInfoEditorDialog.resx">
       <DependentUpon>FileMetaInfoEditorDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\NTFSStreamsEditor.resx">
+      <DependentUpon>NTFSStreamsEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\YtDlpDownloader.resx">
       <DependentUpon>YtDlpDownloader.cs</DependentUpon>

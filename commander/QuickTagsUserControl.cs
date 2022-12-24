@@ -142,10 +142,7 @@ namespace commander
         private void Flc_SelectedFileChanged(IFileInfo obj)
         {
             currentFile = obj;
-
             UpdateTags(obj);
-
-
         }
 
         public IFileListControl FileControl;
@@ -158,6 +155,14 @@ namespace commander
         private void Watermark1_TextChanged(object sender, EventArgs e)
         {
             UpdateCheckList();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(watermark1.Text))
+                return;
+
+            Stuff.AddTag(new TagInfo() { Name = watermark1.Text }, !Stuff.AllowNTFSStreamsSync);
         }
     }
 }

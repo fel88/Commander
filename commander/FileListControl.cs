@@ -17,6 +17,7 @@ using IsoLib;
 using System.Management;
 using System.IO.Compression;
 using Trinet.Core.IO.Ntfs;
+using commander.Forms;
 
 namespace commander
 {
@@ -1531,107 +1532,9 @@ namespace commander
         }
 
         private void SetTagsToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
-        {
-            setTagsToolStripMenuItem.DropDownItems.Clear();
-            forceCloseMenu = false;
-            if (listView1.SelectedItems.Count == 0) return;
+        {       
 
-
-
-            List<IFileInfo> files = new List<IFileInfo>();
-            foreach (var item in listView1.SelectedItems)
-            {
-                var tag = (item as ListViewItem).Tag;
-                if (!(tag is IFileInfo)) continue;
-                files.Add(tag as IFileInfo);
-            }
-
-            if (!files.Any()) return;
-
-
-            List<TagInfo> cands = new List<TagInfo>();
-            foreach (var item in Stuff.Tags.OrderBy(z => z.Name))
-            {
-                //if (item.IsHidden && !Stuff.ShowHidden) continue;
-                cands.Add(item);
-            }
-
-            if (cands.Count > 20)
-            {
-                int grps = cands.Count / 20;
-                int remain = cands.Count;
-                int index = 0;
-                List<ToolStripMenuItem> ii = new List<ToolStripMenuItem>();
-                for (int i = 0; i <= grps; i++)
-                {
-                    ToolStripMenuItem grp1 = new ToolStripMenuItem("Group #" + i);
-                    setTagsToolStripMenuItem.DropDownItems.Add(grp1);
-                    grp1.DropDown.Closing += DropDown_Closing;
-                    for (int j = 0; j < 20; j++)
-                    {
-                        if (remain == 0) break;
-                        var item = cands[index++];
-                        var ww = files.Count(z => item.ContainsFile(z.FullName));
-                        var state = CheckState.Indeterminate;
-                        if (ww == 0) { state = CheckState.Unchecked; }
-                        if (ww == files.Count) { state = CheckState.Checked; }
-
-                        var ss = new ToolStripMenuItem(item.Name)
-                        {
-                            CheckOnClick = true,
-                            CheckState = state
-                        };
-                        ss.Tag = new Tuple<TagInfo, IFileInfo[]>(item, files.ToArray());
-                        ss.CheckedChanged += Ss_CheckedChanged;
-                        grp1.DropDownItems.Add(ss);
-                        remain--;
-                    }
-
-                }
-
-
-
-            }
-            else
-            {
-                foreach (var item in cands)
-                {
-                    var ww = files.Count(z => item.ContainsFile(z.FullName));
-                    var state = CheckState.Indeterminate;
-                    if (ww == 0) { state = CheckState.Unchecked; }
-                    if (ww == files.Count) { state = CheckState.Checked; }
-
-                    var ss = new ToolStripMenuItem(item.Name)
-                    {
-                        CheckOnClick = true,
-                        CheckState = state
-                    };
-                    ss.Tag = new Tuple<TagInfo, IFileInfo[]>(item, files.ToArray());
-                    ss.CheckedChanged += Ss_CheckedChanged;
-                    setTagsToolStripMenuItem.DropDownItems.Add(ss);
-                }
-            }
-
-
-        }
-
-        private void Ss_CheckedChanged(object sender, EventArgs e)
-        {
-            var f = (sender as ToolStripMenuItem).Tag as Tuple<TagInfo, IFileInfo[]>;
-            foreach (var item in f.Item2)
-            {
-                if (f.Item1.ContainsFile(item.FullName))
-                {
-                    f.Item1.DeleteFile(item.FullName);
-                }
-                else
-                {
-                    f.Item1.AddFile(item);
-                }
-                if (Stuff.AllowNTFSStreamsSync)
-                    Stuff.UpdateFileMetaInfo(item);
-            }
-        }
+        }      
 
         bool forceCloseMenu = true;
         private void ContextMenuStrip2_Closing(object sender, ToolStripDropDownClosingEventArgs e)
@@ -2471,11 +2374,6 @@ namespace commander
 
         private void setTagsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
-        }
-
-        private void tagPanelToolStripMenuItem_Click(object sender, EventArgs e)
-        {
             if (SelectedFile == null) return;
             QuickTagsWindow q = new QuickTagsWindow();
 
@@ -2483,7 +2381,7 @@ namespace commander
             q.MdiParent = mdi.MainForm;
             q.TopLevel = false;
             q.Show();
-        }
+        }        
 
         private void addSiteToolStripMenuItem1_Click(object sender, EventArgs e)
         {
@@ -2536,6 +2434,17 @@ namespace commander
                     Stuff.Info("Index was mounted!");
                 }
             }
+        }
+
+        private void streamsEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SelectedFile == null) 
+                return;
+
+            NTFSStreamsEditor ed = new NTFSStreamsEditor();
+            ed.Init(SelectedFile);
+            ed.MdiParent = mdi.MainForm;
+            ed.Show();
         }
     }
 

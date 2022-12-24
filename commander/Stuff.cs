@@ -313,10 +313,19 @@ namespace commander
                 }
             }
         }
+
         public static void UpdateFileMetaInfo(IFileInfo item)
         {
             if (!item.Exist)
                 return;
+
+            if (item.Attributes.HasFlag(FileAttributes.ReadOnly))
+            {
+                if (Stuff.Question("File is read-only, do you want to update tags anyway?") != DialogResult.Yes)
+                    return;
+
+                File.SetAttributes(item.FullName, item.Attributes & ~FileAttributes.ReadOnly);
+            }
 
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("<?xml version=\"1.0\"?>");

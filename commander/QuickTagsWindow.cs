@@ -22,7 +22,14 @@ namespace commander
         QuickTagsUserControl u;
         public void Init(IFileListControl flc, IFileInfo file)
         {
-            u.Init(flc,file);            
+            Text = $"Tags: {file.Name}";
+            u.Init(flc,file);
+            flc.SelectedFileChanged += Flc_SelectedFileChanged; ;
+        }
+
+        private void Flc_SelectedFileChanged(IFileInfo file)
+        {
+            Text = $"Tags: {file.Name}";
         }
     }
 }

@@ -1,10 +1,5 @@
 ﻿using PluginLib;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using Trinet.Core.IO.Ntfs;
 
 namespace commander
 {
@@ -58,10 +53,8 @@ namespace commander
                     break;
                 }
             }
-            Stuff.IsDirty = true;
+            if (!Stuff.AllowNTFSStreamsSync)
+                Stuff.IsDirty = true;
         }
-
-
-    }
-
+    }    
 }
