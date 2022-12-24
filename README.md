@@ -2,6 +2,8 @@
 
 Organize your files via tags and other metadata (using NTFS [Forks](https://en.wikipedia.org/wiki/Fork_(file_system)) (Alternate data stream (ADS)))
 
+https://www.filemeta.org/Manifesto.html
+
 Containers, tags, extractors and navigation. 
 
 **Some features:**
